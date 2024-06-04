@@ -21,3 +21,10 @@ groupbox_template = """
         font-size: {font_size}px;
     }}
 """
+
+setting_label_template = """
+    QLabel {{
+        color: {font_color};
+        font-size: {size}px;
+    }}
+"""

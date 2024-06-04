@@ -8,6 +8,7 @@ from src.gui.models.py_toggle import PyToggle
 from src.gui.models.qt_message import QtMessage
 from .styles import *
 from .qt_non_rigid_registration import NonRigidSettings
+from .qt_setting_header import SettingHeader
 
 
 class RigidSettings(QGroupBox):
@@ -18,7 +19,6 @@ class RigidSettings(QGroupBox):
             self,
             title: str = 'Rigid Settings',
             detectors: list = ['BRISK', 'KAZE', 'AKAZE', 'ORB'],
-            descriptors: list = ['BRISK', 'KAZE', 'AKAZE', 'ORB', 'VGG', 'LATCH', 'DAISY', 'Boost'],
             matching_metric: list = ['Euclidean', 'Jaccard (continuous)'],
             similarity_metric: list = ['Euclidean', 'Matches'],
             color: str = 'black',
@@ -51,7 +51,6 @@ class RigidSettings(QGroupBox):
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         self._detectors = detectors
-        self._descriptors = descriptors
         self._matching_metric = matching_metric
         self._similarity_metric = similarity_metric
         self._font_size = font_size
@@ -67,6 +66,16 @@ class RigidSettings(QGroupBox):
         content_widget = QWidget(self)
         content_widget.setObjectName('contents_widget')
 
+        fd_label = QLabel()
+        fd_label.setObjectName('fd_label')
+        fd_label.setText('Feature Detector')
+
+        fd_header = SettingHeader(
+            label_text='Feature Detector',
+            tool_msg='This is the setting for the feature detector.',
+            parent=content_widget
+        )
+
         self.feature_detector_combo = QtComboBox(
             bg_color=self.themes["app_color"]["dark_one"],
             text_color=self.themes["app_color"]["text_color"],
@@ -79,16 +88,11 @@ class RigidSettings(QGroupBox):
         self.feature_detector_combo.setFixedHeight(30)
         self.feature_detector_combo.setMinimumWidth(120)
 
-        self.feature_descriptor_combo = QtComboBox(
-            bg_color=self.themes["app_color"]["dark_one"],
-            text_color=self.themes["app_color"]["text_color"],
+        mm_header = SettingHeader(
+            label_text='Feature Matching Metric',
+            tool_msg='This is the setting for the feature matching metric.',
             parent=content_widget
         )
-        self.feature_descriptor_combo.setObjectName('feature_descriptor_combo')
-        self.feature_descriptor_combo.addItems(self._descriptors)
-        self.feature_descriptor_combo.setCurrentIndex(0)
-        self.feature_descriptor_combo.setFixedHeight(30)
-        self.feature_descriptor_combo.setMinimumWidth(120)
 
         self.matching_metric_combo = QtComboBox(
             bg_color=self.themes["app_color"]["dark_one"],
@@ -101,6 +105,12 @@ class RigidSettings(QGroupBox):
         self.matching_metric_combo.setFixedHeight(30)
         self.matching_metric_combo.setMinimumWidth(150)
 
+        sm_header = SettingHeader(
+            label_text='Similarity Metric',
+            tool_msg='This is the setting for the similarity metric.',
+            parent=content_widget
+        )
+
         self.similarity_metric_combo = QtComboBox(
             bg_color=self.themes["app_color"]["dark_one"],
             text_color=self.themes["app_color"]["text_color"],
@@ -112,9 +122,15 @@ class RigidSettings(QGroupBox):
         self.similarity_metric_combo.setFixedHeight(30)
         self.similarity_metric_combo.setMinimumWidth(120)
 
+        is_header = SettingHeader(
+            label_text='Allow Image Scaling',
+            tool_msg='This is the setting for image scaling.',
+            parent=content_widget
+        )
+
         self.image_scaling_chbx = PyToggle(
-            width=28,
-            height=16,
+            width=34,
+            height=20,
             ellipse_y=2,
             bg_color = self.themes['app_color']['text_color'],
             circle_color = self.themes['app_color']['yellow_bg'],
@@ -124,9 +140,15 @@ class RigidSettings(QGroupBox):
         self.image_scaling_chbx.setObjectName('image_scaling_chbx')
         self.image_scaling_chbx.setChecked(True)
 
+        mmi_header = SettingHeader(
+            label_text='Maximize Mutual Information',
+            tool_msg='This is the setting for maximize mutual information.',
+            parent=content_widget
+        )
+
         self.mutual_information_chbx = PyToggle(
-            width=28,
-            height=16,
+            width=34,
+            height=20,
             ellipse_y=2,
             bg_color = self.themes['app_color']['text_color'],
             circle_color = self.themes['app_color']['yellow_bg'],
@@ -172,20 +194,18 @@ class RigidSettings(QGroupBox):
 
         content_layout = QGridLayout(content_widget)
         content_layout.setContentsMargins(25, 18, 25, 18)
-        content_layout.setSpacing(20)
-        content_layout.addWidget(QLabel('Feature Detector:'), 0, 0, 1, 1)
-        content_layout.addWidget(self.feature_detector_combo, 0, 1, 1, 2)
-        content_layout.addWidget(QLabel('Feature Descriptor:'), 1, 0, 1, 1)
-        content_layout.addWidget(self.feature_descriptor_combo, 1, 1, 1, 2)
-        content_layout.addWidget(QLabel('Feature Matching Metric:'), 2, 0, 1, 1)
-        content_layout.addWidget(self.matching_metric_combo, 2, 1, 1, 2)
-        content_layout.addWidget(QLabel('Similarity Metric:'), 3, 0, 1, 1)
-        content_layout.addWidget(self.similarity_metric_combo, 3, 1, 1, 2)
-        content_layout.addWidget(QLabel('Allow Image Scaling:'), 4, 0, 1, 1)
-        content_layout.addWidget(self.image_scaling_chbx, 4, 1, 1, 2)
-        content_layout.addWidget(QLabel('Maximize Mutual Information:'), 5, 0, 1, 1)
-        content_layout.addWidget(self.mutual_information_chbx, 5, 1, 1, 2)
-        content_layout.addWidget(non_rigid_frame, 6, 3, 1, 1)
+        content_layout.setSpacing(40)
+        content_layout.addWidget(fd_header, 0, 0, 1, 1)
+        content_layout.addWidget(self.feature_detector_combo, 0, 2, 1, 2)
+        content_layout.addWidget(mm_header, 1, 0, 1, 1)
+        content_layout.addWidget(self.matching_metric_combo, 1, 2, 1, 2)
+        content_layout.addWidget(sm_header, 2, 0, 1, 1)
+        content_layout.addWidget(self.similarity_metric_combo, 2, 2, 1, 2)
+        content_layout.addWidget(is_header, 3, 0, 1, 1)
+        content_layout.addWidget(self.image_scaling_chbx, 3, 2, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
+        content_layout.addWidget(mmi_header, 4, 0, 1, 1)
+        content_layout.addWidget(self.mutual_information_chbx, 4, 2, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
+        content_layout.addWidget(non_rigid_frame, 5, 4, 1, 1)
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -201,9 +221,6 @@ class RigidSettings(QGroupBox):
     def get_feature_detector(self):
         return self.feature_detector_combo.currentText()
     
-    def get_feature_descriptor(self):
-        return self.feature_descriptor_combo.currentText()
-    
     def get_matching_metric(self):
         return self.matching_metric_combo.currentText()
     
@@ -218,7 +235,6 @@ class RigidSettings(QGroupBox):
 
     def get_data(self):
         detector_type = self.get_feature_detector()
-        descriptor_type = self.get_feature_descriptor()
         matching_metric_type = self.get_matching_metric()
         similarity_metric_type = self.get_similarity_metric()
         do_image_scaling = self.get_image_scaling()
@@ -227,7 +243,6 @@ class RigidSettings(QGroupBox):
 
         data_dict = {
             'detector': detector_type,
-            'descriptor': descriptor_type,
             'matching_metric': matching_metric_type,
             'similarity_metric': similarity_metric_type,
             'image_scaling': do_image_scaling,

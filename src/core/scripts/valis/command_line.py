@@ -37,7 +37,6 @@ def start_valis_process(settings_data: dict = None):
 
         # Rigid Category
         rigid_detector = rigid_data['detector']
-        rigid_descriptor = rigid_data['descriptor']
         rigid_matching_metric = rigid_data['matching_metric']
         rigid_similarity_metric = rigid_data['similarity_metric']
         rigid_image_scaling = rigid_data['image_scaling']
