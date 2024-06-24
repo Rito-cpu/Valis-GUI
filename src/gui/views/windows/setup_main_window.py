@@ -338,8 +338,7 @@ class SetupMainWindow:
                 self,
                 self.processing_settings,
                 self.rigid_settings,
-                non_rigid_settings,
-                self.immuno_entry.is_empty()
+                non_rigid_settings
             )
         )
 

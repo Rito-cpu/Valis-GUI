@@ -4,13 +4,14 @@ from src.core.pyqt_core import *
 from src.core.app_config import IMG_RSC_PATH
 from src.core.json.json_themes import Themes
 from .styles import setting_label_template
+from .helper_window import HelperWindow
 
 
 class SettingHeader(QWidget):
     def __init__(
         self,
         label_text: str,
-        tool_msg: str='',
+        tool_msg: str,
         font_size: int=12,
         parent=None
     ):
@@ -58,40 +59,24 @@ class SettingHeader(QWidget):
         main_layout.addWidget(self.help_bttn)
         main_layout.addWidget(setting_label)
 
-    def show_window(self):        
-        self._message_window = QMainWindow()
-        self._message_window.setObjectName('message_window')
-        self._message_window.setStyleSheet(f'background: {self.themes["app_color"]["main_bg"]};')
+    def show_window(self):
+        # TODO: Continue work here
+        if self._message_window is not None:
+            self._message_window.close()
+            self._message_window = None
 
-        central_widget = QWidget(self._message_window)
-        central_widget.setObjectName('central_widget')
+        print(f'Showing the {self._label_text} settings window.')
+        curr_window_title = self._label_text + ' Settings'
+        curr_setting_name = self._label_text
 
-        label_style = setting_label_template.format(
-            font_color=self.themes['app_color']['text_color'],
-            size=self._font_size
+        self._message_window = HelperWindow(
+            window_title=curr_window_title,
+            setting_name=curr_setting_name,
+            setting_msg=self._tool_msg
         )
-
-        title_text = QLabel(central_widget)
-        title_text.setObjectName('title_text')
-        title_text.setText(f'{self._label_text} Information:')
-        title_text.setStyleSheet(f'color: {self.themes["app_color"]["main_bg"]}; font-size: 12px; background: {self.themes["app_color"]["blue_bg"]}; border-radius: 8px; padding: 8px;')
-        title_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        message_label = QLabel(central_widget)
-        message_label.setObjectName('message_label')
-        message_label.setText(self._tool_msg)
-        message_label.setStyleSheet(f'color: {self.themes["app_color"]["text_color"]}; font-size: 12px; border-radius: 8px; padding: 8px; border: 1px solid black;')
-        message_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        central_layout = QVBoxLayout(central_widget)
-        central_layout.setObjectName('central_layout')
-        central_layout.setContentsMargins(5, 5, 5, 5)
-        central_layout.setSpacing(15)
-        central_layout.addStretch(1)
-        central_layout.addWidget(title_text, alignment=Qt.AlignmentFlag.AlignCenter)
-        central_layout.addWidget(message_label, alignment=Qt.AlignmentFlag.AlignCenter)
-        central_layout.addStretch(1)
-        
-        self._message_window.setCentralWidget(central_widget)
-        self._message_window.setMinimumSize(400, 250)
+        self._message_window.closed.connect(self.on_msg_close)
         self._message_window.show()
+
+    def on_msg_close(self):
+        print('Resetting the message window to None.')
+        self._message_window = None

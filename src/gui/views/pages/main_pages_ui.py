@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
-
 from src.core.pyqt_core import *
 from src.core.image_functions import Functions
 from src.gui.models import *
 
 
 class Ui_MainPages(object):
+    """Creates multiple QWidget pages to be placed in a QStackedWidget and placed in the Main Window.
+
+    Args:
+        MainPages (object): The main window or parents widget that will contain the pages.
+    """
     def setupUi(self, MainPages):
         if not MainPages.objectName():
             MainPages.setObjectName(u"MainPages")
@@ -300,8 +304,6 @@ class Ui_MainPages(object):
         self.export_page_layout.addWidget(self.export_title_label)
         self.export_page_layout.addWidget(export_scroll_area)
 
-        # self.export_page_layout = QVBoxLayout(self.export_page)
-
         # ************************
         # **** Finalize Pages ****
         # ************************
@@ -327,9 +329,7 @@ class Ui_MainPages(object):
 
     def retranslate_ui(self, MainPages):
         MainPages.setWindowTitle(QCoreApplication.translate("MainPages", u"Form", None))
-        # self.label.setText(QCoreApplication.translate("MainPages", u"Welcome To PyOneDark GUI", None))
         self.image_dir_title.setText(QCoreApplication.translate("MainPages", u"Upload Slides ", None))
         self.registration_title.setText(QCoreApplication.translate("MainPages", u"Registration Settings", None))
         self.result_page_title.setText(QCoreApplication.translate("MainPages", u"Results", None))
         self.export_title_label.setText(QCoreApplication.translate("MainPages", u"Export", None))
-    # retranslateUi

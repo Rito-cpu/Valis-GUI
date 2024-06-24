@@ -7,6 +7,14 @@ from src.gui.models import *
 
 
 class MainWindow(QMainWindow):
+    """Main Window widget that will contain all other child widgets.
+
+    Args:
+        QMainWindow (QWidget): _description_
+    Attributes:
+        first_two_pages (QWidget): a holder variable that keeps track of which pages (first two pages of system, 1-2) are in use.
+        second_two_pages (QWidget): a holder variable that keeps track of which pages  (second two pages, 3-4) are in use.
+    """
     first_two_pages = None
     second_two_pages = None
 
@@ -27,80 +35,60 @@ class MainWindow(QMainWindow):
 
         self.show()
 
-    # LEFT MENU BTN IS CLICKED
-    # Check funtion by object name / btn_id
     def menu_clicked(self, menu_bttn):
-        # GET BTTN CLICKED
+        """Handles button click events from the left menu and title menu.
 
+        Args:
+            menu_bttn (PyPushButton): custom QPushButton object
+        """
         # Remove Selection If Clicked By "btn_close_left_column"
         if menu_bttn.objectName() != "bttn_settings":
             self.ui.left_menu.deselect_all_tab()
 
-        # Get Title Bar Btn And Reset Active
+        # Deactive title bar settings by default
         top_settings = MainFunctions.get_title_bar_btn(self, "bttn_top_settings")
         top_settings.set_active(False)
 
-        # LEFT MENU
-        # HOME BTN
+        # Left Menu Buttons
         if menu_bttn.objectName() == "bttn_home":
-            # Close right panel and disable it, nothing to show
+            # Right panel must not show in the home page
             if MainFunctions.right_column_is_visible(self):
                 menu_bttn.set_active(False)
                 MainFunctions.toggle_right_column(self)
             top_settings.setDisabled(True)
-            # Select Menu
             self.ui.left_menu.select_only_one(menu_bttn.objectName())
-
-            # Load Page 1
+            # Load first page
             MainFunctions.set_page(self, self.ui.load_pages.home_menu_container)
-            # MainFunctions.set_right_column_menu(self, self.ui.right_column.menu_1)
-
-        # WIDGETS BTN
-        if menu_bttn.objectName() == "registration_bttn":
-            # Select Menu
+        elif menu_bttn.objectName() == "registration_bttn":
             self.ui.left_menu.select_only_one(menu_bttn.objectName())
             top_settings.setEnabled(True)
-
-            # Load Page 2
-            if self.first_two_pages == None:
+            # Load second page
+            if self.first_two_pages is None:
                 MainFunctions.set_page(self, self.ui.load_pages.image_dir_subpage)
             else:
                 MainFunctions.set_page(self, self.first_two_pages)
             MainFunctions.set_right_column_menu(self, self.ui.right_column.slide_settings_column)
-
-        # LOAD USER PAGE
-        if menu_bttn.objectName() == "results_bttn":
-            # Select Menu
+        elif menu_bttn.objectName() == "results_bttn":
             self.ui.left_menu.select_only_one(menu_bttn.objectName())
             top_settings.setEnabled(True)
-
-            # Load Page 3
-            # MainFunctions.set_page(self, self.ui.load_pages.result_page)
-            # MainFunctions.set_right_column_menu(self, self.ui.right_column.results_right_column)
-            if self.second_two_pages == None:
+            # Load third page
+            if self.second_two_pages is None:
                 MainFunctions.set_page(self, self.ui.load_pages.result_page)
             else:
                 MainFunctions.set_page(self, self.second_two_pages)
             MainFunctions.set_right_column_menu(self, self.ui.right_column.results_right_column)
-
-        # BOTTOM INFORMATION
-        if menu_bttn.objectName() == "bttn_info":
-            # CHECK IF LEFT COLUMN IS VISIBLE
+        elif menu_bttn.objectName() == "bttn_info":
+            # Ensure that left column is visible
             if not MainFunctions.left_column_is_visible(self):
                 self.ui.left_menu.select_only_one_tab(menu_bttn.objectName())
-
-                # Show / Hide
                 MainFunctions.toggle_left_column(self)
                 self.ui.left_menu.select_only_one_tab(menu_bttn.objectName())
             else:
                 if menu_bttn.objectName() == "bttn_close_left_column":
                     self.ui.left_menu.deselect_all_tab()
-                    # Show / Hide
                     MainFunctions.toggle_left_column(self)
-
                 self.ui.left_menu.select_only_one_tab(menu_bttn.objectName())
 
-            # Change Left Column Menu
             if menu_bttn.objectName() != "bttn_close_left_column":
                 MainFunctions.set_left_column_menu(
                     self,
@@ -108,22 +96,16 @@ class MainWindow(QMainWindow):
                     title = "Info tab",
                     icon_path = Functions.set_svg_icon("icon_info.svg")
                 )
-
-        # SETTINGS LEFT
-        if menu_bttn.objectName() == "bttn_settings" or menu_bttn.objectName() == "bttn_close_left_column":
-            # CHECK IF LEFT COLUMN IS VISIBLE
+        elif menu_bttn.objectName() == "bttn_settings" or menu_bttn.objectName() == "bttn_close_left_column":
             if not MainFunctions.left_column_is_visible(self):
-                # Show / Hide
                 MainFunctions.toggle_left_column(self)
                 self.ui.left_menu.select_only_one_tab(menu_bttn.objectName())
             else:
                 if menu_bttn.objectName() == "bttn_close_left_column":
                     self.ui.left_menu.deselect_all_tab()
-                    # Show / Hide
                     MainFunctions.toggle_left_column(self)
                 self.ui.left_menu.select_only_one_tab(menu_bttn.objectName())
 
-            # Change Left Column Menu
             if menu_bttn.objectName() != "bttn_close_left_column":
                 MainFunctions.set_left_column_menu(
                     self,
@@ -132,40 +114,31 @@ class MainWindow(QMainWindow):
                     icon_path = Functions.set_svg_icon("icon_settings.svg")
                 )
 
-        # TITLE BAR MENU
-        # SETTINGS TITLE BAR
+        # Title Bar Button(s)
         if menu_bttn.objectName() == "bttn_top_settings":
-            # Toogle Active
             if not MainFunctions.right_column_is_visible(self):
                 menu_bttn.set_active(True)
-
-                # Show / Hide
                 MainFunctions.toggle_right_column(self)
             else:
                 menu_bttn.set_active(False)
-
-                # Show / Hide
                 MainFunctions.toggle_right_column(self)
 
-            # Get Left Menu Btn
-            # top_settings = MainFunctions.get_left_menu_btn(self, "bttn_settings")
-            # top_settings.set_active_tab(False)
-
-        # DEBUG
-        # print(f"Button {menu_bttn.objectName()}, clicked!")
-
-    # LEFT MENU BTN IS RELEASED
-    # Run function when menu_bttn is released
-    # Check funtion by object name / btn_id
     def menu_released(self, menu_bttn):
-        pass
-        # GET BT CLICKED
-        # menu_bttn = SetupMainWindow.setup_btns(self)
+        """Handles button release events from the left menu and title menu.
 
-        # DEBUG
+        Args:
+            menu_bttn (PyPushButton): custom QPushButton widget.
+        """
+        pass
+        # menu_bttn = SetupMainWindow.setup_btns(self)
         # print(f"Button {menu_bttn.objectName()}, released!")
 
     def registration_page_picker(self, page):
+        """Keeps track of which page is in use between the import page and the registration page.
+
+        Args:
+            page (QWidget): custom QWidget container with interactive child widgets.
+        """
         MainFunctions.set_page(self, page)
 
         slide_menu_bttn = self.ui.right_column.slide_navigation_bttn_frame.findChild(PyPushButton, 'slide_menu_bttn')
@@ -180,6 +153,11 @@ class MainWindow(QMainWindow):
         self.first_two_pages = page
 
     def results_page_picker(self, page):
+        """Keeps track of which page is in use between the results page and the export page.
+
+        Args:
+            page (QWidget): custom QWidget container with interactive child widgets.
+        """
         MainFunctions.set_page(self, page)
 
         results_menu_bttn = self.ui.right_column.results_button_frame.findChild(PyPushButton, 'results_menu_bttn')
@@ -193,41 +171,37 @@ class MainWindow(QMainWindow):
 
         self.second_two_pages = page
 
-    # RESIZE EVENT
     def resizeEvent(self, event):
         SetupMainWindow.resize_grips(self)
 
-    # MOUSE CLICK EVENTS
     def mousePressEvent(self, event):
-        # SET DRAG POS WINDOW
         self.dragPos = event.globalPosition().toPoint()
 
     def closeEvent(self, event) -> None:
-        #sender = self.sender()
-        #if sender is not None:
+        """Custom close event that triggers a messagebox for confirmation.
+
+        Args:
+            event (QCloseEvent): event triggered when closing an application in PyQt6.
+        """
         exit_buttons = {
             "Yes": QMessageBox.ButtonRole.YesRole,
             "No": QMessageBox.ButtonRole.NoRole
         }
 
-        exit_message = QtMessage(buttons=exit_buttons,
+        exit_message_box = QtMessage(buttons=exit_buttons,
                         color=self.themes["app_color"]["main_bg"],
                         bg_color_one=self.themes["app_color"]["dark_one"],
                         bg_color_two=self.themes["app_color"]["bg_one"],
                         bg_color_hover=self.themes["app_color"]["dark_three"],
                         bg_color_pressed=self.themes["app_color"]["dark_four"])
-        exit_message.setIcon(QMessageBox.Icon.Warning)
-        exit_message.setText("Are you sure you want to exit?")
-        exit_message.setInformativeText("Any unsaved work will be lost.")
-        exit_message.exec()
+        exit_message_box.setIcon(QMessageBox.Icon.Warning)
+        exit_message_box.setText("Are you sure you want to exit?")
+        exit_message_box.setInformativeText("Any unsaved work will be lost.")
+        exit_message_box.exec()
 
-        if exit_message.clickedButton() == exit_message.buttons["Yes"]:
+        if exit_message_box.clickedButton() == exit_message_box.buttons["Yes"]:
             QApplication.instance().closeAllWindows()
             event.accept()
         else:
+            # Ignoring event resumes application use
             event.ignore()
-        #else:
-        #    print(f'Sender is none!')
-        #    QApplication.instance().closeAllWindows()
-        #    event.accept()
-            # super().closeEvent(event)

@@ -32,3 +32,6 @@ def is_blank_line(line: Optional[str]) -> bool:
     """Check if the line is blank or None."""
 
     return line is None or not line.strip()
+
+def is_existing_dir(path: Optional[str]) -> bool:
+    return os.path.isdir(path)
