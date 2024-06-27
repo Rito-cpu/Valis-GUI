@@ -2,7 +2,7 @@ import inspect
 
 from valis import feature_detectors, preprocessing, registration
 from src.core.keyword_store import FD_KEY, PROCESSOR_KEY, IF_PROCESSOR_KEY, BF_PROCESSOR_KEY
-
+from sklearn.metrics.pairwise import _VALID_METRICS
 
 def _get_subclasses(module, base_class, exclude=()):
     include_list = []
@@ -76,6 +76,30 @@ def get_image_processers():
 
     return default_dict, processor_dict
 
+def get_feature_matching_metrics():
+    """Get all feature matching metrics
+
+    Returns
+    --------
+    fmm_list: list
+        list of all available feature matching metrics, default (index 0) is "euclidean"
+    """
+    fmm_list = _VALID_METRICS.copy()
+
+    return fmm_list
+
+def get_similarity_metrics():
+    """Get all similarity matching (sorting) metrics
+
+    Returns
+    --------
+    sm_list: list
+        list of all available sorting metrics, default (index 0) defined in registration.py
+    """
+    sm_list = _VALID_METRICS.copy()
+    sm_list.insert(0, registration.DEFAULT_SIMILARITY_METRIC)
+
+    return sm_list
 
 if __name__ == "__main__":
     # Get feature detector options
