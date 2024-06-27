@@ -1,7 +1,9 @@
 import inspect
+import cv2
 
-from valis import feature_detectors, preprocessing, registration
+from valis import feature_detectors, preprocessing, registration, non_rigid_registrars
 from src.core.keyword_store import FD_KEY, PROCESSOR_KEY, IF_PROCESSOR_KEY, BF_PROCESSOR_KEY
+from sklearn.metrics.pairwise import _VALID_METRICS
 
 
 def _get_subclasses(module, base_class, exclude=()):
@@ -100,6 +102,23 @@ def get_similarity_metrics():
     sm_list.insert(0, registration.DEFAULT_SIMILARITY_METRIC)
 
     return sm_list
+
+
+def get_nonrigid_registrars():
+    """Get all nonrigid_registrars
+
+        Returns
+        --------
+        nrr_list: list
+            list of all available non-rigid registrars, default (index 0) defined in registration.py
+        """
+    nrr_list = [registration.DEFAULT_NON_RIGID_CLASS().method.split("_")[1]]
+    nrr_to_append = [i.split("_")[1] for i in dir(cv2.optflow) if (i.find("createOptFlow") != -1) and (i.find("Sparse") == -1) and i.split("_")[1] not in nrr_list]
+    # appends only what appears after the underscore for each i that reaches the "else" statement
+    nrr_list.extend(nrr_to_append)
+    nrr_list.extend(["SimpleElastixWarper, SimpleElastixGroupwiseWarper"])
+
+    return nrr_list
 
 if __name__ == "__main__":
     # Get feature detector options
