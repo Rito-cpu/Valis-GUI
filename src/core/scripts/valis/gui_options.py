@@ -86,9 +86,11 @@ def get_feature_matching_metrics():
     fmm_list: list
         list of all available feature matching metrics, default (index 0) is "euclidean"
     """
+
     fmm_list = _VALID_METRICS.copy()
 
     return fmm_list
+
 
 def get_similarity_metrics():
     """Get all similarity matching (sorting) metrics
@@ -98,6 +100,7 @@ def get_similarity_metrics():
     sm_list: list
         list of all available sorting metrics, default (index 0) defined in registration.py
     """
+
     sm_list = _VALID_METRICS.copy()
     sm_list.insert(0, registration.DEFAULT_SIMILARITY_METRIC)
 
@@ -105,20 +108,24 @@ def get_similarity_metrics():
 
 
 def get_nonrigid_registrars():
-    """Get all nonrigid_registrars
+    """Get all nonrigid registrars
 
         Returns
         --------
         nrr_list: list
             list of all available non-rigid registrars, default (index 0) defined in registration.py
         """
+
     nrr_list = [registration.DEFAULT_NON_RIGID_CLASS().method.split("_")[1]]
-    nrr_to_append = [i.split("_")[1] for i in dir(cv2.optflow) if (i.find("createOptFlow") != -1) and (i.find("Sparse") == -1) and i.split("_")[1] not in nrr_list]
-    # appends only what appears after the underscore for each i that reaches the "else" statement
+    nrr_to_append = [i.split("_")[1] for i in dir(cv2.optflow) if
+                     (i.find("createOptFlow") != -1) and (i.find("Sparse") == -1) and i.split("_")[1] not in nrr_list]
+    # appends only what appears after the underscore for each i that isn't the default
+
     nrr_list.extend(nrr_to_append)
     nrr_list.extend(["SimpleElastixWarper, SimpleElastixGroupwiseWarper"])
 
     return nrr_list
+
 
 if __name__ == "__main__":
     # Get feature detector options

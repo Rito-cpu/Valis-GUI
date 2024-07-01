@@ -47,14 +47,18 @@ def get_nonrigid_registrar_obj(user_selection: str):
     return nrr_obj, optical_flow_dict
 
 
-def get_image_processor_obj(user_selection: str):
+def get_image_processor_obj(bf_selection: str, if_selection: str):
     """Return selected image processor to VALIS
 
             Returns
             --------
-            processor_obj: image processor subclass
-                uninitialized image processor subclass object with name matching user selection
+            bf_obj: image processor subclass
+                uninitialized brightfield image processor subclass object with name matching user selection
+                
+            if_obj: image processor subclass
+                uninitialized immunofluorescence image processor subclass object with name matching user selection
             """
 
-    processor_obj = getattr(preprocessing, user_selection)
-    return processor_obj
+    bf_obj = getattr(preprocessing, bf_selection)
+    if_obj = getattr(preprocessing, if_selection)
+    return bf_obj, if_obj
