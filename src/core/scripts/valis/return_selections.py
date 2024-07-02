@@ -1,6 +1,6 @@
 import cv2
 
-from valis import feature_detectors, preprocessing, non_rigid_registrars
+from valis import feature_detectors, preprocessing, non_rigid_registrars, feature_matcher
 
 
 def get_feature_detector_obj(user_selection: str):
@@ -62,3 +62,26 @@ def get_image_processor_obj(bf_selection: str, if_selection: str):
     bf_obj = getattr(preprocessing, bf_selection)
     if_obj = getattr(preprocessing, if_selection)
     return bf_obj, if_obj
+
+
+def get_matcher_obj(match_filter_method: str, feature_matching_metric: str, feature_detector: str):
+
+    """
+
+    Args:
+        match_filter_method: matcher method obtained from matcher combobox
+        feature_matching_metric: feature matching metric obtained from feature matcher combobox
+        feature_detector: feature detector obtained from feature detector combobox
+
+    Returns:
+        m_obj: matcher object initialized with user selections
+
+    """
+    m_obj = None
+    if match_filter_method != "SUPERGLUE":
+        m_obj =  feature_matcher.Matcher(metric=feature_matching_metric, match_filter_method=match_filter_method)
+    elif feature_detector == "SuperPointFD":
+        m_obj = feature_matcher.SuperPointAndGlue()
+    else:
+        m_obj = feature_matcher.SuperGlueMatcher()
+    return m_obj

@@ -127,6 +127,21 @@ def get_nonrigid_registrars():
     return nrr_list
 
 
+def get_matchers():
+    """Get all matchers
+
+            Returns
+            --------
+            m_list: list
+                list of all available matchers, default (index 0) defined in feature_matcher.py
+    """
+    m_list = [i.split("_")[0] for i in dir(feature_matcher) if i.find("NAME") != -1]
+
+    m_list.insert(0, m_list.pop(m_list.index(feature_matcher.DEFAULT_MATCH_FILTER)))
+
+    return m_list
+
+
 if __name__ == "__main__":
     # Get feature detector options
     default_fd, feature_detector_combobox_vals = get_feature_detectors()
