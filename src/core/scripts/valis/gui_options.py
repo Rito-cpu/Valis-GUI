@@ -1,7 +1,7 @@
 import inspect
 import cv2
 
-from valis import feature_detectors, preprocessing, registration, non_rigid_registrars
+from valis import feature_detectors, preprocessing, registration, non_rigid_registrars, feature_matcher
 from src.core.keyword_store import FD_KEY, PROCESSOR_KEY, IF_PROCESSOR_KEY, BF_PROCESSOR_KEY
 from sklearn.metrics.pairwise import _VALID_METRICS
 
