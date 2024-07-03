@@ -32,8 +32,11 @@ def get_nonrigid_registrar_obj(user_selection: str):
                 If the user has not selected a CV2 optical flow registrar, this will be set to None.
             """
 
+    if user_selection is None:
+        return None, None
+
     optical_flow_dict = {"optical_flow_obj": None}
-    if user_selection.find("Simple") == -1:
+    if user_selection.find("SimpleElastix") == -1:
         user_selection = "createOptFlow_" + user_selection
 
         optical_flow_obj = getattr(cv2.optflow, user_selection)
