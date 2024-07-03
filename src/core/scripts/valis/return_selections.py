@@ -1,6 +1,8 @@
 import cv2
 
-from valis import feature_detectors, preprocessing, non_rigid_registrars, feature_matcher
+from valis import feature_detectors, preprocessing, non_rigid_registrars, feature_matcher, affine_optimizer, \
+    micro_rigid_registrar
+import skimage.transform
 
 
 def get_feature_detector_obj(user_selection: str):
@@ -68,7 +70,6 @@ def get_image_processor_obj(bf_selection: str, if_selection: str):
 
 
 def get_matcher_obj(match_filter_method: str, feature_matching_metric: str, feature_detector: str):
-
     """
 
     Args:
@@ -82,9 +83,62 @@ def get_matcher_obj(match_filter_method: str, feature_matching_metric: str, feat
     """
     m_obj = None
     if match_filter_method != "SUPERGLUE":
-        m_obj =  feature_matcher.Matcher(metric=feature_matching_metric, match_filter_method=match_filter_method)
+        m_obj = feature_matcher.Matcher(metric=feature_matching_metric, match_filter_method=match_filter_method)
     elif feature_detector == "SuperPointFD":
         m_obj = feature_matcher.SuperPointAndGlue()
     else:
         m_obj = feature_matcher.SuperGlueMatcher()
     return m_obj
+
+
+def get_image_transformer(selection: bool):
+    """
+
+    Args:
+        selection: user selection to allow image scaling
+
+    Returns:
+        transformer_obj: uninitialized transformer object to be passed into transformer_cls parameter on start of Valis
+    """
+    transformer_obj = None
+    if selection is True:
+        transformer_obj = skimage.transform.SimilarityTransform
+    else:
+        transformer_obj = skimage.transform.EuclideanTransform
+
+    return transformer_obj
+
+
+def get_affine_optimizer(selection: bool):
+    """
+
+    Args:
+        selection: user selection to maximize mutual information
+
+    Returns: optimizer_obj: uninitialized optimizer object to be passed into affine_optimzer_cls parameter on start
+    of Valis. Will be None if the user selected not to maximize mutual information.
+    """
+
+    optimizer_obj = None
+
+    if selection:
+        optimizer_obj = affine_optimizer.AffineOptimizerMattesMI
+
+    return optimizer_obj
+
+
+def get_micro_rigid_registrar(selection: bool):
+    """
+
+    Args:
+        selection: user choice to do micro rigid registration
+
+    Returns: micro_rigid_registrar_obj: uninitialized micro rigid registrar object to be passed into
+    micro_rigid_registrar_cls parameter on start of Valis, will be None if the user selected not to do micro rigid
+    registration.
+    """
+
+    micro_rigid_registrar_obj = None
+    if selection:
+        micro_rigid_registrar_obj = micro_rigid_registrar.MicroRigidRegistrar
+    return micro_rigid_registrar_obj
