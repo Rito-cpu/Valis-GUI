@@ -78,3 +78,20 @@ BRIGHTFIELD_PROCESSING_CLS = "brightfield_processing_cls"
 BRIGHTFIELD_PROCESSING_KWARGS = "brightfield_processing_kwargs"
 ADAPTIVE_EQ = "adaptive_eq"
 CHANNEL = "channel"
+
+## tooltips
+TOOLTIP_IMAGE_PROCESSOR = ("The first step of VALIS registration in which samples are preprocessed to single channel "
+                           "images to facilitate registration. Options represent available image processors. ")
+TOOLTIP_FEATURE_DETECTOR = ("Identifies notable features to later be used for ordering images in the sample. Options "
+                            "represent available feature detectors." "Note that some selections may increase runtime "
+                            "significantly.")
+TOOLTIP_FEATURE_MATCHING_METRIC = ("Matches individual features together within the sample and removes outliers. "
+                                   "Options represent available matching metrics.")
+TOOLTIP_SORTING_METRIC = ("Measures the similarity between image pairs, which can be used to sort them "
+                          "accordingly. Options represent available similarity calculation algorithms.")
+TOOLTIP_NON_RIGID_REG = ("Optional additional step in which VALIS will warp rigidly registered images to align "
+                         "features more closely than may be possible in rigid registration. Options represent "
+                         "available non rigid registrars.")
+TOOLTIP_MICRO_RIGID_REG = ("Optional additional step in which VALIS will update rigid registration using a higher "
+                           "resolution version of the image. This will increase VALIS runtime and may not "
+                           "significantly improve results.")
