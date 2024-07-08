@@ -9,6 +9,7 @@ from src.gui.models import *
 from src.gui.views.windows.ui_main_window import UI_MainWindow
 from src.gui.views.windows.functions_main_window import *
 from src.gui.models.qt_immuno_image import *
+from src.gui.models.qt_process_images import BFProcessWidget, IFProcessWidget
 
 
 class SetupMainWindow:
@@ -312,7 +313,10 @@ class SetupMainWindow:
         # ****************************************
         # *** Registration Settings Page Setup ***
         # ****************************************
-        self.processing_settings = QtProcessImages(parent=self.ui.load_pages.registration_scroll_contents)
+        #self.processing_settings = QtProcessImages(parent=self.ui.load_pages.registration_scroll_contents)
+        #self.processing_settings.hide()
+        self.bf_process = BFProcessWidget(parent=self.ui.load_pages.registration_scroll_contents)
+        self.if_process = IFProcessWidget(parent=self.ui.load_pages.registration_scroll_contents)
         self.rigid_settings = RigidSettings(parent=self.ui.load_pages.registration_scroll_contents)
         non_rigid_settings = NonRigidSettings(parent=self.ui.load_pages.registration_scroll_contents)
         non_rigid_settings.hide()
@@ -336,7 +340,8 @@ class SetupMainWindow:
         self.register_setting_bttn.clicked.connect(
             lambda: MainFunctions.register_settings(
                 self,
-                self.processing_settings,
+                self.bf_process,
+                self.if_process,
                 self.rigid_settings,
                 non_rigid_settings
             )
@@ -347,7 +352,9 @@ class SetupMainWindow:
         register_settings_bttn_layout.addWidget(self.register_setting_bttn)
         register_settings_bttn_layout.addStretch(1)
 
-        self.ui.load_pages.registration_scroll_layout.addWidget(self.processing_settings)
+        #self.ui.load_pages.registration_scroll_layout.addWidget(self.processing_settings)
+        self.ui.load_pages.registration_scroll_layout.addWidget(self.bf_process)
+        self.ui.load_pages.registration_scroll_layout.addWidget(self.if_process)
         self.ui.load_pages.registration_scroll_layout.addWidget(self.rigid_settings)
         self.ui.load_pages.registration_scroll_layout.addWidget(non_rigid_settings)
         self.ui.load_pages.registration_scroll_layout.addLayout(register_settings_bttn_layout)

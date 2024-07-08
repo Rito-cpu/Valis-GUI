@@ -1,3 +1,4 @@
+from PyQt6.QtGui import QMouseEvent
 from src.core.pyqt_core import *
 from src.core.app_config import *
 from src.core.json.json_themes import Themes
@@ -11,6 +12,88 @@ from .hed_options import HEDOptions
 from .luminosity_options import LuminosityOptions
 from .stain_flattener_options import StainFlattener
 from .styles import *
+from .bf_process import BFProcessWidget
+from .if_process import IFProcessWidget
+
+
+class GradientButton(QPushButton):
+    button_hover_style = """
+        QPushButton {
+            border-radius: 17px;
+            border: 1px outset lightgray;
+            color: black;
+            font-size: 14px;
+        }
+    """
+
+    def __init__(
+        self,
+        parent=None
+    ):
+        super().__init__()
+        if parent is not None:
+            self.setParent(parent)
+
+        self.setFixedSize(70, 70)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._gradient_pos = 0
+        self.set_gradient(self._gradient_pos)
+        self.set_normal_style()
+
+    def set_gradient(self, pos):
+        if pos == 0:
+            gradient = "qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 blue, stop: 1 red)"
+        else:
+            gradient = "qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 red, stop: 1 blue)"
+        self._current_gradient = gradient
+
+    def toggle_gradient(self):
+        if self._gradient_pos == 0:
+            self._gradient_pos = 1
+        else:
+            self._gradient_pos = 0
+        self.set_gradient(self._gradient_pos)
+
+    def set_normal_style(self):
+        self.setStyleSheet(f"""
+            QPushButton {{
+                border-radius: 17px;
+                border: 1px inset lightgray;
+                background: {self._current_gradient};
+                color: black;
+                font-size: 14px;
+            }}
+            QPushButton:hover {{
+                
+            }}
+        """)
+
+    def set_pressed_style(self):
+        self.setStyleSheet(f"""
+            QPushButton {{
+                border-radius: 17px;
+                border: 2px outset lightgray;
+                background: {self._current_gradient};
+                color: black;
+                font-size: 14px;
+            }}
+        """)
+
+    def toggle_gradient(self):
+        if self._gradient_pos == 0:
+            self._gradient_pos = 1
+        else:
+            self._gradient_pos = 0
+        self.set_gradient(self._gradient_pos)
+        self.set_normal_style()
+
+    def mousePressEvent(self, event):
+        super().mousePressEvent(event)
+        self.set_pressed_style()
+
+    def mouseReleaseEvent(self, event):
+        super().mouseReleaseEvent(event)
+        self.toggle_gradient()
 
 
 class QtProcessImages(QGroupBox):
@@ -43,7 +126,6 @@ class QtProcessImages(QGroupBox):
         themes = Themes()
         self.themes = themes.items
 
-
         groupbox_style = groupbox_template.format(
             color=self.themes['app_color']['main_bg'],
             color_two=self.themes['app_color']['text_color'],
@@ -56,10 +138,11 @@ class QtProcessImages(QGroupBox):
         self.setStyleSheet(groupbox_style)
 
         # setup UI
-        self._setup_widget()
+        #self._setup_widget()
+        self._setup_two()
 
         # *** Slots/Signals ***
-        self.process_option_dropdown.currentIndexChanged.connect(self.dropdown_changed)
+        #self.process_option_dropdown.currentIndexChanged.connect(self.dropdown_changed)
 
     def _setup_widget(self):
         content_widget = QWidget(self)
@@ -157,3 +240,28 @@ class QtProcessImages(QGroupBox):
         }
 
         return data_dict
+
+    def _setup_two(self):
+        content = QWidget(self)
+        self.t1 = BFProcessWidget(parent=content)
+        #self.t2 = IFProcessWidget(parent=content)
+        #self.t2.hide()
+        self.butt = GradientButton(parent=content)
+        self.butt.setObjectName('butt')
+        self.butt.setFixedSize(35, 35)
+        self.butt.setText('BF')
+        self.butt.clicked.connect(self.testing)
+        c_lay = QVBoxLayout(content)
+        c_lay.setContentsMargins(5, 5, 5, 5)
+        c_lay.addWidget(self.butt)
+        c_lay.addWidget(self.t1)
+        #c_lay.addWidget(self.t2)
+        main_lay = QVBoxLayout(self)
+        main_lay.setContentsMargins(0, 0, 0, 0)
+        main_lay.addWidget(content)
+
+    def testing(self):
+        if self.butt.text() == 'BF':
+            self.butt.setText('IF')
+        else:
+            self.butt.setText('BF')

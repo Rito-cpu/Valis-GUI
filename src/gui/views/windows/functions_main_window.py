@@ -259,7 +259,8 @@ class MainFunctions():
 
     def register_settings(
             self,
-            process_setting: QWidget,
+            bf_settings: QWidget,
+            if_settings: QWidget,
             rigid_setting: QWidget,
             non_rigid_setting: QWidget,
     ):
@@ -305,16 +306,20 @@ class MainFunctions():
                 error_msg.setDetailedText("The path to the required valis docker container returned invalid.")
                 error_msg.exec()
                 return
-            processing_data = process_setting.get_data()
+            # processing_data = process_setting.get_data()
+            if_data = if_settings.get_widget_settings()
+            bf_data = bf_settings.get_widget_settings()
             rigid_data = rigid_setting.get_data()
             non_rigid_data = non_rigid_setting.get_data()
             data_dict = {
-                'processing_settings': processing_data,
+                'if_processor': if_data,
+                'bf_processor': bf_data,
+                'docker_path': docker_path,
+                'parent_dir': PROJECT_DIRECTORY,
                 'rigid_settings': rigid_data,
                 'non_rigid_settings': non_rigid_data
             }
 
-            print(f'Processing Data: \n{processing_data}\n')
             print(f'Rigid Data: \n{rigid_data}\n')
             print(f'Non-Rigid Data: \n{non_rigid_data}\n')
 

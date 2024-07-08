@@ -1,4 +1,6 @@
 from .qt_process_image import QtProcessImages
+from .bf_process import BFProcessWidget
+from .if_process import IFProcessWidget
 from .channel_options import ChannelGetter
 from .color_distance_options import BgColorDistance
 from .color_standardizer import ColorfulStandardizer
@@ -6,4 +8,5 @@ from .greyscale_options import GrayOptions
 from .hed_options import HEDOptions
 from .luminosity_options import LuminosityOptions
 from .stain_flattener_options import StainFlattener
+from .process_args import ClassArgs
 from .styles import *
