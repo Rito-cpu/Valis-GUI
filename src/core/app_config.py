@@ -20,7 +20,7 @@ DEFAULT_FD = None
 DETECTORS = None
 try:
     DEFAULT_FD, DETECTORS = get_feature_detectors()
-except Exception as e:
+except Exception as error:
     print('Valis detector import failed. Exiting application...')
     sys.exit(1)
 
@@ -39,19 +39,41 @@ try:
     BF_PROCESSOR_OPTIONS = all_processors[BF_PROCESSOR_KEY]
     DEFAULT_PROCESSOR_BF = default_processors[BF_PROCESSOR_KEY]
     default_bf_processor_args = BF_PROCESSOR_OPTIONS[DEFAULT_PROCESSOR_BF]
-    #print(f'All Processors (IF):\n{IF_PROCESSOR_OPTIONS}')
-    #print(f'Default Procs (IF):\n{DEFAULT_PROCESSOR_IF}')
-    #print(f'Default Procs Args (IF):\n{default_if_processor_args}')
-    #print(f'All Processors (BF):\n{BF_PROCESSOR_OPTIONS}')
-    #print(f'Default Procs (BF):\n{DEFAULT_PROCESSOR_BF}')
-    #print(f'Default Procs Args (BF):\n{default_bf_processor_args}')
 
     for item in IF_PROCESSOR_OPTIONS.keys():
         COMBINED_PROCESSOR_OPTIONS.append(item)
     for item in BF_PROCESSOR_OPTIONS.keys():
         COMBINED_PROCESSOR_OPTIONS.append(item)
-except Exception as e:
+except Exception as error:
     print('Valis processors import failed. Exiting application...')
+    sys.exit(1)
+
+FMM_LIST = None
+try:
+    FMM_LIST = get_feature_matching_metrics()
+except Exception as error:
+    print('Valis feature matching metric import failed. Exiting application...')
+    sys.exit(1)
+
+SM_LIST = None
+try:
+    SM_LIST = get_similarity_metrics()
+except Exception as error:
+    print('Valis similarity metric import failed. Exiting application...')
+    sys.exit(1)
+
+NONRIGID_REGISTRARS = None
+try:
+    NONRIGID_REGISTRARS = get_nonrigid_registrars()
+except Exception as error:
+    print('Valis non-rigid registrar import failed. Exiting application...')
+    sys.exit(1)
+
+MATCH_FILTERS = None
+try:
+    MATCH_FILTERS = get_matchers()
+except Exception as error:
+    print('Valis match filter import failed. Exiting application...')
     sys.exit(1)
 
 # --- Menu States ---

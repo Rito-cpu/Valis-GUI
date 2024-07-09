@@ -319,11 +319,6 @@ class SetupMainWindow:
         self.if_process = IFProcessWidget(parent=self.ui.load_pages.registration_scroll_contents)
         self.rigid_settings = RigidSettings(parent=self.ui.load_pages.registration_scroll_contents)
         non_rigid_settings = NonRigidSettings(parent=self.ui.load_pages.registration_scroll_contents)
-        non_rigid_settings.hide()
-
-        self.rigid_settings.non_rigid_signal.connect(
-            lambda show: MainFunctions.show_non_rigid(self, non_rigid_settings, show)
-        )
 
         self.register_setting_bttn = PyPushButton(
             text="Register",

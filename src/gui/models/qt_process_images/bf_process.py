@@ -1,6 +1,7 @@
 from src.core.pyqt_core import *
 from src.core.json.json_themes import Themes
 from src.core.app_config import BF_PROCESSOR_OPTIONS, DEFAULT_PROCESSOR_BF, default_bf_processor_args
+from src.core.keyword_store import *
 from src.gui.models.qt_combo_widget import QtComboBox
 from .styles import *
 from .process_args import ClassArgs
@@ -29,9 +30,6 @@ class BFProcessWidget(QGroupBox):
         themes = Themes()
         self.themes = themes.items
 
-        print(f'Brightfield Methods: \n{BF_PROCESSOR_OPTIONS}')
-        #print(f'\nDefault Proc: {DEFAULT_PROCESSOR_BF}')
-        #print(f'Default Brightfield Args: \n{default_bf_processor_args}')
         self._method_names = BF_PROCESSOR_OPTIONS.keys()
 
         groupbox_style = groupbox_template.format(
@@ -133,4 +131,9 @@ class BFProcessWidget(QGroupBox):
         frame = self.stacked_settings_area.currentWidget()
         setting_widget = frame.findChild(ClassArgs)
 
-        return setting_widget.get_data()
+        data = {
+            BRIGHTFIELD_PROCESSING_CLS: self.get_processing_class(),
+            BRIGHTFIELD_PROCESSING_KWARGS: setting_widget.get_data()
+        }
+
+        return data

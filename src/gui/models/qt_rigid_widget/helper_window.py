@@ -20,7 +20,8 @@ class HelperWindow(QWidget):
             self.setParent(parent)
 
         self.setWindowTitle(window_title)
-        self.setMinimumSize(400, 250)
+        self.setMinimumSize(400, 300)
+        self.setMaximumSize(600, 380)
 
         self._setting_name = setting_name
         self._setting_msg = setting_msg
@@ -50,6 +51,8 @@ class HelperWindow(QWidget):
         self.message_area.setStyleSheet('border: none; border-radius: 8px; background: lightgray;')
         self.message_area.setText(self._setting_msg)
         self.message_area.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.message_area.setMinimumHeight(200)
+        self.message_area.setMaximumHeight(250)
 
         frame_layout = QVBoxLayout(background_frame)
         frame_layout.setObjectName('frame_layout')

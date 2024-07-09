@@ -48,8 +48,6 @@ class ClassArgs(QWidget):
             widget_grid = QGridLayout(widget_container)
             widget_grid.setObjectName('widget_grid')
             widget_grid.setContentsMargins(10, 10, 10, 10)
-            if 'c' in self._args.keys():
-                print(f'\nReceived these args: {self._args}')
             for name, value in self._args.items():
                 arg_widget = QFrame(widget_container)
                 arg_widget.setObjectName('arg_widget')
@@ -140,5 +138,5 @@ class ClassArgs(QWidget):
             elif isinstance(widget, QtNumEntry):
                 data[name] = widget.value()
             elif isinstance(widget, QLabel):
-                data[name] = widget.text()
+                data[name] = widget.text().strip("'")
         return data

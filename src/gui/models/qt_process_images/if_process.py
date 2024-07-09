@@ -1,6 +1,7 @@
 from src.core.pyqt_core import *
 from src.core.json.json_themes import Themes
 from src.core.app_config import IF_PROCESSOR_OPTIONS, DEFAULT_PROCESSOR_IF, default_if_processor_args
+from src.core.keyword_store import *
 from src.gui.models.qt_combo_widget import QtComboBox
 from .styles import *
 from .process_args import ClassArgs
@@ -25,11 +26,6 @@ class IFProcessWidget(QGroupBox):
 
         self.setTitle(title)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-
-
-        #print(f'Brightfield Methods: \n{IF_PROCESSOR_OPTIONS}')
-        #print(f'\nDefault Proc: {DEFAULT_PROCESSOR_IF}')
-        #print(f'Default Brightfield Args: \n{default_if_processor_args}')
 
         self._method_names = IF_PROCESSOR_OPTIONS.keys()
 
@@ -135,4 +131,10 @@ class IFProcessWidget(QGroupBox):
     def get_widget_settings(self):
         frame = self.stacked_settings_area.currentWidget()
         setting_widget = frame.findChild(ClassArgs)
-        return setting_widget.get_data()
+
+        data = {
+            IF_PROCESSING_CLS: self.get_processing_class(),
+            IF_PROCESSING_KWARGS: setting_widget.get_data()
+        }
+
+        return data

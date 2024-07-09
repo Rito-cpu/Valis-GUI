@@ -1,8 +1,9 @@
-import os
+import json
 
 from datetime import datetime
 from src.core.pyqt_core import *
 from src.core.app_config import *
+from src.core.keyword_store import *
 from src.core.json.json_themes import Themes
 from src.core.validation.validate_file import is_json_file, is_excel_file, is_existing_dir
 from src.core.scripts.valis.gui_options import *
@@ -234,18 +235,6 @@ class MainFunctions():
 
             label.setText(directory)
 
-    def show_non_rigid(self, setting: QWidget, show):
-        """Hide or shows the Non-Rigid widget in the settings page based upon user interaction.
-
-        Args:
-            setting (QWidget): Non-Rigid settings widget container
-            show (bool): boolean to determine non-rigid widget's visibility
-        """
-        if show:
-            setting.show()
-        else:
-            setting.hide()
-
     def on_thread_finished(self):
         """Slot function for QThread completion signal that brings the user to a new page upon valis registration completion.
         """
@@ -311,21 +300,46 @@ class MainFunctions():
             bf_data = bf_settings.get_widget_settings()
             rigid_data = rigid_setting.get_data()
             non_rigid_data = non_rigid_setting.get_data()
+
             data_dict = {
-                'if_processor': if_data,
-                'bf_processor': bf_data,
-                'docker_path': docker_path,
-                'parent_dir': PROJECT_DIRECTORY,
-                'rigid_settings': rigid_data,
-                'non_rigid_settings': non_rigid_data
+                SRC_DIR: '',
+                DST_DIR: PROJECT_DIRECTORY,
+                SERIES: None,
+                NAME: None,
+                IMAGE_TYPE: None,
+                IMGS_ORDERED: True,
+                NON_RIGID_REG_PARAMS: None,
+                COMPOSE_NON_RIGID: False,
+                IMG_LIST: None,
+                REFERENCE_IMG_F: None,
+                ALIGN_TO_REFERENCE: False,
+                DO_RIGID: True,
+                CROP: None,
+                CREATE_MASKS: True,
+                DENOISE_RIGID: False,
+                RESOLUTION_XYU: None,
+                SLIDE_DIMS_DICT_WH: None,
+                MAX_IMAGE_DIM_PX: 1024,
+                MAX_PROCESSED_IMAGE_DIM_PX: 1024,
+                MAX_NON_RIGID_REGISTRAR_DIM_PX: 1024,
+                THUMBNAIL_SIZE: 500,
+                NORM_METHOD: "img_stats",
+                MICRO_RIGID_REGISTRAR_PARAMS: None,
+                QT_EMITTER: None,
+                IF_PROCESSOR: if_data,
+                BF_PROCESSOR: bf_data,
             }
+            data_dict.update(rigid_data)
+            data_dict.update(non_rigid_data)
 
-            print(f'Rigid Data: \n{rigid_data}\n')
-            print(f'Non-Rigid Data: \n{non_rigid_data}\n')
+            json_obj = json.dumps({'user_selections': data_dict}, indent=2)
+            file_path = '/Users/4474613/Documents/user_settings.json'
+            with open(file_path, 'w') as outfile:
+                outfile.write(json_obj)
 
-            self.valis_worker = ValisWorker()
-            self.valis_worker.begin_process(docker_path, data_dict)
-            self.valis_worker.finished.connect(lambda: MainFunctions.on_thread_finished(self))
+            #self.valis_worker = ValisWorker()
+            #self.valis_worker.begin_process(docker_path, data_dict)
+            #self.valis_worker.finished.connect(lambda: MainFunctions.on_thread_finished(self))
 
             REGISTRATION_STATE = COMPLETE
 
