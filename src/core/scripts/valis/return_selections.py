@@ -82,9 +82,9 @@ def get_matcher_obj(match_filter_method: str, feature_matching_metric: str, feat
 
     """
     m_obj = None
-    if match_filter_method != "SUPERGLUE":
+    if match_filter_method != "superglue":
         m_obj = feature_matcher.Matcher(metric=feature_matching_metric, match_filter_method=match_filter_method)
-    elif feature_detector == "SuperPointFD":
+    elif feature_detector == "SuperPointFD" and match_filter_method == "superglue":
         m_obj = feature_matcher.SuperPointAndGlue()
     else:
         m_obj = feature_matcher.SuperGlueMatcher()

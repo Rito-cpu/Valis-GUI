@@ -15,6 +15,7 @@ def _get_subclasses(module, base_class, exclude=()):
                 include_list.append(name)
     return include_list
 
+
 def get_feature_detectors():
     """Get all feature detectors
     Returns
@@ -32,6 +33,7 @@ def get_feature_detectors():
     feature_detector_names = _get_subclasses(feature_detectors, feature_detectors.FeatureDD, exclude_list)
 
     return default_fd, feature_detector_names
+
 
 def get_image_processers():
     """Get all image processers
@@ -73,10 +75,11 @@ def get_image_processers():
         else:
             bf_pdict[p_name] = arg_dict
 
-    processor_dict = {IF_PROCESSOR_KEY:if_pdict, BF_PROCESSOR_KEY:bf_pdict}
-    default_dict = {IF_PROCESSOR_KEY:default_if, BF_PROCESSOR_KEY:default_bf}
+    processor_dict = {IF_PROCESSOR_KEY: if_pdict, BF_PROCESSOR_KEY: bf_pdict}
+    default_dict = {IF_PROCESSOR_KEY: default_if, BF_PROCESSOR_KEY: default_bf}
 
     return default_dict, processor_dict
+
 
 def get_feature_matching_metrics():
     """Get all feature matching metrics
@@ -114,7 +117,7 @@ def get_nonrigid_registrars():
         --------
         nrr_list: list
             list of all available non-rigid registrars, default (index 0) defined in registration.py
-        """
+    """
 
     nrr_list = [registration.DEFAULT_NON_RIGID_CLASS().method.split("_")[1]]
     nrr_to_append = [i.split("_")[1] for i in dir(cv2.optflow) if
@@ -130,10 +133,10 @@ def get_nonrigid_registrars():
 def get_matchers():
     """Get all matchers
 
-            Returns
-            --------
-            m_list: list
-                list of all available matchers, default (index 0) defined in feature_matcher.py
+        Returns
+        --------
+        m_list: list
+            list of all available matchers, default (index 0) defined in feature_matcher.py
     """
     m_list = [i.split("_")[0] for i in dir(feature_matcher) if i.find("NAME") != -1]
 

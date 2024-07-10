@@ -1,19 +1,19 @@
 {
     "user_selections":
       {
-        "src_dir": "/Users/80029349/Documents/dummy2",
-        "dst_dir": "/Users/80029349/Documents/dummyOutput2",
+        "src_dir": "/Users/80029349/Documents/dummyInput",
+        "dst_dir": "/Users/80029349/Documents/DummyOutput",
         "series": null,
         "name": null,
         "image_type": null,
         "feature_detector_cls": "VggFD",
-        "transformer_cls": null,
-        "affine_optimizer_cls": null,
+        "transformer_cls": true,
+        "affine_optimizer_cls": false,
         "similarity_metric": "n_matches",
         "match_filter_method": "RANSAC",
-        "feature_matching_metric": "manhattan",
+        "feature_matching_metric": "euclidean",
         "imgs_ordered": true,
-        "non_rigid_registrar_cls": null,
+        "non_rigid_registrar_cls": "DeepFlow",
         "non_rigid_reg_params": null,
         "compose_non_rigid": false,
         "img_list": null,
@@ -32,7 +32,7 @@
         "max_non_rigid_registration_dim_px": 1024,
         "thumbnail_size": 500,
         "norm_method": "img_stats",
-        "micro_rigid_registrar_cls": null,
+        "micro_rigid_registrar_cls": false,
         "micro_rigid_registrar_params": null,
         "qt_emitter": null,
 
@@ -48,7 +48,9 @@
           {
             "brightfield_processing_cls": "OD",
             "brightfield_processing_kwargs": {
-              "adaptive_eq": true
+              "adaptive_eq": true,
+              "c": 0.2,
+              "invert": true
             }
           }
       }
