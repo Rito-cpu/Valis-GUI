@@ -13,12 +13,18 @@ from valis import registration
 import argparse
 
 
-def launch_with_selections(settings_path: str):
+def launch_with_selections(settings_path: str, image_path: str):
+
     # read in JSON file as a dictionary
     f = open(settings_path)
     reader = json.load(f)
     selections_dict = reader['user_selections']
+    f = open(image_path)
+    reader = json.load(f)
+    outer_image_dict = reader
     f.close()
+    del reader
+
 
     # convert strings in dictionary to needed object
     selections_dict["matcher"] = get_matcher_obj(selections_dict.pop(MATCH_FILTER_METHOD),
@@ -46,12 +52,36 @@ def launch_with_selections(settings_path: str):
     registration_params[IF_PROCESSING_CLS], registration_params[BRIGHTFIELD_PROCESSING_CLS] = get_image_processor_obj(
         registration_params[IF_PROCESSING_CLS], registration_params[BRIGHTFIELD_PROCESSING_CLS])
 
-    # code to run valis with the formatted data above
-    registrar = registration.Valis(**selections_dict)
+    # generate image dictionaries and determine the amount of runs of valis that are needed
+    directory_list = []
+    name_list = []
 
-    rigid_registrar, non_rigid_registrar, error_df = registrar.register(**registration_params)
+    for k, v in outer_image_dict.items():
+        directory_list.append(v)
+        name_list.append(k)
 
-    registrar.warp_and_save_slides(selections_dict[DST_DIR], crop="overlap")
+    for i in range(0, len(directory_list)):
+        for k, v in directory_list[i].items():
+            directory_list[i][k] = v["File"] if v["Include"] else None
+        directory_list[i] = {key: value for key, value in directory_list[i].items() if value}
+
+    directory_count = len(name_list)
+
+    home_path = os.path.expanduser("~")
+    selections_dict[SRC_DIR].replace(home_path, '/root')
+    selections_dict[DST_DIR].replace(home_path, '/root')
+
+    for i in range(0, directory_count):
+
+        selections_dict[IMG_LIST] = list(directory_list[i].values())
+        selections_dict[NAME] = name_list[i]
+
+        # code to run valis with the formatted data above
+        registrar = registration.Valis(**selections_dict)
+
+        rigid_registrar, non_rigid_registrar, error_df = registrar.register(**registration_params)
+
+        registrar.warp_and_save_slides(selections_dict[DST_DIR], crop="overlap")
 
     registration.kill_jvm()
 
@@ -60,14 +90,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="Valis_launch_script", description="launches VALIS using arguments read in "
                                                                              "from a JSON file")
     parser.add_argument('-path')
+    parser.add_argument('-il')
+
     args = parser.parse_args()
 
     start = time.perf_counter()
 
-    thread1 = Thread(target=check_completion)
-    thread1.start()
-    launch_with_selections(args.path)
-    thread1.join()
+    #thread1 = Thread(target=check_completion)
+    #thread1.start()
+    launch_with_selections(args.path, args.il)
+    #thread1.join()
 
     end = time.perf_counter()
     elapsed_time = end - start
