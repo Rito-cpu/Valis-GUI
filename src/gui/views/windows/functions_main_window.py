@@ -229,11 +229,12 @@ class MainFunctions():
             directory (str): user defined directory path 
             label (QtMarqueeLabel): custom QWidget that displays a scrolling text
         """
+        global PROJECT_DIRECTORY
         if is_existing_dir(directory):
-            global PROJECT_DIRECTORY
             PROJECT_DIRECTORY = directory
-
             label.setText(directory)
+        else:
+            PROJECT_DIRECTORY = None
 
     def on_thread_finished(self):
         """Slot function for QThread completion signal that brings the user to a new page upon valis registration completion.
@@ -321,7 +322,7 @@ class MainFunctions():
                 SLIDE_DIMS_DICT_WH: None,
                 MAX_IMAGE_DIM_PX: 1024,
                 MAX_PROCESSED_IMAGE_DIM_PX: 1024,
-                MAX_NON_RIGID_REGISTRAR_DIM_PX: 1024,
+                MAX_NON_RIGID_REGISTRATION_DIM_PX: 1024,
                 THUMBNAIL_SIZE: 500,
                 NORM_METHOD: "img_stats",
                 MICRO_RIGID_REGISTRAR_PARAMS: None,
@@ -332,10 +333,13 @@ class MainFunctions():
             data_dict.update(rigid_data)
             data_dict.update(non_rigid_data)
 
-            json_obj = json.dumps({'user_selections': data_dict}, indent=2)
-            file_path = '/Users/4474613/Documents/user_settings.json'
-            with open(file_path, 'w') as outfile:
-                outfile.write(json_obj)
+            if PROJECT_DIRECTORY is not None:
+                json_obj = json.dumps({'user_selections': data_dict}, indent=2)
+                file_path = '/Users/4474613/Documents/user_settings.json'
+                with open(file_path, 'w') as outfile:
+                    outfile.write(json_obj)
+            else:
+                print(f'No directory to save JSON to - but we have the dictionary ready!')
 
             #self.valis_worker = ValisWorker()
             #self.valis_worker.begin_process(docker_path, data_dict)
@@ -343,7 +347,7 @@ class MainFunctions():
 
             REGISTRATION_STATE = COMPLETE
 
-    def upload_slides(self, immuno_setting: QtImmunoWidget):
+    def upload_slides(self, slide_dir_widget: QtSlideDirectory):
         """Validation checking for user provided images to be uploaded and processed in valis registration.
 
         Args:
@@ -367,7 +371,7 @@ class MainFunctions():
         )
         error_msg.setIcon(QMessageBox.Icon.Warning)
 
-        if immuno_setting.is_empty():
+        if slide_dir_widget.is_empty():
             # Empty data entered, fire msg box
             error_msg.setText("Empty parameters were submitted.")
             error_msg.setDetailedText(
@@ -376,7 +380,7 @@ class MainFunctions():
             )
             error_msg.exec()
             return
-        elif not immuno_setting.is_valid_path():
+        elif not slide_dir_widget.is_valid_path():
             # Invalid or non-existent file path provided
             error_msg.setText("Invalid file path submitted.")
             error_msg.setDetailedText(
@@ -385,7 +389,7 @@ class MainFunctions():
             )
             error_msg.exec()
             return
-        elif immuno_setting.has_all_toggled():
+        elif slide_dir_widget.has_all_toggled():
             error_msg.setText("No sub-directories were chosen.")
             error_msg.setDetailedText(
                 "All the sub-directory toggle buttons are unchecked in the \'Directory Contents\' widget. " +
@@ -401,7 +405,7 @@ class MainFunctions():
                     obj.click()
                     self.registration_page_picker(self.ui.load_pages.registration_settings_subpage)
 
-        data_dict = immuno_setting.get_data()
+        data_dict = slide_dir_widget.get_data()
         UPLOADED_DATA = data_dict
 
         UPLOAD_STATE = COMPLETE

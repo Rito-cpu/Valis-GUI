@@ -13,7 +13,6 @@ from .qt_circle_progress_bar import QtCircleProgressBar
 from .qt_combo_widget import QtComboBox
 from .qt_mpl_canvas import QtPlotMenu
 from .qt_process import QtProcessThread
-from .qt_process_images import QtProcessImages
 from .qt_results_area import QtResultsArea
 from .qt_rigid_widget import RigidSettings, NonRigidSettings
 from .qt_message import QtMessage
@@ -22,4 +21,5 @@ from .qt_date_box import QtDateEntry
 from .qt_exclusive_combo import QtExclusiveComboGroup
 from .qt_export_area import QtExportArea
 from .qt_image_viewer import QtGraphicsView, QtImageView
-from .qt_immuno_image import QtImmunoWidget
+from .qt_slide_entry import QtSlideDirectory
+from .qt_tree_widget import QtTree

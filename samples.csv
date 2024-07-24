@@ -1,0 +1,9 @@
+,,Sample,File,Include,Image type
+cycif,0,cycif,/Users/4474613/Downloads/valis-chandler/examples/example_datasets/cycif/CD8 FOXP3 CD20.ome.tiff,True,fluorescence
+cycif,1,cycif,/Users/4474613/Downloads/valis-chandler/examples/example_datasets/cycif/CD20 FOXP3 CD3.ome.tiff,True,fluorescence
+cycif,2,cycif,/Users/4474613/Downloads/valis-chandler/examples/example_datasets/cycif/CD4 CD68 CD3.ome.tiff,True,fluorescence
+ihc,0,ihc,/Users/4474613/Downloads/valis-chandler/examples/example_datasets/ihc/ihc_2.ome.tiff,True,brightfield
+ihc,1,ihc,/Users/4474613/Downloads/valis-chandler/examples/example_datasets/ihc/ihc_3.ome.tiff,True,brightfield
+ihc,2,ihc,/Users/4474613/Downloads/valis-chandler/examples/example_datasets/ihc/ihc_5.ome.tiff,True,brightfield
+ihc,3,ihc,/Users/4474613/Downloads/valis-chandler/examples/example_datasets/ihc/ihc_4.ome.tiff,True,brightfield
+ihc,4,ihc,/Users/4474613/Downloads/valis-chandler/examples/example_datasets/ihc/ihc_1.ome.tiff,True,brightfield

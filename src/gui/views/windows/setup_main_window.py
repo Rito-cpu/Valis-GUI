@@ -8,7 +8,7 @@ from src.core.keyword_store import *
 from src.gui.models import *
 from src.gui.views.windows.ui_main_window import UI_MainWindow
 from src.gui.views.windows.functions_main_window import *
-from src.gui.models.qt_immuno_image import *
+from src.gui.models.qt_slide_entry import *
 from src.gui.models.qt_process_images import BFProcessWidget, IFProcessWidget
 
 
@@ -278,14 +278,14 @@ class SetupMainWindow:
         # ****************************************
         # ****** Image Directory Page Setup ******
         # ****************************************
-        self.immuno_entry = QtImmunoWidget(
+        self.slide_directory = QtSlideDirectory(
             text_color=self.themes['app_color']['text_color'],
             blue_color=self.themes['app_color']['blue_bg'],
             yellow_color=self.themes['app_color']['yellow_bg'],
             highlight_color=self.themes['app_color']['highlight_bg'],
             parent=self.ui.load_pages.immuno_dir_interaction
         )
-        self.immuno_entry.setObjectName('immuno_entry')
+        self.slide_directory.setObjectName('slide_directory')
 
         self.submit_file_bttn = PyPushButton(
             text="Submit",
@@ -305,9 +305,9 @@ class SetupMainWindow:
         submit_file_bttn_layout.addWidget(self.submit_file_bttn)
         submit_file_bttn_layout.addStretch(1)
 
-        self.submit_file_bttn.clicked.connect(lambda: MainFunctions.upload_slides(self, self.immuno_entry))
+        self.submit_file_bttn.clicked.connect(lambda: MainFunctions.upload_slides(self, self.slide_directory))
 
-        self.ui.load_pages.immuno_interaction_layout.addWidget(self.immuno_entry)
+        self.ui.load_pages.immuno_interaction_layout.addWidget(self.slide_directory)
         self.ui.load_pages.immuno_interaction_layout.addLayout(submit_file_bttn_layout)
 
         # ****************************************
