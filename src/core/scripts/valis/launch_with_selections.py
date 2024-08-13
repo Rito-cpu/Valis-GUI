@@ -1,3 +1,8 @@
+# this is script that reads the selections in user_settings.json and sample.json and runs valis using those files.
+# This script will run within the docker container, so any filepath needs to be formatted with a "/root" in place
+# of the "~" directory on the host machine.
+
+
 
 #there are a couple "problem" areas that may not function on a windows machine, they will be commented throughout this code
 

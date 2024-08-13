@@ -1,3 +1,7 @@
+# this file is to create a window to test the functionality of the progress bar and initialize it properly.
+# It will likely need to be changed to fit into the GUI architecture.
+
+
 import sys
 
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QPlainTextEdit, QVBoxLayout, QProgressBar

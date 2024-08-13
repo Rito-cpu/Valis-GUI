@@ -1,3 +1,7 @@
+# this file holds the logic for determining the state of the progress bar. The process is defined in a single
+# QThread object and run as a thread in progress_bar.py
+
+
 # processed masks overlaps rigid registration non_rigid_registration data
 
 

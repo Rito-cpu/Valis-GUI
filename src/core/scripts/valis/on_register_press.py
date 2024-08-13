@@ -1,3 +1,9 @@
+# this is the script that will run when the user hits register in the GUI. It collects relevant filepaths for needed
+# json files and the user's "~" directory and runs launch_with_selections.py with launchscript.sh. It also launches the
+# progress bar using multithreading, but it may be better to change the implementation of the progress bar to run from
+# another file
+
+
 import os.path
 from pathlib import PureWindowsPath, PurePosixPath
 import sys
