@@ -1,7 +1,14 @@
+
+#there are a couple "problem" areas that may not function on a windows machine, they will be commented throughout this code
+
+
 import os
 import sys
-import time
 
+# this particular line of code may not work on windows because of the use of a backslash.
+# A simple if statement using sys.platform.startswith("win32") should be able to fix this.
+# Alternatively, if you can modify the import statements entirely so that this code is no longer needed,
+# that would be ideal.
 sys.path.append("/".join(os.path.realpath(__file__).split("/")[0:-3]))
 
 from return_selections import *
@@ -40,7 +47,6 @@ def launch_with_selections(settings_path: str, image_path: str, home_dir: str):
     selections_dict[MICRO_RIGID_REGISTRAR_CLS] = get_micro_rigid_registrar(selections_dict[MICRO_RIGID_REGISTRAR_CLS])
 
     # convert user filepaths into compatible docker container filepaths
-    #home_dir = os.path.expanduser("~")
     selections_dict[SRC_DIR] = selections_dict[SRC_DIR].replace(home_dir, "/root")
     selections_dict[DST_DIR] = selections_dict[DST_DIR].replace(home_dir, "/root")
 
@@ -70,7 +76,7 @@ def launch_with_selections(settings_path: str, image_path: str, home_dir: str):
     r'''
     Explanation of home_dir and "/root":
         home_dir refers to the "~" directory of the users host system (Users/Username on POSIX, C:\Users\username on windows).
-        "/root" refers to the directory within the docker container to which the home system is mounted. In order for 
+        "/root" refers to the directory within the docker container to which the host system is mounted. In order for 
         this code to work correctly, any instance of home_dir passed into the container must be corrected to "/root" so 
         that the filepath is accurate to the file structure of the linux-based docker container. 
         '''
@@ -141,19 +147,17 @@ def launch_with_selections(settings_path: str, image_path: str, home_dir: str):
 
 
 if __name__ == "__main__":
+
+    # create args to pass file locations into python script when called in launchscript.sh
+
     parser = argparse.ArgumentParser(prog="Valis_launch_script", description="launches VALIS using arguments read in "
                                                                              "from a JSON file")
+    # -path is the path to the user_settings.json file, -il is the path to the sample.json file,
+    # -hdir is the string representing os.expanduser("~") on the user's system.
     parser.add_argument('-path')
     parser.add_argument('-il')
     parser.add_argument("-hdir")
 
     args = parser.parse_args()
 
-    start = time.perf_counter()
-
     launch_with_selections(args.path, args.il, args.hdir)
-
-    end = time.perf_counter()
-    elapsed_time = end - start
-
-    print(f"{elapsed_time} seconds have passed")

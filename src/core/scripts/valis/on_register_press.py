@@ -10,6 +10,7 @@ import progress_bar
 def on_register_press():
 
     # check for user platform and reformat running directory as needed, also obtain home dir for use within docker container
+    # THIS CODE HAS NOT BEEN TESTED ON A WINDOWS MACHINE
     if sys.platform.startswith("win32"):
         running_dir = PureWindowsPath(
             r'C:\Users\80029349\Documents\GUI-Repo\Valis-GUI\src\core\scripts\valis\on_register_press.py').as_posix()
@@ -38,6 +39,9 @@ def on_register_press():
 
 
 def start_prog_bar():
+
+    # get names of samples and number of steps selected by the user to be passed to the progress bar
+
     f = open("user_settings.json")
     reader = json.load(f)["user_selections"]
     do_rigid, do_micro, do_non_rigid = reader["do_rigid"], reader["micro_rigid_registrar_cls"], reader[
@@ -50,12 +54,16 @@ def start_prog_bar():
 
     del reader
 
+    # create a dictionary of steps to be passed into the progress bar. This will determine how many steps
+    # are given to the progress bar on initialization.
+
     steps_dict = {"rigid": do_rigid, "micro_rigid": do_micro, "non_rigid": do_non_rigid}
     steps_dict = {k: v for k, v in steps_dict.items() if v is not False or None}
     progress_bar.init_prog_bar("/Users/80029349/Documents/DummyOutput2", steps_dict, sample_list)
 
 
 if __name__ == "__main__":
+
     x = Thread(target=on_register_press)
     x.start()
     start_prog_bar()
