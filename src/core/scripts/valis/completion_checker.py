@@ -93,9 +93,7 @@ class Thread(QThread):
                         if step_iterator == max_steps - 1:
                             self.dir_change.emit(max_steps)
                             sample_iterator += 1
-                            time.sleep(1)
                             step_iterator = 1
-                            self.dir_change.emit(step_iterator)
                             path = f"{self.path}/{sample_names[sample_iterator]}/overlaps/{sample_names[sample_iterator]}_{folder_array[step_iterator]}_overlap.png"
                             curr_time = os.path.getctime(path)
                         else:
