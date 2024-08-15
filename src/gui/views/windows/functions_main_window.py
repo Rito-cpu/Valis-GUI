@@ -7,6 +7,7 @@ from src.core.json.json_themes import Themes
 from src.core.validation.validate_file import is_json_file, is_excel_file, is_existing_dir
 from src.core.scripts.valis.gui_options import *
 from src.core.scripts.valis.valis_command import ValisWorker
+from src.core.scripts.valis.on_register_press import *
 from src.gui.views.windows.ui_main_window import UI_MainWindow
 from src.gui.models import *
 
@@ -183,12 +184,12 @@ class MainFunctions():
             bg_color_pressed=self.themes["app_color"]["dark_four"],
         )
 
-        if UPLOAD_STATE == INCOMPLETE:
+        if SLIDE_UPLOAD_STATE == INCOMPLETE:
             context_file_msg.setText('No slide image files have been submitted.')
             context_file_msg.setDetailedText('Please upload slide image file(s) to proceed.')
             context_file_msg.exec()
-        elif UPLOAD_STATE == COMPLETE:
-            data = UPLOADED_DATA
+        elif SLIDE_UPLOAD_STATE == COMPLETE:
+            data = SUBMITTED_SLIDES
             slide_dirs = data['slide_dirs']
 
             parent_portion = """
@@ -221,7 +222,7 @@ class MainFunctions():
             context_file_msg.setDetailedText(child_list)
             context_file_msg.exec()
 
-    def check_project_directory(self, directory: str, label: QtMarqueeLabel):
+    def set_project_directory(self, directory: str, label: QtMarqueeLabel):
         """Establishes a user provided directory as a project directory for application use.
 
         Args:
@@ -233,18 +234,35 @@ class MainFunctions():
             PROJECT_DIRECTORY = directory
 
             label.setText(directory)
-
-    def show_non_rigid(self, setting: QWidget, show):
-        """Hide or shows the Non-Rigid widget in the settings page based upon user interaction.
-
-        Args:
-            setting (QWidget): Non-Rigid settings widget container
-            show (bool): boolean to determine non-rigid widget's visibility
-        """
-        if show:
-            setting.show()
         else:
-            setting.hide()
+            PROJECT_DIRECTORY = None
+
+    def check_project_directory(self):
+        if PROJECT_DIRECTORY:
+            return True
+        else:
+            error_bttns = {
+                "Ok": QMessageBox.ButtonRole.AcceptRole
+            }
+            error_msg = QtMessage(
+                buttons=error_bttns,
+                color=self.themes["app_color"]["main_bg"],
+                bg_color_one=self.themes["app_color"]["dark_one"],
+                bg_color_two=self.themes["app_color"]["bg_one"],
+                bg_color_hover=self.themes["app_color"]["dark_three"],
+                bg_color_pressed=self.themes["app_color"]["dark_four"]
+            )
+            error_msg.setIcon(QMessageBox.Icon.Warning)
+            error_msg.setText('No set project directory.')
+            error_msg.setDetailedText('A project directory has not yet been configured and is needed for the next step. Please submit a valid project directory in the home page.')
+            error_msg.exec()
+
+            return False
+
+    def clear_pressed(self):
+        global SUBMITTED_SLIDES, SLIDE_UPLOAD_STATE
+        SUBMITTED_SLIDES = None
+        SLIDE_UPLOAD_STATE = INCOMPLETE
 
     def on_thread_finished(self):
         """Slot function for QThread completion signal that brings the user to a new page upon valis registration completion.
@@ -283,10 +301,9 @@ class MainFunctions():
         )
         error_msg.setIcon(QMessageBox.Icon.Warning)
 
-        global UPLOAD_STATE, REGISTRATION_STATE
-        
+        global SLIDE_UPLOAD_STATE, REGISTRATION_STATE, SUBMITTED_SLIDES, PROJECT_DIRECTORY
         # Check if image slide upload stage has been completed
-        if UPLOAD_STATE == INCOMPLETE:
+        if SLIDE_UPLOAD_STATE == INCOMPLETE:
             error_msg.setText("Missing Upload Process!")
             error_msg.setDetailedText(
                 "The upload process in the Slide Directory menu is not complete." +
@@ -296,31 +313,100 @@ class MainFunctions():
             error_msg.exec()
             return
         else:
-            docker_path = QFileDialog.getExistingDirectory(self, 'Select Docker Project Directory')
-            if docker_path == '':
-                # Catch cancel button event to not trigger an error message
-                return
-            elif not docker_path or not is_existing_dir(docker_path):
-                error_msg.setText("Invalid Docker path.")
-                error_msg.setDetailedText("The path to the required valis docker container returned invalid.")
+            # Check for invalid project directory submission
+            if not PROJECT_DIRECTORY:
+                error_msg.setText('No set project directory.')
+                error_msg.setDetailedText(
+                    'A project directory has not yet been configured and is needed for the next step.' +
+                    'Please submit a valid project directory in the home page.'
+                )
                 error_msg.exec()
                 return
-            processing_data = process_setting.get_data()
+
+            # Gather valid docker file path
+            #docker_path = QFileDialog.getExistingDirectory(self, 'Select Docker Project Directory')
+            #if docker_path == '':
+                # Catch cancel button event to not trigger an error message
+            #    return
+            #elif not docker_path or not is_existing_dir(docker_path):
+            #    error_msg.setText("Invalid Docker path.")
+            #    error_msg.setDetailedText("The path to the required valis docker container returned invalid.")
+            #    error_msg.exec()
+            #    return
+
+            # Gather widget states for registration
+            if_data = if_settings.get_widget_settings()
+            bf_data = bf_settings.get_widget_settings()
             rigid_data = rigid_setting.get_data()
             non_rigid_data = non_rigid_setting.get_data()
-            data_dict = {
-                'processing_settings': processing_data,
-                'rigid_settings': rigid_data,
-                'non_rigid_settings': non_rigid_data
+
+            # Package user settings from registration
+            user_settings = {
+                SRC_DIR: '',
+                DST_DIR: PROJECT_DIRECTORY,
+                SERIES: None,
+                NAME: None,
+                IMAGE_TYPE: None,
+                IMGS_ORDERED: True,
+                NON_RIGID_REG_PARAMS: None,
+                COMPOSE_NON_RIGID: False,
+                IMG_LIST: None,
+                REFERENCE_IMG_F: None,
+                ALIGN_TO_REFERENCE: False,
+                DO_RIGID: True,
+                CROP: None,
+                CREATE_MASKS: True,
+                DENOISE_RIGID: False,
+                RESOLUTION_XYU: None,
+                SLIDE_DIMS_DICT_WH: None,
+                MAX_IMAGE_DIM_PX: 1024,
+                MAX_PROCESSED_IMAGE_DIM_PX: 1024,
+                MAX_NON_RIGID_REGISTRATION_DIM_PX: 1024,
+                THUMBNAIL_SIZE: 500,
+                NORM_METHOD: "img_stats",
+                MICRO_RIGID_REGISTRAR_PARAMS: None,
+                QT_EMITTER: None,
+                IF_PROCESSOR: if_data,
+                BF_PROCESSOR: bf_data,
             }
+            user_settings.update(rigid_data)
+            user_settings.update(non_rigid_data)
 
-            print(f'Processing Data: \n{processing_data}\n')
-            print(f'Rigid Data: \n{rigid_data}\n')
-            print(f'Non-Rigid Data: \n{non_rigid_data}\n')
+            # TODO: How to handle crashes/errors?
+            if PROJECT_DIRECTORY is not None:
+                json_user_settings = json.dumps({'user_selections': user_settings}, indent=2)
+                # FIXME: Configure to POSIX for both platforms
+                output_file = os.path.abspath(
+                    os.path.join(
+                        APP_ROOT,
+                        "src/core/output/states/user_settings.json"
+                    )
+                )
+                with open(output_file, 'w') as outfile:
+                    outfile.write(json_user_settings)
 
-            self.valis_worker = ValisWorker()
-            self.valis_worker.begin_process(docker_path, data_dict)
-            self.valis_worker.finished.connect(lambda: MainFunctions.on_thread_finished(self))
+                slides_dict = SUBMITTED_SLIDES
+                slides_settings = json.dumps(slides_dict, indent=2)
+                output_file = os.path.abspath(
+                    os.path.join(
+                        APP_ROOT,
+                        "src/core/output/states/sample.json"
+                    )
+                )
+                with open(output_file, 'w') as outfile:
+                    outfile.write(slides_settings)
+                #valis_worker = ValisWorker()
+                #valis_worker.begin_process(docker_path, data_dict)
+                proc_thread = Thread(target=on_register_press)
+                proc_thread.start()
+                start_prog_bar()
+                proc_thread.join()
+                # on_register_press(docker_path)
+            else:
+                error_msg.setIcon(QMessageBox.Icon.Information)
+                error_msg.setText('No home directory found.')
+                error_msg.setDetailedText('The home directory path has not been set. To continue, please configure a home directory.')
+                error_msg.exec()
 
             REGISTRATION_STATE = COMPLETE
 
@@ -330,14 +416,11 @@ class MainFunctions():
         Args:
             immuno_setting (QtImmunoWidget): custom widget that contains user interactive widgets to enable slide image uploading.
         """
-        global PROJECT_DIRECTORY, UPLOAD_STATE, UPLOADED_DATA
-        print(f'Project Working Directory: {PROJECT_DIRECTORY}')
-
+        global PROJECT_DIRECTORY, SLIDE_UPLOAD_STATE, SUBMITTED_SLIDES
         # Prepare message box for user errors
         error_bttns = {
             "Ok": QMessageBox.ButtonRole.AcceptRole
         }
-
         error_msg = QtMessage(
             buttons=error_bttns,
             color=self.themes["app_color"]["main_bg"],
@@ -348,16 +431,7 @@ class MainFunctions():
         )
         error_msg.setIcon(QMessageBox.Icon.Warning)
 
-        if immuno_setting.is_empty():
-            # Empty data entered, fire msg box
-            error_msg.setText("Empty parameters were submitted.")
-            error_msg.setDetailedText(
-                "Please provide a valid parent directory of slide image directories " +
-                "in the file path and make selections accordingly using the toggle buttons."
-            )
-            error_msg.exec()
-            return
-        elif not immuno_setting.is_valid_path():
+        if not slide_dir_widget.is_valid_path():
             # Invalid or non-existent file path provided
             error_msg.setText("Invalid file path submitted.")
             error_msg.setDetailedText(
@@ -366,11 +440,17 @@ class MainFunctions():
             )
             error_msg.exec()
             return
-        elif immuno_setting.has_all_toggled():
-            error_msg.setText("No sub-directories were chosen.")
+        elif slide_dir_widget.check_empty_tree():
+            error_msg.setText("File Tree is not populated.")
             error_msg.setDetailedText(
-                "All the sub-directory toggle buttons are unchecked in the \'Directory Contents\' widget. " +
-                "\nValis requires slide images, so please ensure that at least one (1) sub-directory toggle button is checked."
+                "Please ensure that the file tree is populated with the desired images to be registered."
+            )
+            error_msg.exec()
+            return
+        elif slide_dir_widget.all_toggle_deactivated():
+            error_msg.setText("There are no files to be registered.")
+            error_msg.setDetailedText(
+                "All files within the tree have been toggled to not be included. Please include at least one file."
             )
             error_msg.exec()
             return
@@ -382,11 +462,10 @@ class MainFunctions():
                     obj.click()
                     self.registration_page_picker(self.ui.load_pages.registration_settings_subpage)
 
-        data_dict = immuno_setting.get_data()
-        UPLOADED_DATA = data_dict
+        slide_dict = slide_dir_widget.get_data()
+        SUBMITTED_SLIDES = slide_dict
 
-        UPLOAD_STATE = COMPLETE
-        # print(data)
+        SLIDE_UPLOAD_STATE = COMPLETE
 
     def export_data(self):
         """Handles the submit button on the export page to check if previous page has been completed and process further instructions for exporting
@@ -394,7 +473,6 @@ class MainFunctions():
         error_bttns = {
             "Ok": QMessageBox.ButtonRole.AcceptRole
         }
-
         error_msg = QtMessage(
             buttons=error_bttns,
             color=self.themes["app_color"]["main_bg"],

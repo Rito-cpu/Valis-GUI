@@ -14,7 +14,7 @@ def is_json_file(filepath: str) -> bool:
 def is_valid_json_file(filepath: str) -> bool:
     """Check if the file is a valid JSON file."""
 
-    return is_json_file(filepath) and os.path.exists(filepath)
+    return is_json_file(filepath) and is_existing_path(filepath)
 
 def is_excel_file(filepath: str) -> bool:
     """Check if the file has an Excel mime type."""
@@ -35,3 +35,6 @@ def is_blank_line(line: Optional[str]) -> bool:
 
 def is_existing_dir(path: Optional[str]) -> bool:
     return os.path.isdir(path)
+
+def is_existing_path(path: Optional[str]) -> bool:
+    return os.path.exists(path)

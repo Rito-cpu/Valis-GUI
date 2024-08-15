@@ -22,4 +22,6 @@ from .qt_date_box import QtDateEntry
 from .qt_exclusive_combo import QtExclusiveComboGroup
 from .qt_export_area import QtExportArea
 from .qt_image_viewer import QtGraphicsView, QtImageView
-from .qt_immuno_image import QtImmunoWidget
+from .qt_slide_entry import QtSlideDirectory
+from .qt_tree_widget import QtTree
+from .qt_bar import ValisBar

@@ -1,7 +1,6 @@
 import cv2
 
-from valis import feature_detectors, preprocessing, non_rigid_registrars, feature_matcher, affine_optimizer, \
-    micro_rigid_registrar
+from valis import feature_detectors, preprocessing, non_rigid_registrars, feature_matcher, affine_optimizer, micro_rigid_registrar
 import skimage.transform
 
 

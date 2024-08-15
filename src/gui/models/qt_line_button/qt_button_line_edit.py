@@ -186,10 +186,10 @@ class QtButtonLineEdit(QGroupBox):
         """
         home = str(pathlib.Path.home())
 
-        if PROJECT_DIRECTORY is None:
-            print('There is no saved directory to start from, using default...')
-        else:
-            print(f'Project directory found! \n\t{PROJECT_DIRECTORY}')
+        #if PROJECT_DIRECTORY is None:
+        #    print('There is no saved directory to start from, using default...')
+        #else:
+        #    print(f'Project directory found! \n\t{PROJECT_DIRECTORY}')
 
         folder_name = QFileDialog.getExistingDirectory(
             parent=self,

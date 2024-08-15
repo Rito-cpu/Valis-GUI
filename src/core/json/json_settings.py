@@ -1,7 +1,7 @@
 import os
 import json
 
-from ..app_config import *
+from src.core.app_config import APP_ROOT
 
 
 class Settings(object):

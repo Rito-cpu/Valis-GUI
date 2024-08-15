@@ -257,7 +257,7 @@ class SetupMainWindow:
         self.project_dir_label.setText('None')
 
         self.submit_dir_bttn.clicked.connect(
-            lambda: MainFunctions.check_project_directory(
+            lambda: MainFunctions.set_project_directory(
                 self,
                 self.proj_dir_entry.text(),
                 self.project_dir_label
@@ -275,7 +275,7 @@ class SetupMainWindow:
         self.ui.load_pages.project_dir_frame.setMaximumWidth(self.ui.load_pages.dir_entry_interaction.sizeHint().width())
 
         # ****************************************
-        # ****** Image Directory Page Setup ******
+        # ****** Slide Directory Page Setup ******
         # ****************************************
         self.immuno_entry = QtImmunoWidget(
             text_color=self.themes['app_color']['text_color'],
@@ -304,9 +304,10 @@ class SetupMainWindow:
         submit_file_bttn_layout.addWidget(self.submit_file_bttn)
         submit_file_bttn_layout.addStretch(1)
 
-        self.submit_file_bttn.clicked.connect(lambda: MainFunctions.upload_slides(self, self.immuno_entry))
+        self.slide_directory.dir_tree.clear_bttn.clicked.connect(lambda: MainFunctions.clear_pressed(self))
+        self.submit_file_bttn.clicked.connect(lambda: MainFunctions.upload_slides(self, self.slide_directory))
 
-        self.ui.load_pages.immuno_interaction_layout.addWidget(self.immuno_entry)
+        self.ui.load_pages.immuno_interaction_layout.addWidget(self.slide_directory, alignment=Qt.AlignmentFlag.AlignCenter)
         self.ui.load_pages.immuno_interaction_layout.addLayout(submit_file_bttn_layout)
 
         # ****************************************

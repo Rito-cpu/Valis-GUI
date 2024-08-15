@@ -145,7 +145,7 @@ class Ui_MainPages(object):
 
         self.immuno_interaction_layout = QVBoxLayout(self.immuno_dir_interaction)
         self.immuno_interaction_layout.setObjectName('immuno_interaction_layout')
-        self.immuno_interaction_layout.setContentsMargins(5, 5, 5, 5)
+        self.immuno_interaction_layout.setContentsMargins(0, 0, 0, 0)
         self.immuno_interaction_layout.setSpacing(15)
 
         self.file_content_layout = QVBoxLayout(self.file_scroll_contents)

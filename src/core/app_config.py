@@ -12,6 +12,10 @@ APP_ROOT = os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardi
 image_dir = "resources/images"
 IMG_RSC_PATH = os.path.join(APP_ROOT, image_dir)
 
+# Path to scripts
+scripts_loc = "src/core/scripts"
+SCRIPTS_PATH = os.path.abspath(os.path.join(APP_ROOT, scripts_loc))
+
 # --- Home Directory Instance ---
 PROJECT_DIRECTORY = None
 
@@ -64,10 +68,10 @@ except Exception as e:
 INCOMPLETE = 0
 COMPLETE = 1
 
-UPLOAD_STATE = INCOMPLETE
+SLIDE_UPLOAD_STATE = INCOMPLETE
 REGISTRATION_STATE = INCOMPLETE
 RESULTS_STATE = INCOMPLETE
 EXPORT_STATE = INCOMPLETE
 
 # Menu Data Storage
-UPLOADED_DATA = None
+SUBMITTED_SLIDES = None
