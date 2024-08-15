@@ -29,7 +29,7 @@ def launch_with_selections(settings_path: str, image_path: str, home_dir: str):
         settings_path: the full filepath to the user_settings.json file within the docker container
         image_path: the full filepath to sample.json file within the docker container
         home_dir: the value of os.expanduser("~") on the host machines OS,
-         required for manipulation of filepaths within the docker container
+        required for manipulation of filepaths within the docker container
     """
 
     # read in JSON file as a dictionary
@@ -42,10 +42,14 @@ def launch_with_selections(settings_path: str, image_path: str, home_dir: str):
     f.close()
     del reader
 
+    selections_dict["src_dir"] = outer_image_dict["src_dir"]
+
     # convert strings in dictionary to needed objects using functions in return_selections.py
-    selections_dict["matcher"] = get_matcher_obj(selections_dict.pop(MATCH_FILTER_METHOD),
-                                                 selections_dict.pop(FEATURE_MATCHING_METRIC),
-                                                 selections_dict[FEATURE_DETECTOR_CLS])
+    selections_dict["matcher"] = get_matcher_obj(
+        selections_dict.pop(MATCH_FILTER_METHOD),
+        selections_dict.pop(FEATURE_MATCHING_METRIC),
+        selections_dict[FEATURE_DETECTOR_CLS]
+    )
     selections_dict[FEATURE_DETECTOR_CLS] = get_feature_detector_obj(selections_dict[FEATURE_DETECTOR_CLS])
     selections_dict[TRANSFORMER_CLS] = get_image_transformer(selections_dict[TRANSFORMER_CLS])
     selections_dict[AFFINE_OPTIMIZER_CLS] = get_affine_optimizer((selections_dict[AFFINE_OPTIMIZER_CLS]))
@@ -88,8 +92,11 @@ def launch_with_selections(settings_path: str, image_path: str, home_dir: str):
 
     # create list of sample directories and their corresponding names
     for k, v in outer_image_dict.items():
-        directory_list.append(v)
+        if k == "src_dir":
+            continue
         name_list.append(k)
+        samples = v["files"]
+        directory_list.append(samples)
 
     for i in range(0, len(directory_list)):
         #k refers to each sample directory, v refers to the individual images in those samples

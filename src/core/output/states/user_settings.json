@@ -25,18 +25,18 @@
     "micro_rigid_registrar_params": null,
     "qt_emitter": null,
     "if_processor": {
+      "brightfield_processing_cls": "OD",
+      "brightfield_processing_kwargs": {
+        "adaptive_eq": false,
+        "p": 95.0
+      }
+    },
+    "bf_processor": {
       "if_processing_cls": "ChannelGetter",
       "if_processing_kwargs": {
         "channel": "dapi",
         "adaptive_eq": true,
         "invert": false
-      }
-    },
-    "bf_processor": {
-      "brightfield_processing_cls": "OD",
-      "brightfield_processing_kwargs": {
-        "adaptive_eq": false,
-        "p": 95.0
       }
     },
     "feature_detector_cls": "VggFD",

@@ -7,7 +7,7 @@ from src.gui.models import *
 from src.gui.models.qt_line_button import QtButtonLineEdit
 from src.gui.models.py_push_button import PyPushButton
 from src.gui.models.qt_tree_widget import QtTree
-from .immuno_folder_widget import ImmunoFolderView
+# from .immuno_folder_widget import ImmunoFolderView
 
 
 class QtSlideDirectory(QWidget):

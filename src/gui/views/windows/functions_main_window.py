@@ -277,7 +277,8 @@ class MainFunctions():
 
     def register_settings(
             self,
-            process_setting: QWidget,
+            if_settings: QWidget,
+            bf_settings: QWidget,
             rigid_setting: QWidget,
             non_rigid_setting: QWidget,
     ):
@@ -367,7 +368,7 @@ class MainFunctions():
                 MICRO_RIGID_REGISTRAR_PARAMS: None,
                 QT_EMITTER: None,
                 IF_PROCESSOR: if_data,
-                BF_PROCESSOR: bf_data,
+                BF_PROCESSOR: bf_data
             }
             user_settings.update(rigid_data)
             user_settings.update(non_rigid_data)
@@ -395,13 +396,11 @@ class MainFunctions():
                 )
                 with open(output_file, 'w') as outfile:
                     outfile.write(slides_settings)
-                #valis_worker = ValisWorker()
-                #valis_worker.begin_process(docker_path, data_dict)
+                
                 proc_thread = Thread(target=on_register_press)
                 proc_thread.start()
                 start_prog_bar()
                 proc_thread.join()
-                # on_register_press(docker_path)
             else:
                 error_msg.setIcon(QMessageBox.Icon.Information)
                 error_msg.setText('No home directory found.')
@@ -410,11 +409,11 @@ class MainFunctions():
 
             REGISTRATION_STATE = COMPLETE
 
-    def upload_slides(self, immuno_setting: QtImmunoWidget):
+    def upload_slides(self, slide_dir_widget: QtSlideDirectory):
         """Validation checking for user provided images to be uploaded and processed in valis registration.
 
         Args:
-            immuno_setting (QtImmunoWidget): custom widget that contains user interactive widgets to enable slide image uploading.
+            slide_dir_widget (QtSlideDirectory): custom widget that contains user interactive widgets to enable slide image uploading.
         """
         global PROJECT_DIRECTORY, SLIDE_UPLOAD_STATE, SUBMITTED_SLIDES
         # Prepare message box for user errors

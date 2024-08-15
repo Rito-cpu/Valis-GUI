@@ -13,7 +13,6 @@ from .qt_circle_progress_bar import QtCircleProgressBar
 from .qt_combo_widget import QtComboBox
 from .qt_mpl_canvas import QtPlotMenu
 from .qt_process import QtProcessThread
-from .qt_process_images import QtProcessImages
 from .qt_results_area import QtResultsArea
 from .qt_rigid_widget import RigidSettings, NonRigidSettings
 from .qt_message import QtMessage

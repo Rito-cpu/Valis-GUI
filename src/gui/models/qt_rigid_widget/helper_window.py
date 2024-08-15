@@ -20,7 +20,8 @@ class HelperWindow(QWidget):
             self.setParent(parent)
 
         self.setWindowTitle(window_title)
-        self.setMinimumSize(400, 250)
+        self.setMinimumSize(400, 300)
+        self.setMaximumSize(600, 380)
 
         self._setting_name = setting_name
         self._setting_msg = setting_msg
@@ -57,12 +58,6 @@ class HelperWindow(QWidget):
         frame_layout.setSpacing(15)
         frame_layout.addWidget(title_text, alignment=Qt.AlignmentFlag.AlignCenter)
         frame_layout.addWidget(self.message_area)
-
-        # message_label = QLabel(central_widget)
-        # message_label.setObjectName('message_label')
-        # message_label.setText(self._tool_msg)
-        # message_label.setStyleSheet(f'color: {self.themes["app_color"]["text_color"]}; font-size: 12px; border-radius: 8px; padding: 8px; border: 1px solid black;')
-        # message_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         main_layout = QVBoxLayout(self)
         main_layout.setObjectName('main_layout')

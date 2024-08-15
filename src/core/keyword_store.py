@@ -35,6 +35,10 @@ HEDECONVOLUTION_KEY = "HEDeconvolution"
 LUMINOSITY_KEY = "Luminosity"
 STAIN_FLATTENER_KEY = "StainFlattener"
 
+## IMAGE TYPES
+FLUORESCENCE_KEY = "fluorescence"
+BF_KEY = "brightfield"
+
 ## Valis constructor parameters
 SRC_DIR = "src_dir"
 DST_DIR = "dst_dir"
