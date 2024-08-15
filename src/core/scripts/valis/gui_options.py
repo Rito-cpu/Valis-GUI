@@ -15,6 +15,7 @@ def _get_subclasses(module, base_class, exclude=()):
                 include_list.append(name)
     return include_list
 
+
 def get_feature_detectors():
     """Get all feature detectors
     Returns
@@ -32,6 +33,7 @@ def get_feature_detectors():
     feature_detector_names = _get_subclasses(feature_detectors, feature_detectors.FeatureDD, exclude_list)
 
     return default_fd, feature_detector_names
+
 
 def get_image_processers():
     """Get all image processers
@@ -73,8 +75,8 @@ def get_image_processers():
         else:
             bf_pdict[p_name] = arg_dict
 
-    processor_dict = {IF_PROCESSOR_KEY:if_pdict, BF_PROCESSOR_KEY:bf_pdict}
-    default_dict = {IF_PROCESSOR_KEY:default_if, BF_PROCESSOR_KEY:default_bf}
+    processor_dict = {IF_PROCESSOR_KEY: if_pdict, BF_PROCESSOR_KEY: bf_pdict}
+    default_dict = {IF_PROCESSOR_KEY: default_if, BF_PROCESSOR_KEY: default_bf}
 
     return default_dict, processor_dict
 
@@ -134,6 +136,70 @@ def get_matchers():
             --------
             m_list: list
                 list of all available matchers, default (index 0) defined in feature_matcher.py
+    """
+    m_list = [i.split("_")[0] for i in dir(feature_matcher) if i.find("NAME") != -1]
+
+    m_list.insert(0, m_list.pop(m_list.index(feature_matcher.DEFAULT_MATCH_FILTER)))
+
+    return m_list
+
+
+def get_feature_matching_metrics():
+    """Get all feature matching metrics
+
+    Returns
+    --------
+    fmm_list: list
+        list of all available feature matching metrics, default (index 0) is "euclidean"
+    """
+
+    fmm_list = _VALID_METRICS.copy()
+
+    return fmm_list
+
+
+def get_similarity_metrics():
+    """Get all similarity matching (sorting) metrics
+
+    Returns
+    --------
+    sm_list: list
+        list of all available sorting metrics, default (index 0) defined in registration.py
+    """
+
+    sm_list = _VALID_METRICS.copy()
+    sm_list.insert(0, registration.DEFAULT_SIMILARITY_METRIC)
+
+    return sm_list
+
+
+def get_nonrigid_registrars():
+    """Get all nonrigid registrars
+
+        Returns
+        --------
+        nrr_list: list
+            list of all available non-rigid registrars, default (index 0) defined in registration.py
+    """
+
+    nrr_list = [registration.DEFAULT_NON_RIGID_CLASS().method.split("_")[1]]
+    nrr_to_append = [i.split("_")[1] for i in dir(cv2.optflow) if
+                     (i.find("createOptFlow") != -1) and (i.find("Sparse") == -1) and i.split("_")[1] not in nrr_list]
+    # appends only what appears after the underscore for each i that isn't the default
+
+    nrr_list.extend(nrr_to_append)
+    nrr_list.extend(["SimpleElastixWarper, SimpleElastixGroupwiseWarper"])
+
+    return nrr_list
+
+
+def get_matchers():
+    """Get all matchers
+
+        Returns
+        --------
+        m_list: list
+            list of all available matchers, default (index 0) defined in feature_matcher.py
     """
     m_list = [i.split("_")[0] for i in dir(feature_matcher) if i.find("NAME") != -1]
 

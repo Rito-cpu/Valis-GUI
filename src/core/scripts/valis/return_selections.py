@@ -1,7 +1,8 @@
 import cv2
-import skimage.transform
 
-from valis import feature_detectors, preprocessing, non_rigid_registrars, feature_matcher, affine_optimizer, micro_rigid_registrar
+from valis import feature_detectors, preprocessing, non_rigid_registrars, feature_matcher, affine_optimizer, \
+    micro_rigid_registrar
+import skimage.transform
 
 
 def get_feature_detector_obj(user_selection: str):
@@ -16,6 +17,7 @@ def get_feature_detector_obj(user_selection: str):
     fd_obj = getattr(feature_detectors, user_selection)
 
     return fd_obj
+
 
 def get_nonrigid_registrar_obj(user_selection: str):
     """Return selected nonrigid registrar to VALIS
@@ -49,6 +51,7 @@ def get_nonrigid_registrar_obj(user_selection: str):
 
     return nrr_obj, optical_flow_dict
 
+
 def get_image_processor_obj(bf_selection: str, if_selection: str):
     """Return selected image processor to VALIS
 
@@ -65,6 +68,7 @@ def get_image_processor_obj(bf_selection: str, if_selection: str):
     if_obj = getattr(preprocessing, if_selection)
     return bf_obj, if_obj
 
+
 def get_matcher_obj(match_filter_method: str, feature_matching_metric: str, feature_detector: str):
     """
 
@@ -78,13 +82,14 @@ def get_matcher_obj(match_filter_method: str, feature_matching_metric: str, feat
 
     """
     m_obj = None
-    if match_filter_method != "SUPERGLUE":
+    if match_filter_method != "superglue":
         m_obj = feature_matcher.Matcher(metric=feature_matching_metric, match_filter_method=match_filter_method)
     elif feature_detector == "SuperPointFD":
         m_obj = feature_matcher.SuperPointAndGlue()
     else:
         m_obj = feature_matcher.SuperGlueMatcher()
     return m_obj
+
 
 def get_image_transformer(selection: bool):
     """
@@ -103,6 +108,7 @@ def get_image_transformer(selection: bool):
 
     return transformer_obj
 
+
 def get_affine_optimizer(selection: bool):
     """
 
@@ -119,6 +125,7 @@ def get_affine_optimizer(selection: bool):
         optimizer_obj = affine_optimizer.AffineOptimizerMattesMI
 
     return optimizer_obj
+
 
 def get_micro_rigid_registrar(selection: bool):
     """
