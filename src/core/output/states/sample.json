@@ -1,0 +1,61 @@
+{
+  "src_dir": "/Users/4474613/Downloads/valis-chandler/examples/example_datasets",
+  "cycif": {
+    "is_sorted": false,
+    "files": {
+      "0": {
+        "File": "/Users/4474613/Downloads/valis-chandler/examples/example_datasets/cycif/CD8 FOXP3 CD20.ome.tiff",
+        "Include": true,
+        "Image type": "fluorescence",
+        "Use reference": false
+      },
+      "1": {
+        "File": "/Users/4474613/Downloads/valis-chandler/examples/example_datasets/cycif/CD20 FOXP3 CD3.ome.tiff",
+        "Include": true,
+        "Image type": "fluorescence",
+        "Use reference": false
+      },
+      "2": {
+        "File": "/Users/4474613/Downloads/valis-chandler/examples/example_datasets/cycif/CD4 CD68 CD3.ome.tiff",
+        "Include": true,
+        "Image type": "fluorescence",
+        "Use reference": false
+      }
+    }
+  },
+  "ihc": {
+    "is_sorted": false,
+    "files": {
+      "0": {
+        "File": "/Users/4474613/Downloads/valis-chandler/examples/example_datasets/ihc/ihc_2.ome.tiff",
+        "Include": true,
+        "Image type": "brightfield",
+        "Use reference": false
+      },
+      "1": {
+        "File": "/Users/4474613/Downloads/valis-chandler/examples/example_datasets/ihc/ihc_3.ome.tiff",
+        "Include": true,
+        "Image type": "brightfield",
+        "Use reference": false
+      },
+      "2": {
+        "File": "/Users/4474613/Downloads/valis-chandler/examples/example_datasets/ihc/ihc_5.ome.tiff",
+        "Include": true,
+        "Image type": "brightfield",
+        "Use reference": false
+      },
+      "3": {
+        "File": "/Users/4474613/Downloads/valis-chandler/examples/example_datasets/ihc/ihc_4.ome.tiff",
+        "Include": true,
+        "Image type": "brightfield",
+        "Use reference": false
+      },
+      "4": {
+        "File": "/Users/4474613/Downloads/valis-chandler/examples/example_datasets/ihc/ihc_1.ome.tiff",
+        "Include": true,
+        "Image type": "brightfield",
+        "Use reference": false
+      }
+    }
+  }
+}

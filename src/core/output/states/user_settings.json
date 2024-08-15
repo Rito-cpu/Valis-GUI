@@ -1,0 +1,53 @@
+{
+  "user_selections": {
+    "src_dir": "",
+    "dst_dir": "/Users/4474613/Documents/testing_output",
+    "series": null,
+    "name": null,
+    "image_type": null,
+    "imgs_ordered": true,
+    "non_rigid_reg_params": null,
+    "compose_non_rigid": false,
+    "img_list": null,
+    "reference_img_f": null,
+    "align_to_reference": false,
+    "do_rigid": true,
+    "crop": null,
+    "create_masks": true,
+    "denoise_rigid": false,
+    "resolution_xyu": null,
+    "slide_dims_dict_wh": null,
+    "max_image_dim_px": 1024,
+    "max_processed_image_dim_px": 1024,
+    "max_non_rigid_registration_dim_px": 1024,
+    "thumbnail_size": 500,
+    "norm_method": "img_stats",
+    "micro_rigid_registrar_params": null,
+    "qt_emitter": null,
+    "if_processor": {
+      "if_processing_cls": "ChannelGetter",
+      "if_processing_kwargs": {
+        "channel": "dapi",
+        "adaptive_eq": true,
+        "invert": false
+      }
+    },
+    "bf_processor": {
+      "brightfield_processing_cls": "OD",
+      "brightfield_processing_kwargs": {
+        "adaptive_eq": false,
+        "p": 95.0
+      }
+    },
+    "feature_detector_cls": "VggFD",
+    "similarity_metric": "n_matches",
+    "match_filter_method": "RANSAC",
+    "feature_matching_metric": "euclidean",
+    "transformer_cls": true,
+    "affine_optimizer_cls": false,
+    "micro_rigid_registrar_cls": false,
+    "crop_for_rigid_reg": true,
+    "check_for_reflections": false,
+    "non_rigid_registrar_cls": null
+  }
+}
