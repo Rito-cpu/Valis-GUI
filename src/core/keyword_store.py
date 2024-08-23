@@ -88,6 +88,10 @@ CYCIF_KEY = "cycif"
 IHC_KEY = "ihc"
 
 ## tooltips
+TOOLTIP_BF_SETTINGS = "This is the setting for Brightfield processing."
+TOOLTIP_IF_SETTINGS = "This is the setting for Immunofluorescence processing."
+TOOLTIP_RIGID_SETTINGS = "This is the setting for Rigid registration."
+TOOLTIP_NON_RIGID_SETTINGS = "This is the setting for Non-Rigid registration."
 TOOLTIP_IMAGE_PROCESSOR = ("The first step of VALIS registration in which samples are preprocessed to single channel "
                            "images to facilitate registration. Options represent available image processors. ")
 TOOLTIP_FEATURE_DETECTOR = ("Identifies notable features to later be used for ordering images in the sample. Options "

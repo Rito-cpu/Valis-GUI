@@ -29,14 +29,6 @@ class NonRigidSettings(QGroupBox):
         self.setTitle(title)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
-        if len(non_rigid_methods) == 0:
-            non_rigid_methods = [
-                'Deep Flow',
-                'SimpleElastix',
-                'Demons',
-                'RAFT',
-                'Symmetric Diffeomorphic'
-            ]
         self._non_rigid_methods = non_rigid_methods
 
         themes = Themes()
@@ -134,6 +126,18 @@ class NonRigidSettings(QGroupBox):
             registration_method = None
         else:
             registration_method = self.non_rigid_combo.currentText()
+
+        data_dict = {
+            NON_RIGID_REGISTRAR_CLS: registration_method
+        }
+
+        return data_dict
+    
+    def get_default_data(self):
+        if not self.non_rigid_chbx.isChecked():
+            registration_method = None
+        else:
+            registration_method = NONRIGID_REGISTRARS[0]
 
         data_dict = {
             NON_RIGID_REGISTRAR_CLS: registration_method

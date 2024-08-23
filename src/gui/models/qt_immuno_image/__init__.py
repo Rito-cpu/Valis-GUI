@@ -1,2 +1,0 @@
-from .qt_immuno_image_widget import QtImmunoWidget
-from .immuno_folder_widget import ImmunoFolderView

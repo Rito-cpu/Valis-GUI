@@ -313,3 +313,18 @@ class RigidSettings(QGroupBox):
         }
 
         return data_dict
+
+    def get_default_data(self):
+        data_dict = {
+            FEATURE_DETECTOR_CLS: DEFAULT_FD,
+            SORTING_METRIC: SM_LIST[0],
+            MATCH_FILTER_METHOD: MATCH_FILTERS[0],
+            FEATURE_MATCHING_METRIC: FMM_LIST[0],
+            TRANSFORMER_CLS: True,
+            AFFINE_OPTIMIZER_CLS: False,
+            MICRO_RIGID_REGISTRAR_CLS: False,
+            CROP_FOR_RIGID_REG: True,
+            CHECK_FOR_REFLECTIONS: False
+        }
+
+        return data_dict

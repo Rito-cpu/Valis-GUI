@@ -16,9 +16,9 @@ from src.core.validation import is_windows_platform, is_valid_json_file, is_exis
 
 
 def on_register_press():
-
     # check for user platform and reformat running directory as needed, also obtain home dir for use within docker container
     # THIS CODE HAS NOT BEEN TESTED ON A WINDOWS MACHINE
+    # TODO: Configure windows portion
     if is_windows_platform():
         running_dir = PureWindowsPath(
             r'C:\Users\80029349\Documents\GUI-Repo\Valis-GUI\src\core\scripts\valis\on_register_press.py').as_posix()
@@ -35,24 +35,19 @@ def on_register_press():
             break
         else:
             running_dir_list.pop(i)
-    #print(running_dir_list)
 
-    # TODO: path building needs to be modified for windows
     selections_script = ["scripts", "valis", "launch_with_selections.py"]
-    # running_dir_list[-1] = "launch_with_selections.py"
     script_dir = os.path.join(*running_dir_list, *selections_script)
     if not is_existing_path(script_dir):
         print("Error: launch_with_selections.py not found!")
         return
 
     output_dir = ["output", "states"]
-    #running_dir_list[-1] = "user_settings.JSON"
     json_dir = os.path.join(*running_dir_list, *output_dir, "user_settings.json")
     if not is_valid_json_file(json_dir):
         print("Error: user_settings.json not found!")
         return
 
-    #running_dir_list[-1] = "sample.JSON"
     img_dir = os.path.join(*running_dir_list, *output_dir, "sample.json")
     if not is_valid_json_file(img_dir):
         print("Error: sample.json not found!")
@@ -63,9 +58,9 @@ def on_register_press():
     img_dir = img_dir.replace(home_dir, '/root')
 
     # run launchscript.sh with generated arguments
-    launch_script = ["scripts", "valis", "launchscript.sh"]
-    test = os.path.join(*running_dir_list, *launch_script)
-    subprocess.run(["bash", test, script_dir, json_dir, img_dir, home_dir])
+    launch_build = ["scripts", "valis", "launchscript.sh"]
+    launch_build = os.path.join(*running_dir_list, *launch_build)
+    subprocess.run(["bash", launch_build, script_dir, json_dir, img_dir, home_dir])
 
 
 def start_prog_bar():
@@ -96,7 +91,6 @@ def start_prog_bar():
     reader = json.load(f)["user_selections"]
     do_rigid, do_micro, do_non_rigid = reader["do_rigid"], reader["micro_rigid_registrar_cls"], reader["non_rigid_registrar_cls"]
     dest_dir = reader["dst_dir"]
-    print(f'Destination: {dest_dir}')
 
     f = open(os.path.join(*running_dir_list, "sample.json"))
     reader = json.load(f)
@@ -111,11 +105,10 @@ def start_prog_bar():
     steps_dict = {"rigid": do_rigid, "micro_rigid": do_micro, "non_rigid": do_non_rigid}
     steps_dict = {k: v for k, v in steps_dict.items() if v is not False or None}
 
-    from src.gui.models.qt_bar import ValisBar
     # progress_bar.init_prog_bar("/Users/80029349/Documents/DummyOutput2", steps_dict, sample_list)
-    valis_bar = ValisBar(dest_dir, steps_dict, sample_list)
-    valis_bar.create_thread()
-    valis_bar.show()
+    #valis_bar = ValisBar(dest_dir, steps_dict, sample_list)
+    #bar_wid.create_thread(dest_dir, steps_dict, sample_list)
+    #valis_bar.show()
 
 
 #if __name__ == "__main__":

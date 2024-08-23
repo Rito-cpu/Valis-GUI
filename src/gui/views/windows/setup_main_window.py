@@ -283,7 +283,7 @@ class SetupMainWindow:
             blue_color=self.themes['app_color']['blue_bg'],
             yellow_color=self.themes['app_color']['yellow_bg'],
             highlight_color=self.themes['app_color']['highlight_bg'],
-            parent=self.ui.load_pages.immuno_dir_interaction
+            parent=self.ui.load_pages.slide_dir_interaction
         )
         self.slide_directory.setObjectName('slide_directory')
 
@@ -295,7 +295,7 @@ class SetupMainWindow:
             bg_color_hover=self.themes["app_color"]["dark_three"],
             bg_color_pressed=self.themes["app_color"]["dark_four"],
             font_size=14,
-            parent=self.ui.load_pages.immuno_dir_interaction
+            parent=self.ui.load_pages.slide_dir_interaction
         )
         self.submit_file_bttn.setObjectName(u"submit_file_bttn")
         self.submit_file_bttn.setMinimumSize(120, 40)
@@ -308,16 +308,61 @@ class SetupMainWindow:
         self.slide_directory.dir_tree.clear_bttn.clicked.connect(lambda: MainFunctions.clear_pressed(self))
         self.submit_file_bttn.clicked.connect(lambda: MainFunctions.upload_slides(self, self.slide_directory))
 
-        self.ui.load_pages.immuno_interaction_layout.addWidget(self.slide_directory, alignment=Qt.AlignmentFlag.AlignCenter)
-        self.ui.load_pages.immuno_interaction_layout.addLayout(submit_file_bttn_layout)
+        self.ui.load_pages.slide_interaction_layout.addWidget(self.slide_directory, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.ui.load_pages.slide_interaction_layout.addLayout(submit_file_bttn_layout)
 
         # ****************************************
         # *** Registration Settings Page Setup ***
         # ****************************************
-        self.bf_process = BFProcessWidget(parent=self.ui.load_pages.registration_scroll_contents)
-        self.if_process = IFProcessWidget(parent=self.ui.load_pages.registration_scroll_contents)
-        self.rigid_settings = RigidSettings(parent=self.ui.load_pages.registration_scroll_contents)
-        non_rigid_settings = NonRigidSettings(parent=self.ui.load_pages.registration_scroll_contents)
+        registration_settings_frame = QFrame(self.ui.load_pages.registration_scroll_contents)
+        registration_settings_frame.setObjectName('settings_frame')
+        registration_settings_frame.setFrameShape(QFrame.Shape.NoFrame)
+        registration_settings_frame.setFrameShadow(QFrame.Shadow.Plain)
+
+        self.collapsible_bf_settings = QtCollapsibleWidget(
+            title='Brightfield',
+            help_msg=TOOLTIP_BF_SETTINGS,
+            parent=registration_settings_frame
+        )
+        self.collapsible_bf_settings.setObjectName('collapsible_bf_settings')
+        self.bf_process = BFProcessWidget(parent=self.collapsible_bf_settings)
+        self.collapsible_bf_settings.set_content(self.bf_process)
+        self.collapsible_bf_settings.setMinimumWidth(625)
+
+        self.collapsible_if_settings = QtCollapsibleWidget(
+            title='Immunofluorescence',
+            help_msg=TOOLTIP_IF_SETTINGS,
+            parent=registration_settings_frame
+        )
+        self.collapsible_if_settings.setObjectName('collapsible_if_settings')
+        self.if_process = IFProcessWidget(parent=self.collapsible_if_settings)
+        self.collapsible_if_settings.set_content(self.if_process)
+        self.collapsible_if_settings.setMinimumWidth(625)
+
+        self.collapsible_rigid_settings = QtCollapsibleWidget(
+            title='Rigid Registration',
+            help_msg=TOOLTIP_RIGID_SETTINGS,
+            parent=registration_settings_frame
+        )
+        self.collapsible_rigid_settings.setObjectName('collapsible_rigid_settings')
+        self.rigid_settings = RigidSettings(parent=self.collapsible_rigid_settings)
+        self.collapsible_rigid_settings.set_content(self.rigid_settings)
+        self.collapsible_rigid_settings.setMinimumWidth(625)
+
+        self.collapsible_non_rigid_settings = QtCollapsibleWidget(
+            title='Non-Rigid Registration',
+            help_msg=TOOLTIP_NON_RIGID_SETTINGS,
+            parent=registration_settings_frame
+        )
+        self.collapsible_non_rigid_settings.setObjectName('collapsible_non_rigid_settings')
+        self.non_rigid_settings = NonRigidSettings(parent=self.collapsible_non_rigid_settings)
+        self.collapsible_non_rigid_settings.set_content(self.non_rigid_settings)
+        self.collapsible_non_rigid_settings.setMinimumWidth(625)
+
+        register_bttn_frame = QFrame(registration_settings_frame)
+        register_bttn_frame.setObjectName('register_bttn_frame')
+        register_bttn_frame.setFrameShape(QFrame.Shape.NoFrame)
+        register_bttn_frame.setFrameShadow(QFrame.Shadow.Plain)
 
         self.register_setting_bttn = PyPushButton(
             text="Register",
@@ -327,7 +372,7 @@ class SetupMainWindow:
             bg_color_hover=self.themes["app_color"]["dark_three"],
             bg_color_pressed=self.themes["app_color"]["dark_four"],
             font_size=14,
-            parent=self.ui.load_pages.registration_scroll_contents
+            parent=register_bttn_frame
         )
         self.register_setting_bttn.setObjectName(u"register_setting_bttn")
         self.register_setting_bttn.setMinimumSize(120, 40)
@@ -337,20 +382,26 @@ class SetupMainWindow:
                 self.bf_process,
                 self.if_process,
                 self.rigid_settings,
-                non_rigid_settings
+                self.non_rigid_settings
             )
         )
 
-        register_settings_bttn_layout = QHBoxLayout()
-        register_settings_bttn_layout.addStretch(1)
-        register_settings_bttn_layout.addWidget(self.register_setting_bttn)
-        register_settings_bttn_layout.addStretch(1)
+        register_bttn_layout = QHBoxLayout(register_bttn_frame)
+        register_bttn_layout.setObjectName('register_bttn_layout')
+        register_bttn_layout.setContentsMargins(5, 30, 5, 5)
+        register_bttn_layout.addWidget(self.register_setting_bttn, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        self.ui.load_pages.registration_scroll_layout.addWidget(self.bf_process)
-        self.ui.load_pages.registration_scroll_layout.addWidget(self.if_process)
-        self.ui.load_pages.registration_scroll_layout.addWidget(self.rigid_settings)
-        self.ui.load_pages.registration_scroll_layout.addWidget(non_rigid_settings)
-        self.ui.load_pages.registration_scroll_layout.addLayout(register_settings_bttn_layout)
+        registration_settings_layout = QVBoxLayout(registration_settings_frame)
+        registration_settings_layout.setObjectName('settings_layout')
+        registration_settings_layout.setContentsMargins(5, 5, 5, 5)
+        registration_settings_layout.setSpacing(25)
+        registration_settings_layout.addWidget(register_bttn_frame, alignment=Qt.AlignmentFlag.AlignCenter)
+        registration_settings_layout.addWidget(self.collapsible_bf_settings, alignment=Qt.AlignmentFlag.AlignCenter)
+        registration_settings_layout.addWidget(self.collapsible_if_settings, alignment=Qt.AlignmentFlag.AlignCenter)
+        registration_settings_layout.addWidget(self.collapsible_rigid_settings, alignment=Qt.AlignmentFlag.AlignCenter)
+        registration_settings_layout.addWidget(self.collapsible_non_rigid_settings, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        self.ui.load_pages.registration_scroll_layout.addWidget(registration_settings_frame)
 
         # **************************
         # *** Results Page Setup ***

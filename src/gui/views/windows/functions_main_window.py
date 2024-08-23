@@ -267,7 +267,8 @@ class MainFunctions():
     def on_thread_finished(self):
         """Slot function for QThread completion signal that brings the user to a new page upon valis registration completion.
         """
-        # TODO: Needs to be set so that user can switch pages while valis is processing so they can view images
+        self.v_bar.my_thread.terminate()
+
         if self.ui.left_menu._menu_list is not None:
                 obj: QPushButton
                 for obj in self.ui.left_menu._menu_list:
@@ -396,11 +397,31 @@ class MainFunctions():
                 )
                 with open(output_file, 'w') as outfile:
                     outfile.write(slides_settings)
-                
-                proc_thread = Thread(target=on_register_press)
-                proc_thread.start()
-                start_prog_bar()
-                proc_thread.join()
+
+                try:
+                    self.valis_thread = ValisThread()
+                    self.valis_thread.finished.connect(lambda: MainFunctions.on_thread_finished(self))
+                    self.valis_thread.start()
+                except Exception as e:
+                    self.valis_thread.terminate()
+                    error_msg.setText('Error occurred during registration process.')
+                    error_msg.setDetailedText(f'An error occurred while trying to register settings: {str(e)}')
+                    error_msg.exec()
+                    return
+
+                self.v_bar = ValisBar()
+                self.v_bar.show()
+                # TODO: Clear progress bar progress if rerunning
+                try:
+                    self.v_bar.create_thread()
+                except Exception as e:
+                    self.valis_thread.terminate()
+                    if self.v_bar.my_thread:
+                        self.v_bar.my_thread.terminate()
+                    error_msg.setText('Error occurred during registration process (within progress bar thread).')
+                    error_msg.setDetailedText(f'An error occurred while trying to create the Valis thread: {str(e)}')
+                    error_msg.exec()
+                    return
             else:
                 error_msg.setIcon(QMessageBox.Icon.Information)
                 error_msg.setText('No home directory found.')

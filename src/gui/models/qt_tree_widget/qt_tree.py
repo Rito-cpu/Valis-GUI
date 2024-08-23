@@ -72,6 +72,7 @@ class QtTree(QWidget):
         title_layout.addWidget(title_label)
 
         self._stack_widget = QStackedWidget(container_frame)
+        self._stack_widget.setObjectName('stack_widget')
 
         self._file_tree = QTreeWidget(self._stack_widget)
         self._file_tree.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -116,20 +117,9 @@ class QtTree(QWidget):
         self._stack_widget.addWidget(self._file_tree)
         self._stack_widget.addWidget(self._empty_label)
         self._stack_widget.setCurrentIndex(1)
+        self._stack_widget.setFixedHeight(370)
 
-        button_buffer = QFrame(self)
-        button_buffer.setObjectName('button_buffer')
-        button_buffer.setFrameShape(QFrame.Shape.NoFrame)
-        button_buffer.setFrameShadow(QFrame.Shadow.Plain)
-        button_buffer.setStyleSheet(f"""
-            QFrame#button_buffer{{
-                background: {self.themes['app_color']['yellow_bg']};
-                border: none;
-                border-top-left-radius: 9px;
-                border-bottom-left-radius: 9px;
-            }}""")
-
-        button_container = QFrame(button_buffer)
+        button_container = QFrame(container_frame)
         button_container.setObjectName('button_container')
         button_container.setFrameShape(QFrame.Shape.NoFrame)
         button_container.setFrameShadow(QFrame.Shadow.Raised)
@@ -168,27 +158,22 @@ class QtTree(QWidget):
         self.clear_bttn.setFixedSize(60, 28)
         self.clear_bttn.setDisabled(True)
 
-        button_layout = QVBoxLayout(button_container)
+        button_layout = QHBoxLayout(button_container)
         button_layout.setObjectName('button_layout')
         button_layout.setContentsMargins(8, 10, 8, 10)
         button_layout.setSpacing(30)
         button_layout.addWidget(self.update_slides_bttn, alignment=Qt.AlignmentFlag.AlignCenter)
         button_layout.addWidget(self.clear_bttn, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        buffer_layout = QVBoxLayout(button_buffer)
-        buffer_layout.setObjectName('buffer_layout')
-        buffer_layout.setContentsMargins(7, 18, 5, 18)
-        buffer_layout.addWidget(button_container)
-
-        container_layout = QHBoxLayout(container_frame)
+        container_layout = QVBoxLayout(container_frame)
         container_layout.setObjectName('container_layout')
         # container_layout.setContentsMargins(40, 15, 40, 10)
-        container_layout.setContentsMargins(10, 15, 10, 10)
-        container_layout.setSpacing(8)
-        #container_layout.addWidget(button_container, alignment=Qt.AlignmentFlag.AlignCenter)
+        container_layout.setContentsMargins(10, 25, 10, 0)
+        container_layout.setSpacing(5)
         container_layout.addWidget(self._stack_widget, alignment=Qt.AlignmentFlag.AlignCenter)
+        container_layout.addWidget(button_container, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        container_frame.setFixedSize(container_layout.sizeHint())
+        container_frame.setFixedSize(int(container_layout.sizeHint().width() * 1.1), int(container_layout.sizeHint().height() * 1.1))
 
         tree_title_layout = QVBoxLayout(tree_title_frame)
         tree_title_layout.setObjectName('tree_title_layout')
@@ -197,11 +182,10 @@ class QtTree(QWidget):
         tree_title_layout.addWidget(title_container, alignment=Qt.AlignmentFlag.AlignHCenter)
         tree_title_layout.addWidget(container_frame, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        main_layout = QHBoxLayout(self)
+        main_layout = QVBoxLayout(self)
         main_layout.setObjectName('main_layout')
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
-        main_layout.addWidget(button_buffer, alignment=Qt.AlignmentFlag.AlignCenter)
         main_layout.addWidget(tree_title_frame)
 
     def use_empty_widget(self):

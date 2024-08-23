@@ -31,8 +31,8 @@ class Window(QWidget):
         self.setLayout(layout)
 
     def create_thread(self):
-        self.t = completion_checker.Thread(self.path, self.steps_dict, self.sample_list)
-        self.t.dir_change.connect(self.advance)
+        self.t = completion_checker.ValisMonitoringThread(self.path, self.steps_dict, self.sample_list)
+        self.t.step_num_signal.connect(self.advance)
         self.t.start()
 
     def advance(self, value):

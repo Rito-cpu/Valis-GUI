@@ -10,7 +10,7 @@ from .process_args import ClassArgs
 class IFProcessWidget(QGroupBox):
     def __init__(
         self,
-        title: str = 'Immunofluorescence Process',
+        title: str = 'Dynamic Settings',
         color: str = 'black',
         bg_color: str = 'lightgray',
         title_size: int = 16,

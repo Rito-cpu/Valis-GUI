@@ -137,24 +137,24 @@ class Ui_MainPages(object):
         self.image_dir_title.setMaximumSize(QSize(16777215, 40))
         # self.import_data_title.font().setPointSize(22)
         # self.import_data_title.font().setBold(True)
-        self.image_dir_title.setStyleSheet(u"font-size: 16pt")
+        self.image_dir_title.setStyleSheet("font-size: 18px; font-weight: bold;")
         self.image_dir_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.immuno_dir_interaction = QWidget(self.file_scroll_contents)
-        self.immuno_dir_interaction.setObjectName('immuno_dir_interaction')
+        self.slide_dir_interaction = QWidget(self.file_scroll_contents)
+        self.slide_dir_interaction.setObjectName('slide_dir_interaction')
 
-        self.immuno_interaction_layout = QVBoxLayout(self.immuno_dir_interaction)
-        self.immuno_interaction_layout.setObjectName('immuno_interaction_layout')
-        self.immuno_interaction_layout.setContentsMargins(0, 0, 0, 0)
-        self.immuno_interaction_layout.setSpacing(15)
+        self.slide_interaction_layout = QVBoxLayout(self.slide_dir_interaction)
+        self.slide_interaction_layout.setObjectName('slide_interaction_layout')
+        self.slide_interaction_layout.setContentsMargins(0, 0, 0, 0)
+        self.slide_interaction_layout.setSpacing(15)
 
         self.file_content_layout = QVBoxLayout(self.file_scroll_contents)
         self.file_content_layout.setObjectName(u"file_content_layout")
         self.file_content_layout.setContentsMargins(5, 5, 5, 5)
-        self.file_content_layout.setSpacing(75)
+        self.file_content_layout.setSpacing(50)
         # self.file_content_layout.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
         self.file_content_layout.addWidget(self.image_dir_title)
-        self.file_content_layout.addWidget(self.immuno_dir_interaction)
+        self.file_content_layout.addWidget(self.slide_dir_interaction)
 
         self.file_scroll_area.setWidget(self.file_scroll_contents)
 
@@ -190,7 +190,7 @@ class Ui_MainPages(object):
         self.registration_title.setMaximumSize(QSize(16777215, 40))
         # self.parameter_title.font().setPointSize(22)
         # self.parameter_title.font().setBold(True)
-        self.registration_title.setStyleSheet(u"font-size: 16pt;")
+        self.registration_title.setStyleSheet("font-size: 18px; font-weight: bold;")
         self.registration_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.registration_scroll_layout = QVBoxLayout(self.registration_scroll_contents)
@@ -200,7 +200,7 @@ class Ui_MainPages(object):
         # self.parameter_scroll_layout.addWidget(self.parameter_title)
 
         self.registration_center_layout = QVBoxLayout(self.registration_settings_subpage)
-        self.registration_center_layout.setSpacing(5)
+        self.registration_center_layout.setSpacing(40)
         self.registration_center_layout.setContentsMargins(15, 5, 15, 5)
         self.registration_center_layout.setObjectName(u"registration_center_layout")
         self.registration_center_layout.addWidget(self.registration_title)
@@ -329,7 +329,7 @@ class Ui_MainPages(object):
 
     def retranslate_ui(self, MainPages):
         MainPages.setWindowTitle(QCoreApplication.translate("MainPages", u"Form", None))
-        self.image_dir_title.setText(QCoreApplication.translate("MainPages", u"Upload Slides ", None))
+        self.image_dir_title.setText(QCoreApplication.translate("MainPages", u"Slide Upload ", None))
         self.registration_title.setText(QCoreApplication.translate("MainPages", u"Registration Settings", None))
         self.result_page_title.setText(QCoreApplication.translate("MainPages", u"Results", None))
         self.export_title_label.setText(QCoreApplication.translate("MainPages", u"Export", None))

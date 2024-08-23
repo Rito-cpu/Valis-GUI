@@ -10,7 +10,7 @@ from .process_args import ClassArgs
 class BFProcessWidget(QGroupBox):
     def __init__(
         self,
-        title: str = 'Brightfield Process',
+        title: str = 'Dynamic Settings',
         color: str = 'black',
         bg_color: str = 'lightgray',
         title_size: int = 16,
