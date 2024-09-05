@@ -8,7 +8,6 @@ class HelperWindow(QWidget):
 
     def __init__(
         self,
-        window_title: str,
         setting_name: str,
         setting_msg: str,
         font_size: int = 12,
@@ -19,7 +18,7 @@ class HelperWindow(QWidget):
         if parent is not None:
             self.setParent(parent)
 
-        self.setWindowTitle(window_title)
+        self.setWindowTitle("Setting Information")
         self.setMinimumSize(400, 300)
         self.setMaximumSize(600, 380)
 

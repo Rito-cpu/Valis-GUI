@@ -24,5 +24,5 @@ from .qt_image_viewer import QtGraphicsView, QtImageView
 from .qt_slide_entry import QtSlideDirectory
 from .qt_tree_widget import QtTree
 from .qt_bar import ValisBar
-from .qt_threads import ValisThread
+from .qt_threads import ValisProcessObject
 from .qt_collapsible_box import QtCollapsibleWidget

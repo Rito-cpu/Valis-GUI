@@ -1,1 +1,1 @@
-from .valis_thread import ValisThread
+from .valis_thread import ValisProcessObject

@@ -327,7 +327,7 @@ class SetupMainWindow:
         self.collapsible_bf_settings.setObjectName('collapsible_bf_settings')
         self.bf_process = BFProcessWidget(parent=self.collapsible_bf_settings)
         self.collapsible_bf_settings.set_content(self.bf_process)
-        self.collapsible_bf_settings.setMinimumWidth(625)
+        self.collapsible_bf_settings.setMinimumWidth(700)
 
         self.collapsible_if_settings = QtCollapsibleWidget(
             title='Immunofluorescence',
@@ -337,7 +337,7 @@ class SetupMainWindow:
         self.collapsible_if_settings.setObjectName('collapsible_if_settings')
         self.if_process = IFProcessWidget(parent=self.collapsible_if_settings)
         self.collapsible_if_settings.set_content(self.if_process)
-        self.collapsible_if_settings.setMinimumWidth(625)
+        self.collapsible_if_settings.setMinimumWidth(700)
 
         self.collapsible_rigid_settings = QtCollapsibleWidget(
             title='Rigid Registration',
@@ -347,7 +347,7 @@ class SetupMainWindow:
         self.collapsible_rigid_settings.setObjectName('collapsible_rigid_settings')
         self.rigid_settings = RigidSettings(parent=self.collapsible_rigid_settings)
         self.collapsible_rigid_settings.set_content(self.rigid_settings)
-        self.collapsible_rigid_settings.setMinimumWidth(625)
+        self.collapsible_rigid_settings.setMinimumWidth(700)
 
         self.collapsible_non_rigid_settings = QtCollapsibleWidget(
             title='Non-Rigid Registration',
@@ -357,7 +357,7 @@ class SetupMainWindow:
         self.collapsible_non_rigid_settings.setObjectName('collapsible_non_rigid_settings')
         self.non_rigid_settings = NonRigidSettings(parent=self.collapsible_non_rigid_settings)
         self.collapsible_non_rigid_settings.set_content(self.non_rigid_settings)
-        self.collapsible_non_rigid_settings.setMinimumWidth(625)
+        self.collapsible_non_rigid_settings.setMinimumWidth(700)
 
         register_bttn_frame = QFrame(registration_settings_frame)
         register_bttn_frame.setObjectName('register_bttn_frame')
@@ -422,6 +422,7 @@ class SetupMainWindow:
             sample_data=results_table_list,
             parent=self.ui.load_pages.results_sideways_frame
         )
+        self.results_area.setObjectName('results_area')
 
         result_image_area = QFrame(self.ui.load_pages.results_sideways_frame)
         result_image_area.setObjectName('image_area')
@@ -473,30 +474,31 @@ class SetupMainWindow:
         self.export_data_bttn.clicked.connect(lambda: MainFunctions.export_data(self))
         self.export_data_bttn.setFixedSize(200, 35)
 
-        self.cancel_results_bttn = PyPushButton(
+        self.cancel_valis_bttn = PyPushButton(
             text="Cancel",
             radius=8,
-            color=self.themes["app_color"]["text_color"],
-            bg_color=self.themes["app_color"]["yellow_bg"],
-            bg_color_hover=self.themes["app_color"]["highlight_bg"],
-            bg_color_pressed=self.themes["app_color"]["highlight_bg"],
+            color=self.themes["app_color"]["main_bg"],
+            bg_color=self.themes["app_color"]["red_bg"],
+            bg_color_hover=self.themes["app_color"]["red_hover"],
+            bg_color_pressed=self.themes["app_color"]["red_pressed"],
+            disabled_bg=self.themes["app_color"]["text_color"],
+            disabled_color=self.themes["app_color"]["main_bg"],
             font_size=14,
             parent=results_bttn_frame
         )
-        self.cancel_results_bttn.setObjectName('cancel_results_bttn')
-        self.cancel_results_bttn.setFixedSize(200, 35)
+        self.cancel_valis_bttn.setObjectName('cancel_valis_bttn')
+        self.cancel_valis_bttn.setFixedSize(80, 35)
+        self.cancel_valis_bttn.setDisabled(True)
 
         results_bttn_layout = QHBoxLayout(results_bttn_frame)
         results_bttn_layout.setObjectName('results_bttn_layout')
         results_bttn_layout.setContentsMargins(5, 5, 5, 5)
         results_bttn_layout.setSpacing(15)
+        results_bttn_layout.addWidget(self.cancel_valis_bttn)
         results_bttn_layout.addWidget(self.export_data_bttn)
-        results_bttn_layout.addWidget(self.cancel_results_bttn)
 
         self.ui.load_pages.results_sideways_layout.addWidget(self.results_area)
-        # self.ui.load_pages.results_sideways_layout.addWidget(self.results_image_view)
         self.ui.load_pages.results_sideways_layout.addWidget(result_image_area)
-        # self.ui.load_pages.results_scroll_layout.addWidget(self.export_data_bttn, alignment=Qt.AlignmentFlag.AlignCenter)
         self.ui.load_pages.results_scroll_layout.addWidget(results_bttn_frame)
 
         # ***************************

@@ -5,6 +5,7 @@ THMB_DIM = 512
 PENDING_S: str = "Pending"
 CONVERTING_S: str = "Converting"
 PROCESSING_S: str = "Processing"
+CANCELED_S: str = "Canceled"
 FEATURE_DETECT_S: str = "Detecting features (rigid)"
 FEATURE_MATCHING_S: str = "Matching images (rigid)"
 ALIGNING_COMMUNITIES_S: str = "Aligning communities (rigid)"

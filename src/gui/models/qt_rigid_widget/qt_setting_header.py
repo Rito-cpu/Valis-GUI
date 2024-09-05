@@ -65,12 +65,9 @@ class SettingHeader(QWidget):
             self._message_window.close()
             self._message_window = None
 
-        print(f'Showing the {self._label_text} settings window.')
-        curr_window_title = self._label_text + ' Settings'
         curr_setting_name = self._label_text
 
         self._message_window = HelperWindow(
-            window_title=curr_window_title,
             setting_name=curr_setting_name,
             setting_msg=self._tool_msg
         )

@@ -32,6 +32,9 @@
         "highlight_bg": "#F2B63F",
         "text_white": "white",
         "text_color": "#4f596d",
-        "green_two": "green"
+        "green_two": "green",
+        "red_bg": "#ea5015",
+        "red_hover": "#e0481f",
+        "red_pressed": "#d24424"
     }
 }

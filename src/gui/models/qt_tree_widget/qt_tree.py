@@ -104,7 +104,7 @@ class QtTree(QWidget):
             QHeaderView::section {{
                 font-size: 12px;
                 color: {self.themes['app_color']['main_bg']};
-                background: {self.themes['app_color']['dark_three']};
+                background: {self.themes['app_color']['blue_bg']};
                 padding-left: 5px;
             }}""")
 

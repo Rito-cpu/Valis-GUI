@@ -1,4 +1,5 @@
 import os
+import json
 
 from datetime import datetime
 from src.core.pyqt_core import *
@@ -6,8 +7,6 @@ from src.core.app_config import *
 from src.core.json.json_themes import Themes
 from src.core.validation.validate_file import is_json_file, is_excel_file, is_existing_dir
 from src.core.scripts.valis.gui_options import *
-from src.core.scripts.valis.valis_command import ValisWorker
-from src.core.scripts.valis.on_register_press import *
 from src.gui.views.windows.ui_main_window import UI_MainWindow
 from src.gui.models import *
 
@@ -264,10 +263,10 @@ class MainFunctions():
         SUBMITTED_SLIDES = None
         SLIDE_UPLOAD_STATE = INCOMPLETE
 
-    def on_thread_finished(self):
-        """Slot function for QThread completion signal that brings the user to a new page upon valis registration completion.
+    def jump_to_results(self):
+        """Function that brings the user to a new page upon valis registration initiation.
         """
-        self.v_bar.my_thread.terminate()
+        # self.v_bar.my_thread.terminate()
 
         if self.ui.left_menu._menu_list is not None:
                 obj: QPushButton
@@ -398,26 +397,32 @@ class MainFunctions():
                 with open(output_file, 'w') as outfile:
                     outfile.write(slides_settings)
 
+                results_area = self.ui.load_pages.results_scroll_content.findChild(QtResultsArea, "results_area")
+
                 try:
-                    self.valis_thread = ValisThread()
-                    self.valis_thread.finished.connect(lambda: MainFunctions.on_thread_finished(self))
-                    self.valis_thread.start()
+                    self.valis_process = ValisProcessObject()
+                    MainFunctions.jump_to_results(self)
+                    self.valis_process.start_process()
+
+                    cancel_bttn = self.ui.load_pages.results_scroll_content.findChild(PyPushButton, "cancel_valis_bttn")
+                    cancel_bttn.clicked.connect(self.valis_process.kill)
+                    cancel_bttn.setEnabled(True)
                 except Exception as e:
-                    self.valis_thread.terminate()
+                    self.valis_process.kill()
                     error_msg.setText('Error occurred during registration process.')
                     error_msg.setDetailedText(f'An error occurred while trying to register settings: {str(e)}')
                     error_msg.exec()
                     return
 
-                self.v_bar = ValisBar()
-                self.v_bar.show()
-                # TODO: Clear progress bar progress if rerunning
                 try:
-                    self.v_bar.create_thread()
+                    results_area.prepare_data()
+                    results_area.create_thread()
+                    self.valis_process.finished.connect(lambda: MainFunctions.completion_cleanup(self))
                 except Exception as e:
-                    self.valis_thread.terminate()
-                    if self.v_bar.my_thread:
-                        self.v_bar.my_thread.terminate()
+                    self.valis_process.kill()
+                    # TODO: Process is not killed if error thrown
+                    if results_area._monitoring_thread:
+                        results_area._monitoring_thread.terminate()
                     error_msg.setText('Error occurred during registration process (within progress bar thread).')
                     error_msg.setDetailedText(f'An error occurred while trying to create the Valis thread: {str(e)}')
                     error_msg.exec()
@@ -486,6 +491,19 @@ class MainFunctions():
         SUBMITTED_SLIDES = slide_dict
 
         SLIDE_UPLOAD_STATE = COMPLETE
+
+    def completion_cleanup(self):
+        if not self.valis_process.process_killed:
+            self.ui.load_pages.results_scroll_content.findChild(PyPushButton, "cancel_valis_bttn").clicked.disconnect(self.valis_process.kill)
+            if self.ui.load_pages.results_scroll_content.findChild(QtResultsArea, "results_area")._monitoring_thread:
+                self.ui.load_pages.results_scroll_content.findChild(QtResultsArea, "results_area")._monitoring_thread.terminate()
+            print(f'Cleaned up!')
+        else:
+            #self.ui.load_pages.results_scroll_content.findChild(PyPushButton, "cancel_valis_bttn").clicked.disconnect(self.valis_process.kill)
+            self.ui.load_pages.results_scroll_content.findChild(QtResultsArea, "results_area").process_terminated()
+            print(f'Canceled!')
+        self.valis_process = None
+        self.ui.load_pages.results_scroll_content.findChild(PyPushButton, 'cancel_valis_bttn').setEnabled(False)
 
     def export_data(self):
         """Handles the submit button on the export page to check if previous page has been completed and process further instructions for exporting

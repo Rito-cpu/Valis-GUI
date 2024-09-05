@@ -215,7 +215,6 @@ class QtCollapsibleWidget(QWidget):
         return self.collapse_toggle.isChecked()
 
     def collapse_widget(self):
-        # self.toggle_button.setChecked(False)
         self.collapse_toggle.setChecked(False)
         self.toggle_collapsed(False)
 
@@ -234,11 +233,9 @@ class QtCollapsibleWidget(QWidget):
             self._message_window.close()
             self._message_window = None
 
-        curr_window_title = self._title + ' Settings'
         curr_setting_name = self._title
 
         self._message_window = HelperWindow(
-            window_title=curr_window_title,
             setting_name=curr_setting_name,
             setting_msg=self._help_msg
         )

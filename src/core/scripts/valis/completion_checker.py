@@ -21,33 +21,6 @@ class ValisMonitoringThread(QThread):
         self._steps_dict = steps_dict
         self._sample_list = sample_list
 
-    def run_two(self):
-        if self.check_previous_run():
-            pass
-
-        self.create_flag_file('start.flag')
-
-        step_iterator = 0
-        sample_iterator = 0
-
-        folder_array = ["processed", "data"]
-        folder_array[-1:-1] = list(self._steps_dict.keys())
-        sample_names = self._sample_list
-
-        while True:
-            if self.check_flag_file('start.flag') and not self.check_flag_file('complete.flag'):
-                self.process_status.emit('Running')
-                # Update progress based on directories created
-                progress = self.calculate_progress()
-                self.progress_updated.emit(progress)
-            elif self.check_flag_file('complete.flag'):
-                self.process_status.emit('Completed')
-                self.progress_updated.emit(100)
-                break
-            else:
-                self.process_status.emit('Not Started')
-            time.sleep(5)  # Check every 5 seconds
-
     def create_flag_file(self, flag_name: str):
         """Creates an empty flag file.
 

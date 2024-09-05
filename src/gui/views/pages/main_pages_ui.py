@@ -239,7 +239,7 @@ class Ui_MainPages(object):
         self.result_page_title = QLabel(self.result_page)
         self.result_page_title.setObjectName("result_page_title")
         self.result_page_title.setMaximumSize(QSize(16777215, 40))
-        self.result_page_title.setStyleSheet(u"font-size: 16pt;")
+        self.result_page_title.setStyleSheet("font-size: 18px; font-weight: bold;")
         self.result_page_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.results_scroll_layout = QVBoxLayout(self.results_scroll_content)

@@ -10,6 +10,7 @@ from .py_table_widget import PyTableWidget
 class QtStatusTable(QWidget):
     def __init__(
             self,
+            font_size: int = 12,
             parent=None
     ) -> None:
         super().__init__()
@@ -17,6 +18,7 @@ class QtStatusTable(QWidget):
         if parent != None:
             self.parent = parent
 
+        self._font_size = font_size
         themes = Themes()
         self.themes = themes.items
 
@@ -29,9 +31,10 @@ class QtStatusTable(QWidget):
     def _setup_widget(self):
         self.sample_list = []
 
-        self.pending_icon = QIcon(os.path.join(IMG_RSC_PATH, "downloads/pending_icon.png"))
-        self.running_icon = QIcon(os.path.join(IMG_RSC_PATH,  "downloads/running_icon.png"))
-        self.complete_icon = QIcon(os.path.join(IMG_RSC_PATH, "downloads/complete_icon.png"))
+        self.pending_icon = QIcon(QPixmap(os.path.join(IMG_RSC_PATH, "downloads/pending_icon.png")))
+        self.running_icon = QIcon(QPixmap(os.path.join(IMG_RSC_PATH,  "downloads/running_icon.png")))
+        #self.complete_icon = QIcon(QPixmap(os.path.join(IMG_RSC_PATH, "downloads/complete_icon.png")))
+        self.complete_icon = QIcon(QPixmap(os.path.join(IMG_RSC_PATH, "downloads/Untitled design.png")))
 
         self.status_table = PyTableWidget(
             radius = 4,
@@ -52,7 +55,8 @@ class QtStatusTable(QWidget):
         self.status_table.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
         self.status_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         #self.status_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
-        self.status_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        #self.status_table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        self.status_table.verticalHeader().setVisible(False)
         self.status_table.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.status_table.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.status_table.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
@@ -80,52 +84,87 @@ class QtStatusTable(QWidget):
         self.status_table.clear()
         self.status_table.setHorizontalHeaderLabels(['File', 'Status'])
         self.status_table.setRowCount(0)
+        self.table_data = None
+        self.data_status = None
 
-    def fill_table(self, data):
+    def set_data(self, data: dict):
         self.reset_table()
-        # self.status_table.setRowCount(len(data))
+        self.table_data = data
+        # Divide data to get what we need
+        self.data_status = {}
+        for item in list(data.keys()):
+            self.data_status[item] = PENDING_S
 
-        for index, sample in enumerate(data):
-            self.sample_list.append(sample.sample_id)
+        self.fill_table()
 
-            sample_icon = self.get_icon(sample.status)
+    def fill_table(self):
+        if self.table_data:
+            data_keys = list(self.table_data.keys())
+            self.status_table.setRowCount(len(data_keys))
+            for index in range(len(data_keys)):
+                sample_icon = self.get_icon(PENDING_S)
 
-            #sample_item = QStandardItem(sample.sample_id)
-            #sample_item.setEditable(False)
-            #sample_item.setIcon(sample_icon)
-            #sample_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                font_size = QFont()
+                font_size.setPointSize(self._font_size)
 
-            # Create QTableWidgetItem for each column
-            sample_item = QTableWidgetItem(sample.sample_id)
-            sample_item.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable)  # Make item selectable and enabled
-            sample_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            font = sample_item.font()
-            font.setPointSize(12)
-            sample_item.setFont(font)
-            sample_item.setIcon(sample_icon)
+                sample_name = data_keys[index]
+                name_item = QTableWidgetItem(sample_name)
+                name_item.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable)  # Make item selectable and enabled
+                name_item.setFont(font_size)
+                name_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                name_item.setIcon(sample_icon)
 
-            #status_item = QStandardItem(sample.status)
-            #status_item.setEditable(False)
-            #status_item.setSelectable(False)
-            #status_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                status_item = QTableWidgetItem(self.data_status[data_keys[index]])
+                status_item.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable)  # Make item selectable and enabled
+                status_item.setFont(font_size)
+                status_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
-            status_item = QTableWidgetItem(sample.status)
-            status_item.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled)  # Make item selectable and enabled
-            status_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            #font = status_item.font()
-            #font.setPointSize(12)
-            status_item.setFont(font)
+                self.status_table.setItem(index, 0, name_item)
+                self.status_table.setItem(index, 1, status_item)
 
-            # Get current row count
-            row_count = self.status_table.rowCount()
-            # Insert new row
-            self.status_table.insertRow(row_count)
-            # Set items in the row
-            self.status_table.setItem(row_count, 0, sample_item)  # Assuming sampleItem goes in column 0
-            self.status_table.setItem(row_count, 1, status_item)  # Assuming sampleStatus goes in column 1
-            # self.status_table.setRowHeight(row_count, sample_item.sizeHint().height() * 2)
+            return
 
-            # self.status_table.insertRow([sample_item, status_item])
+            for index, sample in enumerate(data):
+                self.sample_list.append(sample.sample_id)
+
+                sample_icon = self.get_icon(sample.status)
+
+                #sample_item = QStandardItem(sample.sample_id)
+                #sample_item.setEditable(False)
+                #sample_item.setIcon(sample_icon)
+                #sample_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+                # Create QTableWidgetItem for each column
+                sample_item = QTableWidgetItem(sample.sample_id)
+                sample_item.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable)  # Make item selectable and enabled
+                sample_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                font = sample_item.font()
+                font.setPointSize(12)
+                sample_item.setFont(font)
+                sample_item.setIcon(sample_icon)
+
+                #status_item = QStandardItem(sample.status)
+                #status_item.setEditable(False)
+                #status_item.setSelectable(False)
+                #status_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+                status_item = QTableWidgetItem(sample.status)
+                status_item.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled)  # Make item selectable and enabled
+                status_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                #font = status_item.font()
+                #font.setPointSize(12)
+                status_item.setFont(font)
+
+                # Get current row count
+                row_count = self.status_table.rowCount()
+                # Insert new row
+                self.status_table.insertRow(row_count)
+                # Set items in the row
+                self.status_table.setItem(row_count, 0, sample_item)  # Assuming sampleItem goes in column 0
+                self.status_table.setItem(row_count, 1, status_item)  # Assuming sampleStatus goes in column 1
+                # self.status_table.setRowHeight(row_count, sample_item.sizeHint().height() * 2)
+
+                # self.status_table.insertRow([sample_item, status_item])
 
     def update_status(self, sample_obj):
         sample_index = self.sample_list.index(sample_obj.sample_id)
@@ -139,6 +178,16 @@ class QtStatusTable(QWidget):
 
         if sample_obj.status == COMPLETE_S:
             self.status_table.item(sample_index, 0).setEnabled(True)
+
+    def update_sample_status(self, name_key: str, new_status: str = None):
+        if new_status:
+            target_row = list(self.table_data.keys()).index(name_key)
+
+            new_icon = self.get_icon(new_status)
+            self.status_table.item(target_row, 0).setIcon(new_icon)
+            self.status_table.item(target_row, 1).setText(new_status)
+            #if new_status == COMPLETE_S:
+                #self.status_table.item(target_row, 0).setEnabled(True)
 
     def on_sample_change(self):
         indexes = self.status_table.selectionModel().selectedRows()
