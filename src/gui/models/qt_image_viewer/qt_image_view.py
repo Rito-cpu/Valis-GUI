@@ -258,7 +258,7 @@ class QtImageView(QWidget):
             self.display.set_image(self.pixmap_list[self.image_counter])
 
             if sample:
-                self.sample_label.setText(f'Sample: {sample.sample_id}')
+                self.sample_label.setText(f'Sample: {sample}')
 
             if self.names_list is not None:
                 self.sample_name.setText(self.names_list[self.image_counter])

@@ -16,8 +16,8 @@ IMG_RSC_PATH = os.path.join(APP_ROOT, image_dir)
 scripts_loc = "src/core/scripts"
 SCRIPTS_PATH = os.path.abspath(os.path.join(APP_ROOT, scripts_loc))
 
-# --- Home Directory Instance ---
-PROJECT_DIRECTORY = None
+# --- Output Directory Instance ---
+OUTPUT_DIRECTORY = None
 
 # --- Valis Imports ---
 DEFAULT_FD = None

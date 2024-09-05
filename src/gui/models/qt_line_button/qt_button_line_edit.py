@@ -2,7 +2,7 @@ import os
 import pathlib
 
 from src.core.pyqt_core import *
-from src.core.app_config import IMG_RSC_PATH, PROJECT_DIRECTORY
+from src.core.app_config import IMG_RSC_PATH, OUTPUT_DIRECTORY
 from src.gui.models.qt_line_button.qt_custom_line_edit import EnhancedLineEdit
 from src.gui.models.qt_line_button.styles import *
 

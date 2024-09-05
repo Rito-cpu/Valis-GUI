@@ -10,6 +10,7 @@ class QtMarqueeLabel(QLabel):
             color: str = 'black',
             speed: int = 20,
             mode: str = 'LR',
+            font_size: int = 13,
             parent=None
         ):
         super().__init__(parent)
@@ -22,6 +23,7 @@ class QtMarqueeLabel(QLabel):
         self._color = QColor(color)
         self._speed = speed
         self._mode = mode
+        self._font_size = font_size
 
         self.padding_space = 1
         self._pos_x = 0
@@ -36,6 +38,7 @@ class QtMarqueeLabel(QLabel):
 
     def setText(self, new_text: str, mode: str = "LR"):
         font = self.font()
+        font.setPointSize(self._font_size)
         self.font_metric = QFontMetrics(font)
 
         self.document.setDefaultFont(font)

@@ -221,23 +221,24 @@ class MainFunctions():
             context_file_msg.setDetailedText(child_list)
             context_file_msg.exec()
 
-    def set_project_directory(self, directory: str, label: QtMarqueeLabel):
+    def set_project_directory(self, output_widget: QWidget):
         """Establishes a user provided directory as a project directory for application use.
 
         Args:
             directory (str): user defined directory path 
             label (QtMarqueeLabel): custom QWidget that displays a scrolling text
         """
+        directory = output_widget.get_text()
         if is_existing_dir(directory):
-            global PROJECT_DIRECTORY
-            PROJECT_DIRECTORY = directory
+            global OUTPUT_DIRECTORY
+            OUTPUT_DIRECTORY = directory
 
-            label.setText(directory)
+            output_widget.set_text(directory)
         else:
-            PROJECT_DIRECTORY = None
+            OUTPUT_DIRECTORY = None
 
     def check_project_directory(self):
-        if PROJECT_DIRECTORY:
+        if OUTPUT_DIRECTORY:
             return True
         else:
             error_bttns = {
@@ -302,7 +303,7 @@ class MainFunctions():
         )
         error_msg.setIcon(QMessageBox.Icon.Warning)
 
-        global SLIDE_UPLOAD_STATE, REGISTRATION_STATE, SUBMITTED_SLIDES, PROJECT_DIRECTORY
+        global SLIDE_UPLOAD_STATE, REGISTRATION_STATE, SUBMITTED_SLIDES, OUTPUT_DIRECTORY
         # Check if image slide upload stage has been completed
         if SLIDE_UPLOAD_STATE == INCOMPLETE:
             error_msg.setText("Missing Upload Process!")
@@ -315,11 +316,11 @@ class MainFunctions():
             return
         else:
             # Check for invalid project directory submission
-            if not PROJECT_DIRECTORY:
-                error_msg.setText('No set project directory.')
+            if not OUTPUT_DIRECTORY:
+                error_msg.setText('No set output directory.')
                 error_msg.setDetailedText(
-                    'A project directory has not yet been configured and is needed for the next step.' +
-                    'Please submit a valid project directory in the home page.'
+                    'A output directory has not yet been configured and is needed for the next step.' +
+                    'Please submit a valid output directory to store results.'
                 )
                 error_msg.exec()
                 return
@@ -344,7 +345,7 @@ class MainFunctions():
             # Package user settings from registration
             user_settings = {
                 SRC_DIR: '',
-                DST_DIR: PROJECT_DIRECTORY,
+                DST_DIR: OUTPUT_DIRECTORY,
                 SERIES: None,
                 NAME: None,
                 IMAGE_TYPE: None,
@@ -374,7 +375,7 @@ class MainFunctions():
             user_settings.update(non_rigid_data)
 
             # TODO: How to handle crashes/errors?
-            if PROJECT_DIRECTORY is not None:
+            if OUTPUT_DIRECTORY is not None:
                 json_user_settings = json.dumps({'user_selections': user_settings}, indent=2)
                 # FIXME: Configure to POSIX for both platforms
                 output_file = os.path.abspath(
@@ -441,7 +442,7 @@ class MainFunctions():
         Args:
             slide_dir_widget (QtSlideDirectory): custom widget that contains user interactive widgets to enable slide image uploading.
         """
-        global PROJECT_DIRECTORY, SLIDE_UPLOAD_STATE, SUBMITTED_SLIDES
+        global OUTPUT_DIRECTORY, SLIDE_UPLOAD_STATE, SUBMITTED_SLIDES
         # Prepare message box for user errors
         error_bttns = {
             "Ok": QMessageBox.ButtonRole.AcceptRole

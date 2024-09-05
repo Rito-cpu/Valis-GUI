@@ -59,54 +59,7 @@ class Ui_MainPages(object):
         home_upper_layout.addWidget(home_label, alignment=Qt.AlignmentFlag.AlignCenter)
         home_upper_layout.addWidget(self.home_logo, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        self.directory_frame = QFrame(self.home_menu_container)
-        self.directory_frame.setObjectName(u"welcome_base")
-        self.directory_frame.setFrameShape(QFrame.Shape.NoFrame)
-        self.directory_frame.setFrameShadow(QFrame.Shadow.Raised)
-        self.directory_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-
-        self.dir_entry_interaction = QHBoxLayout()
-        self.dir_entry_interaction.setObjectName(u'dir_entry_interaction')
-        self.dir_entry_interaction.setContentsMargins(5, 5, 5, 5)
-        self.dir_entry_interaction.setSpacing(15)
-
-        self.bttn_holder = QVBoxLayout()
-        self.bttn_holder.setObjectName(u'bttn_holder')
-        self.bttn_holder.setContentsMargins(0, 22, 0, 0)
-
-        self.project_dir_frame = QFrame(self.directory_frame)
-        self.project_dir_frame.setObjectName(u'project_dir_frame')
-        self.project_dir_frame.setFrameShape(QFrame.Shape.NoFrame)
-        self.project_dir_frame.setFrameShadow(QFrame.Shadow.Raised)
-        self.project_dir_frame.setStyleSheet("""
-            QFrame#project_dir_frame {{
-                background: {_bg_color};
-                border-radius: 6px;
-            }}
-        """.format(_bg_color="#1B9AAA"))
-
-        dir_intro_label = QLabel(self.project_dir_frame)
-        dir_intro_label.setObjectName(u'dir_intro_label')
-        dir_intro_label.setText('Project Directory:')
-        dir_intro_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        dir_intro_label.setStyleSheet('color: white;')
-
-        self.project_dir_layout = QHBoxLayout(self.project_dir_frame)
-        self.project_dir_layout.setObjectName(u'project_dir_layout')
-        self.project_dir_layout.setContentsMargins(5, 5, 5, 5)
-        self.project_dir_layout.setSpacing(15)
-        self.project_dir_layout.addWidget(dir_intro_label)
-
-        self.directory_frame_layout = QVBoxLayout(self.directory_frame)
-        self.directory_frame_layout.setContentsMargins(0, 0, 0, 0)
-        self.directory_frame_layout.setSpacing(5)
-        self.directory_frame_layout.setObjectName(u"center_page_layout")
-        self.directory_frame_layout.addLayout(self.dir_entry_interaction)
-        self.directory_frame_layout.addWidget(self.project_dir_frame)
-
         home_menu_layout.addWidget(home_upper_frame, 0, Qt.AlignmentFlag.AlignHCenter)
-        home_menu_layout.addStretch(1)
-        home_menu_layout.addWidget(self.directory_frame, 0, Qt.AlignmentFlag.AlignHCenter)
         home_menu_layout.addStretch(1)
 
         # *********************************

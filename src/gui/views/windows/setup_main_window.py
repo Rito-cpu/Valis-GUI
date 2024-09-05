@@ -228,52 +228,7 @@ class SetupMainWindow:
         # *********************************
         # ******** Home Page Setup ********
         # *********************************
-        self.proj_dir_entry = QtButtonLineEdit(
-            title="Project Directory",
-            title_color=self.themes["app_color"]["text_color"],
-            color_three=self.themes['app_color']['blue_bg'],
-            top_margin=18,
-            parent=self.ui.load_pages.directory_frame
-        )
-        self.proj_dir_entry.setObjectName(u'proj_dir_entry')
-        self.proj_dir_entry.setMinimumWidth(350)
 
-        self.submit_dir_bttn = PyPushButton(
-            text="Submit",
-            radius=8,
-            color=self.themes["app_color"]["white"],
-            bg_color=self.themes["app_color"]["dark_one"],
-            bg_color_hover=self.themes["app_color"]["dark_three"],
-            bg_color_pressed=self.themes["app_color"]["dark_four"],
-            parent=self.ui.load_pages.directory_frame
-        )
-        self.submit_dir_bttn.setObjectName(u"dir_submit_bttn")
-        self.submit_dir_bttn.setMinimumSize(85, 31)
-
-        self.project_dir_label = QtMarqueeLabel(
-            color=self.themes["app_color"]["text_white"],
-            parent=self.ui.load_pages.project_dir_frame
-        )
-        self.project_dir_label.setMinimumWidth(275)
-        self.project_dir_label.setText('None')
-
-        self.submit_dir_bttn.clicked.connect(
-            lambda: MainFunctions.set_project_directory(
-                self,
-                self.proj_dir_entry.text(),
-                self.project_dir_label
-            )
-        )
-
-        self.ui.load_pages.dir_entry_interaction.addWidget(self.proj_dir_entry)
-
-        self.ui.load_pages.bttn_holder.addWidget(self.submit_dir_bttn, alignment=Qt.AlignmentFlag.AlignCenter)
-        self.ui.load_pages.dir_entry_interaction.addLayout(self.ui.load_pages.bttn_holder)
-
-        self.ui.load_pages.project_dir_layout.addWidget(self.project_dir_label, alignment=Qt.AlignmentFlag.AlignCenter)
-        self.ui.load_pages.project_dir_layout.addStretch(1)
-
-        self.ui.load_pages.project_dir_frame.setMaximumWidth(self.ui.load_pages.dir_entry_interaction.sizeHint().width())
 
         # ****************************************
         # ****** Slide Directory Page Setup ******
@@ -318,6 +273,10 @@ class SetupMainWindow:
         registration_settings_frame.setObjectName('settings_frame')
         registration_settings_frame.setFrameShape(QFrame.Shape.NoFrame)
         registration_settings_frame.setFrameShadow(QFrame.Shadow.Plain)
+
+        self.output_dir_widget = QtOutputEntry(parent=registration_settings_frame)
+        self.output_dir_widget.setObjectName('output_dir_widget')
+        self.output_dir_widget.directory_changed.connect(lambda widget: MainFunctions.set_project_directory(self, widget))
 
         self.collapsible_bf_settings = QtCollapsibleWidget(
             title='Brightfield',
@@ -388,13 +347,14 @@ class SetupMainWindow:
 
         register_bttn_layout = QHBoxLayout(register_bttn_frame)
         register_bttn_layout.setObjectName('register_bttn_layout')
-        register_bttn_layout.setContentsMargins(5, 30, 5, 5)
+        register_bttn_layout.setContentsMargins(5, 15, 5, 5)
         register_bttn_layout.addWidget(self.register_setting_bttn, alignment=Qt.AlignmentFlag.AlignCenter)
 
         registration_settings_layout = QVBoxLayout(registration_settings_frame)
         registration_settings_layout.setObjectName('settings_layout')
         registration_settings_layout.setContentsMargins(5, 5, 5, 5)
         registration_settings_layout.setSpacing(25)
+        registration_settings_layout.addWidget(self.output_dir_widget, alignment=Qt.AlignmentFlag.AlignCenter)
         registration_settings_layout.addWidget(register_bttn_frame, alignment=Qt.AlignmentFlag.AlignCenter)
         registration_settings_layout.addWidget(self.collapsible_bf_settings, alignment=Qt.AlignmentFlag.AlignCenter)
         registration_settings_layout.addWidget(self.collapsible_if_settings, alignment=Qt.AlignmentFlag.AlignCenter)
@@ -406,17 +366,15 @@ class SetupMainWindow:
         # **************************
         # *** Results Page Setup ***
         # **************************
-        image_path_1 = '/Users/4474613/Downloads/ihc_2.png'
+        image_path_1 = '/Users/4474613/Downloads/bqm.png'
         img_1 = QPixmap.fromImage(QImage(image_path_1))
 
-        image_path_2 = '/Users/4474613/Downloads/3_ihc_2_rigid.png'
+        image_path_2 = '/Users/4474613/Downloads/Untitled design.png'
         img_2 = QPixmap.fromImage(QImage(image_path_2))
 
-        image_path_3 = '/Users/4474613/Downloads/3_ihc_2_deformation.png'
-        img_3 = QPixmap.fromImage(QImage(image_path_3))
-
-        img_list = [img_1, img_2, img_3]
-        img_names = [os.path.basename(image_path_1), os.path.basename(image_path_2), os.path.basename(image_path_3)]
+        img_list = [img_1, img_2]
+        img_names = [os.path.basename(image_path_1), os.path.basename(image_path_2)]
+        results_table_list = ['One']
 
         self.results_area = QtResultsArea(
             sample_data=results_table_list,
@@ -433,7 +391,7 @@ class SetupMainWindow:
             dimensions=(200, 200),
             parent=result_image_area
         )
-        # self.results_image_view.add_images(results_table_list[0], img_list, img_names)
+        self.results_image_view.add_images(results_table_list[0], img_list, img_names)
         # 325, 465
 
         self.results_type_combo = QtComboBox(

@@ -7,13 +7,13 @@ from src.core.scripts.valis import completion_checker
 from src.core.validation.validate_file import is_valid_json_file, is_existing_path
 from src.core.json.json_themes import Themes
 from src.core.keyword_store import *
-from src.gui.models import QtExportSampleTable, PyPushButton, PyToggle, QtComboBox, QtStatusTable
+from src.gui.models import QtStatusTable
+from src.gui.models.qt_message import QtMessage
 
 
 class QtResultsArea(QWidget):
     def __init__(
             self,
-            sample_data,
             parent=None
     ):
         super().__init__()
@@ -21,7 +21,6 @@ class QtResultsArea(QWidget):
         if parent is not None:
             self.parent = parent
 
-        self._sample_data = sample_data
         self._monitoring_thread = None
         self._table_items = None
 
@@ -38,7 +37,6 @@ class QtResultsArea(QWidget):
         self.sample_table.setObjectName('sample_table')
         self.sample_table.setMinimumWidth(400)
         self.sample_table.reset_table()
-        #self.sample_table.fill_table(self._sample_data)
 
         bar_frame = QFrame(self)
         bar_frame.setObjectName('bar_frame')
@@ -176,7 +174,6 @@ class QtResultsArea(QWidget):
 
     def update_step_bar(self, step_val):
         if step_val == self.steps_max_range:
-            # TODO: Sample just completed, update status text to COMPLETE_S
             self.sample_table.update_sample_status(self.previous_sample, COMPLETE_S)
         self.step_prog_bar.setValue(step_val)
 
@@ -187,13 +184,12 @@ class QtResultsArea(QWidget):
         self.sample_prog_bar.setValue(sample_val)
 
     def update_sample_text(self, sample_text):
-        if self.previous_sample is None:
+        if self.previous_sample is None or self.previous_sample != sample_text:
             self.previous_sample = sample_text
             self.sample_table.update_sample_status(sample_text, PROCESSING_S)
-        elif self.previous_sample != sample_text:
-            #self.sample_table.update_sample_status(self.previous_sample, COMPLETE_S)
-            self.sample_table.update_sample_status(sample_text, PROCESSING_S)
-            self.previous_sample = sample_text
+        #elif self.previous_sample != sample_text:
+        #    self.sample_table.update_sample_status(sample_text, PROCESSING_S)
+        #    self.previous_sample = sample_text
         self.sample_text.setText(f"Sample: {sample_text}")
 
     def finish_bars(self):
@@ -240,9 +236,24 @@ class QtResultsArea(QWidget):
         self.previous_sample = None
 
     def gather_file_data(self):
+        error_bttns = {
+            "Ok": QMessageBox.ButtonRole.AcceptRole
+        }
+        error_msg = QtMessage(
+            buttons=error_bttns,
+            color=self.themes["app_color"]["main_bg"],
+            bg_color_one=self.themes["app_color"]["dark_one"],
+            bg_color_two=self.themes["app_color"]["bg_one"],
+            bg_color_hover=self.themes["app_color"]["dark_three"],
+            bg_color_pressed=self.themes["app_color"]["dark_four"]
+        )
+        error_msg.setIcon(QMessageBox.Icon.Warning)
+        
         output_dir = os.path.join(APP_ROOT, *["src", "core", "output", "states"])
         if not is_existing_path(output_dir):
-            print("Error: output_dir not defined!")
+            error_msg.setText('Error: output directory not found!')
+            error_msg.setDetailedText(f'The directory \"src/core/output/states\" is not found in the project tree. Please create the missing directories to continue.')
+            error_msg.exec()
             return
 
         f = open(os.path.join(output_dir, "user_settings.json"))
@@ -251,8 +262,9 @@ class QtResultsArea(QWidget):
             do_rigid, do_micro, do_non_rigid = reader["do_rigid"], reader["micro_rigid_registrar_cls"], reader["non_rigid_registrar_cls"]
             dst_dir = reader["dst_dir"]
         else:
-            # TODO: Create error box message
-            print("Error: user_settings.json not found!")
+            error_msg.setText('Error: Registration settings file not found!')
+            error_msg.setDetailedText(f'The file \"user_settings.json\" is not found in the \"src/core/output/states\" directory. The file is required to process samples, please create this file by submitting the registration settings.')
+            error_msg.exec()
             return
 
         f = open(os.path.join(output_dir, "sample.json"))
@@ -265,7 +277,9 @@ class QtResultsArea(QWidget):
             self._table_items = reader
             self.sample_max_range = len(sample_list)
         else:
-            print("Error: sample.json not found!")
+            error_msg.setText('Error: Submitted samples file was not found!')
+            error_msg.setDetailedText(f'The file \"sample.json\" is not found in the \"src/core/output/states\" directory. The file is required to locate and select samples, please create this file by completing the sample upload process.')
+            error_msg.exec()
             return
 
         del reader
