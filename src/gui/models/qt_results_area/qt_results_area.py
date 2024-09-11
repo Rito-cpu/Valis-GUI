@@ -1,5 +1,6 @@
 import os
 import json
+from glob import glob
 
 from src.core.pyqt_core import *
 from src.core.app_config import APP_ROOT, SCRIPTS_PATH
@@ -9,6 +10,7 @@ from src.core.json.json_themes import Themes
 from src.core.keyword_store import *
 from src.gui.models import QtStatusTable
 from src.gui.models.qt_message import QtMessage
+from src.gui.models.qt_image_viewer import QtImageView
 
 
 class QtResultsArea(QWidget):
@@ -23,6 +25,8 @@ class QtResultsArea(QWidget):
 
         self._monitoring_thread = None
         self._table_items = None
+        self._dst_dir = None
+        self._sample_lookup = {}
 
         themes = Themes()
         self.themes = themes.items
@@ -31,19 +35,41 @@ class QtResultsArea(QWidget):
         self._setup_widget()
 
         # Setup Slots/Signals
+        self.sample_table.item_selected.connect(self.get_result_locations)
 
     def _setup_widget(self):
-        self.sample_table = QtStatusTable(parent=self)
+        left_side_frame = QFrame(self)
+        left_side_frame.setObjectName('left_side_frame')
+        left_side_frame.setFrameShape(QFrame.Shape.NoFrame)
+        left_side_frame.setFrameShadow(QFrame.Shadow.Plain)
+
+        overall_sample_group = QGroupBox(left_side_frame)
+        overall_sample_group.setObjectName('overall_sample_group')
+        overall_sample_group.setTitle('Overall Sample Progress')
+        overall_sample_group.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        overall_sample_group.setStyleSheet(f"""
+            QGroupBox {{
+                font-size: 13px;
+                background: {self.themes['app_color']['main_bg']};
+                border: 1px solid {self.themes['app_color']['text_color']};
+                border-radius: 8px;
+                margin-top: 9px;
+            }}
+            QGroupBox::title {{
+                color: {self.themes['app_color']['text_color']};
+                subcontrol-origin: margin;
+                subcontrol-position: top-center;
+                padding-left: 7px;
+                padding-right: 7px;
+            }}
+        """)
+
+        self.sample_table = QtStatusTable(parent=overall_sample_group)
         self.sample_table.setObjectName('sample_table')
         self.sample_table.setMinimumWidth(400)
         self.sample_table.reset_table()
 
-        bar_frame = QFrame(self)
-        bar_frame.setObjectName('bar_frame')
-        bar_frame.setFrameShape(QFrame.Shape.NoFrame)
-        bar_frame.setFrameShadow(QFrame.Shadow.Raised)
-
-        sample_bar_frame = QFrame(bar_frame)
+        sample_bar_frame = QFrame(overall_sample_group)
         sample_bar_frame.setObjectName('sample_bar_frame')
         sample_bar_frame.setFrameShape(QFrame.Shape.NoFrame)
         sample_bar_frame.setFrameShadow(QFrame.Shadow.Raised)
@@ -53,6 +79,7 @@ class QtResultsArea(QWidget):
         sample_bar_title.setText('Overall Sample Progress')
         sample_bar_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         sample_bar_title.setStyleSheet(f'font-size: 13px; color: {self.themes["app_color"]["text_color"]};')
+        sample_bar_title.hide()
 
         self.sample_prog_bar = QProgressBar(sample_bar_frame)
         self.sample_prog_bar.setObjectName('sample_prog_bar')
@@ -94,7 +121,36 @@ class QtResultsArea(QWidget):
         sample_bar_layout.addWidget(self.sample_text, alignment=Qt.AlignmentFlag.AlignCenter)
         sample_bar_frame.setFixedHeight(sample_bar_layout.sizeHint().height())
 
-        step_bar_frame = QFrame(bar_frame)
+        overall_sample_layout = QVBoxLayout(overall_sample_group)
+        overall_sample_layout.setObjectName('overall_sample_layout')
+        overall_sample_layout.setContentsMargins(10, 10, 10, 10)
+        overall_sample_layout.setSpacing(15)
+        overall_sample_layout.addWidget(self.sample_table)
+        overall_sample_layout.addWidget(sample_bar_frame)
+
+
+        sample_step_group = QGroupBox(left_side_frame)
+        sample_step_group.setObjectName('sample_step_group')
+        sample_step_group.setTitle('Current Sample Progress')
+        sample_step_group.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        sample_step_group.setStyleSheet(f"""
+            QGroupBox {{
+                font-size: 13px;
+                background: {self.themes['app_color']['main_bg']};
+                border: 1px solid {self.themes['app_color']['text_color']};
+                border-radius: 8px;
+                margin-top: 9px;
+            }}
+            QGroupBox::title {{
+                color: {self.themes['app_color']['text_color']};
+                subcontrol-origin: margin;
+                subcontrol-position: top-center;
+                padding-left: 7px;
+                padding-right: 7px;
+            }}
+        """)
+
+        step_bar_frame = QFrame(sample_step_group)
         step_bar_frame.setObjectName('overall_bar_frame')
         step_bar_frame.setFrameShape(QFrame.Shape.NoFrame)
         step_bar_frame.setFrameShadow(QFrame.Shadow.Raised)
@@ -104,6 +160,7 @@ class QtResultsArea(QWidget):
         step_bar_title.setText('Current Sample Progress')
         step_bar_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         step_bar_title.setStyleSheet(f'font-size: 13px; color: {self.themes["app_color"]["text_color"]};')
+        step_bar_title.hide()
 
         self.step_prog_bar = QProgressBar(step_bar_frame)
         self.step_prog_bar.setObjectName('overall_prog_bar')
@@ -145,19 +202,48 @@ class QtResultsArea(QWidget):
         step_bar_layout.addWidget(self.step_text, alignment=Qt.AlignmentFlag.AlignCenter)
         step_bar_frame.setFixedHeight(step_bar_layout.sizeHint().height())
 
-        bar_layout = QVBoxLayout(bar_frame)
-        bar_layout.setObjectName('progress_layout')
-        bar_layout.setContentsMargins(5, 5, 5, 5)
-        bar_layout.setSpacing(15)
-        bar_layout.addWidget(sample_bar_frame)
-        bar_layout.addWidget(step_bar_frame)
-        bar_frame.setFixedHeight(bar_layout.sizeHint().height() + 10)
+        sample_step_layout = QVBoxLayout(sample_step_group)
+        sample_step_layout.setObjectName('sample_step_layout')
+        sample_step_layout.setContentsMargins(10, 18, 10, 10)
+        sample_step_layout.setSpacing(15)
+        sample_step_layout.addWidget(step_bar_frame)
 
-        main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(0, 60, 0, 70)
+        left_side_layout = QVBoxLayout(left_side_frame)
+        left_side_layout.setObjectName('left_side_layout')
+        left_side_layout.setContentsMargins(5, 15, 0, 15)
+        left_side_layout.setSpacing(30)
+        left_side_layout.addWidget(overall_sample_group)
+        left_side_layout.addWidget(sample_step_group)
+
+        #bar_layout = QVBoxLayout(bar_frame)
+        #bar_layout.setObjectName('progress_layout')
+        #bar_layout.setContentsMargins(5, 5, 5, 5)
+        #bar_layout.setSpacing(15)
+        #bar_layout.addWidget(sample_bar_frame)
+        #bar_layout.addWidget(step_bar_frame)
+        #bar_frame.setFixedHeight(bar_layout.sizeHint().height() + 10)
+
+        viewer_frame = QFrame(self)
+        viewer_frame.setObjectName('viewer_frame')
+        viewer_frame.setFrameShape(QFrame.Shape.NoFrame)
+        viewer_frame.setFrameShadow(QFrame.Shadow.Plain)
+
+        self.image_viewer = QtImageView(
+            dimensions=(200, 200),
+            parent=viewer_frame
+        )
+        self.image_viewer.set_no_image_face()
+
+        viewer_layout = QVBoxLayout(viewer_frame)
+        viewer_layout.setObjectName('viewer_layout')
+        viewer_layout.setContentsMargins(0, 0, 0, 0)
+        viewer_layout.addWidget(self.image_viewer)
+
+        main_layout = QHBoxLayout(self)
+        main_layout.setContentsMargins(0, 7, 0, 7)
         main_layout.setSpacing(15)
-        main_layout.addWidget(self.sample_table)
-        main_layout.addWidget(bar_frame)
+        main_layout.addWidget(left_side_frame)
+        main_layout.addWidget(viewer_frame)
 
     def create_thread(self):
         self._monitoring_thread = completion_checker.ValisMonitoringThread(
@@ -175,6 +261,7 @@ class QtResultsArea(QWidget):
     def update_step_bar(self, step_val):
         if step_val == self.steps_max_range:
             self.sample_table.update_sample_status(self.previous_sample, COMPLETE_S)
+            self._sample_lookup[self.previous_sample] = None
         self.step_prog_bar.setValue(step_val)
 
     def update_step_text(self, step_text):
@@ -187,9 +274,6 @@ class QtResultsArea(QWidget):
         if self.previous_sample is None or self.previous_sample != sample_text:
             self.previous_sample = sample_text
             self.sample_table.update_sample_status(sample_text, PROCESSING_S)
-        #elif self.previous_sample != sample_text:
-        #    self.sample_table.update_sample_status(sample_text, PROCESSING_S)
-        #    self.previous_sample = sample_text
         self.sample_text.setText(f"Sample: {sample_text}")
 
     def finish_bars(self):
@@ -207,9 +291,9 @@ class QtResultsArea(QWidget):
         self.sample_text.setText('Sample: Process Canceled')
         self.step_text.setText('Step: Process Canceled')
 
-    def prepare_data(self):
+    def prepare_menu(self):
         self.clear()
-        self.dst_dir, self.steps_dict, self.sample_list = self.gather_file_data()
+        self.dst_dir, self.steps_dict, self.sample_list = self.extract_script_data()
 
         self.step_prog_bar.setRange(0, self.steps_max_range)
         self.step_prog_bar.setValue(1)
@@ -234,8 +318,12 @@ class QtResultsArea(QWidget):
         self.steps_dict = None
         self.sample_list = None
         self.previous_sample = None
+        self._sample_lookup = {}
 
-    def gather_file_data(self):
+        self.image_viewer.clear()
+        self.image_viewer.set_no_image_face()
+
+    def extract_script_data(self):
         error_bttns = {
             "Ok": QMessageBox.ButtonRole.AcceptRole
         }
@@ -273,6 +361,7 @@ class QtResultsArea(QWidget):
             reader = json.load(f)
             f.close()
             reader.pop("src_dir", None)
+            print(f'Reader is \n{reader}')
             sample_list = list(reader.keys())
             self._table_items = reader
             self.sample_max_range = len(sample_list)
@@ -303,3 +392,29 @@ class QtResultsArea(QWidget):
     def fill_table(self):
         if self._table_items:
             self.sample_table.set_data(self._table_items)
+
+    def get_result_locations(self, name: str):
+        # Is this check even necessary
+        if self.dst_dir:
+            if self._sample_lookup[name] is None:
+                sample_dir = os.path.join(self.dst_dir, name)
+
+                sample_locations = {}
+                for root, dirs, files in os.walk(sample_dir):
+                    if files:
+                        if root is sample_dir:
+                            continue
+                            tiff_files = [file for file in files if file.lower().endswith('.tiff')]
+                            if tiff_files:
+                                sample_locations['Original'] = [os.path.join(root, file) for file in tiff_files]
+                            else: continue
+                        else:
+                            png_files = [file for file in files if file.lower().endswith('.png')]
+                            if png_files:
+                                split_name = os.path.split(root)
+                                sample_locations[split_name[-1]] = [os.path.join(root, file) for file in png_files]
+                            else: continue
+                    else: continue
+                self._sample_lookup[name] = sample_locations
+
+            self.image_viewer.import_sample_data(name, self._sample_lookup[name])

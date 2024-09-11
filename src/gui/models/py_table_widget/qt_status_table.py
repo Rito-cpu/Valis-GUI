@@ -8,6 +8,8 @@ from .py_table_widget import PyTableWidget
 
 
 class QtStatusTable(QWidget):
+    item_selected = pyqtSignal(str)
+
     def __init__(
             self,
             font_size: int = 12,
@@ -145,11 +147,7 @@ class QtStatusTable(QWidget):
             selected_item = selected_items[0]
 
             sample_name = selected_item.text()
-            # Get the file location of this sample to retrieve its completed folders and images
-            # 1. Get file location of this specific sample
-            # 2. Retrieve list of folders with images
-            # 3. Add list of folders to dropdown
-            # 4. Create references to images for each dropdown topic
+            self.item_selected.emit(sample_name)
 
     def on_sample_change(self):
         indexes = self.status_table.selectionModel().selectedRows()

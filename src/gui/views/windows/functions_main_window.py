@@ -416,7 +416,7 @@ class MainFunctions():
                     return
 
                 try:
-                    results_area.prepare_data()
+                    results_area.prepare_menu()
                     results_area.create_thread()
                     self.valis_process.finished.connect(lambda: MainFunctions.completion_cleanup(self))
                 except Exception as e:

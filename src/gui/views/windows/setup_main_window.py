@@ -374,44 +374,30 @@ class SetupMainWindow:
 
         img_list = [img_1, img_2]
         img_names = [os.path.basename(image_path_1), os.path.basename(image_path_2)]
-        results_table_list = ['One']
+        #results_table_list = ['One']
 
         self.results_area = QtResultsArea(
-            sample_data=results_table_list,
             parent=self.ui.load_pages.results_sideways_frame
         )
         self.results_area.setObjectName('results_area')
 
-        result_image_area = QFrame(self.ui.load_pages.results_sideways_frame)
-        result_image_area.setObjectName('image_area')
-        result_image_area.setFrameShape(QFrame.Shape.NoFrame)
-        result_image_area.setFrameShadow(QFrame.Shadow.Raised)
+        #result_image_area = QFrame(self.ui.load_pages.results_sideways_frame)
+        #result_image_area.setObjectName('image_area')
+        #result_image_area.setFrameShape(QFrame.Shape.NoFrame)
+        #result_image_area.setFrameShadow(QFrame.Shadow.Raised)
 
-        self.results_image_view = QtImageView(
-            dimensions=(200, 200),
-            parent=result_image_area
-        )
-        self.results_image_view.add_images(results_table_list[0], img_list, img_names)
+        #self.results_image_view = QtImageView(
+        #    dimensions=(200, 200),
+        #    parent=result_image_area
+        #)
+        #self.results_image_view.add_images(results_table_list[0], img_list, img_names)
         # 325, 465
 
-        self.results_type_combo = QtComboBox(
-            bg_color=self.themes["app_color"]["yellow_bg"],
-            text_color=self.themes["app_color"]["text_color"],
-            parent=result_image_area
-        )
-        self.results_type_combo.setObjectName('results_type_combo')
-        # self.sample_type_combo.addItems(self._detectors)
-        self.results_type_combo.addItems(['Original', 'Processed', 'Aligned (Rigid)', 'Aligned (Non-Rigid)', 'Deformation', 'Error'])
-        self.results_type_combo.setCurrentIndex(0)
-        self.results_type_combo.setFixedHeight(30)
-        self.results_type_combo.setMinimumWidth(250)
-
-        result_image_area_layout = QVBoxLayout(result_image_area)
-        result_image_area_layout.setObjectName('image_area_layout')
-        result_image_area_layout.setContentsMargins(5, 5, 5, 5)
-        result_image_area_layout.setSpacing(10)
-        result_image_area_layout.addWidget(self.results_image_view)
-        result_image_area_layout.addWidget(self.results_type_combo, alignment=Qt.AlignmentFlag.AlignCenter)
+        #result_image_area_layout = QVBoxLayout(result_image_area)
+        #result_image_area_layout.setObjectName('image_area_layout')
+        #result_image_area_layout.setContentsMargins(5, 5, 5, 5)
+        #result_image_area_layout.setSpacing(10)
+        #result_image_area_layout.addWidget(self.results_image_view)
 
         results_bttn_frame = QFrame(self.ui.load_pages.results_scroll_content)
         results_bttn_frame.setObjectName('results_bttn_area')
@@ -456,7 +442,7 @@ class SetupMainWindow:
         results_bttn_layout.addWidget(self.export_data_bttn)
 
         self.ui.load_pages.results_sideways_layout.addWidget(self.results_area)
-        self.ui.load_pages.results_sideways_layout.addWidget(result_image_area)
+        #self.ui.load_pages.results_sideways_layout.addWidget(result_image_area)
         self.ui.load_pages.results_scroll_layout.addWidget(results_bttn_frame)
 
         # ***************************

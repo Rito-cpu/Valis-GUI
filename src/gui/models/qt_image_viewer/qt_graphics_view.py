@@ -1,7 +1,7 @@
 from .styles import graphics_template
 from src.core.pyqt_core import *
 from src.core.json.json_themes import Themes
-from src.gui.models import QtMessage
+from src.gui.models.qt_message import QtMessage
 
 
 class QtGraphicsView(QGraphicsView):
@@ -87,7 +87,7 @@ class QtGraphicsView(QGraphicsView):
         elif isinstance(image, QImage):
             pixmap = QPixmap.fromImage(image)
         else:
-            error_msg.setText('Image Viewer Recevied Wrong Image')
+            error_msg.setText('Image Viewer Received Wrong Image')
             error_msg.setInformativeText('Image Viewer (set_image method) expects a QImage or a QPixmap, but received an image of a different type. ')
             error_msg.exec()
             error_msg.deleteLater()
