@@ -4,6 +4,7 @@ combo_box_template = """
         color: {color};
         border: none;
         border-radius: 4px;
+        {fsize}
     }}
     QComboBox::drop-down {{
         border-left: 1px solid {color};

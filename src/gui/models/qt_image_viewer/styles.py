@@ -16,8 +16,11 @@ title_label_template = """
 
 body_label_template = """
     QLabel {{
-        font-size: {_font_size};
+        font-size: {_font_size}px;
         color: {_color};
+        background-color: {_bg};
+        border: none;
+        border-radius: 9px;
     }}
 """
 
@@ -31,7 +34,7 @@ tool_bttn_template = """
 """
 
 navigation_template = """
-    QWidget#{_obj_name} {{
+    QFrame#{_obj_name} {{
         border: none;
         border-radius: 14px;
         background: {_color};
@@ -43,4 +46,28 @@ graphics_template = """
         border: 2px solid black;
         background: none;
     }
+"""
+
+right_arrow_template = """
+    QFrame#main_frame {{
+        background: {_color};
+        border: none;
+        border-top-right-radius: 9px;
+        border-bottom-right-radius: 9px;
+        border-top-left-radius: 9px;
+        border-bottom-left-radius: 9px;
+        color: {text_color};
+    }}
+"""
+
+left_arrow_template = """
+    QFrame#main_frame {{
+        background: {_color};
+        border: none;
+        border-top-right-radius: 9px;
+        border-bottom-right-radius: 9px;
+        border-top-left-radius: 9px;
+        border-bottom-left-radius: 9px;
+        color: {text_color};
+    }}
 """

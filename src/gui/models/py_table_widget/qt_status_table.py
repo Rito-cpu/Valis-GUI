@@ -21,6 +21,8 @@ class QtStatusTable(QWidget):
             self.parent = parent
 
         self._font_size = font_size
+        self._font_obj = QFont()
+        self._font_obj.setPointSize(self._font_size)
         themes = Themes()
         self.themes = themes.items
 
@@ -61,11 +63,20 @@ class QtStatusTable(QWidget):
         #self.status_table.verticalHeader().setVisible(False)
         self.status_table.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.status_table.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.status_table.setSizeAdjustPolicy(self.status_table.SizeAdjustPolicy.AdjustToContents)
         self.status_table.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.status_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.status_table.setHorizontalHeaderLabels(['Sample', 'Status'])
-        self.status_table.setRowCount(0)
+        self.status_table.setRowCount(1)
         self.status_table.setColumnCount(2)
+
+        _default_item = QTableWidgetItem('None')
+        _default_item.setFlags(Qt.ItemFlag.ItemIsSelectable)  # Make item selectable
+        _default_item.setFont(self._font_obj)
+        _default_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.status_table.setItem(0, 0, _default_item)
+        self.status_table.setSpan(0, 0, 1, 2)
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(5, 5, 5, 5)
@@ -81,11 +92,26 @@ class QtStatusTable(QWidget):
 
         return icon
 
+    def set_default_state(self):
+        default_item = QTableWidgetItem('None')
+        default_item.setFlags(Qt.ItemFlag.ItemIsSelectable)  # Make item selectable
+        default_item.setFont(self._font_obj)
+        default_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        self.status_table.clear()
+        self.status_table.setHorizontalHeaderLabels(['Sample', 'Status'])
+        self.status_table.setRowCount(1)
+        self.status_table.setItem(0, 0, default_item)
+        self.status_table.setSpan(0, 0, 1, 2)
+
+        self.status_table
+
     def reset_table(self):
         self.sample_list = []
         self.status_table.clear()
         self.status_table.setHorizontalHeaderLabels(['Sample', 'Status'])
         self.status_table.setRowCount(0)
+        self.status_table.setSpan(0, 0, 1, 1)
         self.table_data = None
         self.data_status = None
 
@@ -101,31 +127,28 @@ class QtStatusTable(QWidget):
 
     def fill_table(self):
         if self.table_data:
-            vertical_labels = []
+            #vertical_labels = []
             data_keys = list(self.table_data.keys())
             self.status_table.setRowCount(len(data_keys))
             for index in range(len(data_keys)):
-                vertical_labels.append(f's{index}')
+                #vertical_labels.append(f's{index}')
                 sample_icon = self.get_icon(PENDING_S)
-
-                font_size = QFont()
-                font_size.setPointSize(self._font_size)
 
                 sample_name = data_keys[index]
                 name_item = QTableWidgetItem(sample_name)
                 name_item.setFlags(Qt.ItemFlag.ItemIsSelectable)  # Make item selectable
-                name_item.setFont(font_size)
+                name_item.setFont(self._font_obj)
                 name_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 name_item.setIcon(sample_icon)
 
                 status_item = QTableWidgetItem(self.data_status[data_keys[index]])
                 status_item.setFlags(Qt.ItemFlag.ItemIsSelectable)  # Make item selectable and enabled
-                status_item.setFont(font_size)
+                status_item.setFont(self._font_obj)
                 status_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
                 self.status_table.setItem(index, 0, name_item)
                 self.status_table.setItem(index, 1, status_item)
-            self.status_table.setVerticalHeaderLabels(vertical_labels)
+            #self.status_table.setVerticalHeaderLabels(vertical_labels)
             return
 
     def update_sample_status(self, name_key: str, new_status: str = None):

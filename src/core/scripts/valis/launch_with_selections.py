@@ -153,7 +153,11 @@ def launch_with_selections(settings_path: str, image_path: str, home_dir: str):
 
         rigid_registrar, non_rigid_registrar, error_df = registrar.register(**registration_params)
 
-        registrar.warp_and_save_slides(selections_dict[DST_DIR] + "/" + selections_dict[NAME], crop="overlap")
+        # TODO: Save this function for the export button
+        # registrar.warp_and_save_slides(selections_dict[DST_DIR] + "/" + selections_dict[NAME], crop="overlap")
+
+    # TODO: Handle 'sorted' function here once unpacked form json
+    # TODO: Handle 'reference' option here once unpacked as well
 
     registration.kill_jvm()
 

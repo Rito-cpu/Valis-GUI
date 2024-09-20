@@ -1,8 +1,14 @@
+import os
+import re
+import shutil
+
 from src.core.pyqt_core import *
 from src.core.json.json_themes import Themes
+from src.core.validation.validate_file import is_existing_dir
 from .qt_button_line_edit import QtButtonLineEdit
 from src.gui.models import PyPushButton
 from src.gui.models.qt_marquee import QtMarqueeLabel
+from src.gui.models.qt_message import QtMessage
 
 
 class QtOutputEntry(QWidget):
@@ -133,4 +139,111 @@ class QtOutputEntry(QWidget):
         self.dir_marquee_label.setText(new_text)
 
     def submit_bttn_clicked(self):
-        self.directory_changed.emit(self)
+        return_val = self.check_empty()
+        if return_val is None:
+            return
+        else:
+            self.directory_changed.emit(self)
+
+    def validate_directory(self):
+        current_dir = self.output_dir_entry.text()
+        if not is_existing_dir(current_dir):
+            message = f"The directory '{current_dir}' does not exist. Please enter a valid directory."
+            msg_bttns = {
+                "Ok": QMessageBox.ButtonRole.AcceptRole
+            }
+            error_msg = QtMessage(
+                buttons=msg_bttns,
+                color=self.themes["app_color"]["main_bg"],
+                bg_color_one=self.themes["app_color"]["dark_one"],
+                bg_color_two=self.themes["app_color"]["bg_one"],
+                bg_color_hover=self.themes["app_color"]["dark_three"],
+                bg_color_pressed=self.themes["app_color"]["dark_four"]
+            )
+            error_msg.setIcon(QMessageBox.Icon.Warning)
+            error_msg.setText('Non-existing directory entered.')
+            error_msg.setDetailedText(message)
+            error_msg.exec()
+            return None
+        return current_dir
+
+    def check_empty(self):
+        return_val = self.validate_directory()
+        if return_val is None:
+            return None
+        
+        items = [entry.name for entry in os.scandir(return_val)]
+        if items:
+            message = """Existing folders/files have been found. Would you like to delete these items?
+            \nNot deleting the contents will create a new folder inside the entered directory to store data from the current run.
+            \nNote: If these existing folders/files are not from a previous run and are unrelated to the Valis process, we recommend deleting these items."""
+            msg_bttns = {
+                "Yes": QMessageBox.ButtonRole.YesRole,
+                "No": QMessageBox.ButtonRole.NoRole
+            }
+            error_msg = QtMessage(
+                buttons=msg_bttns,
+                color=self.themes["app_color"]["main_bg"],
+                bg_color_one=self.themes["app_color"]["dark_one"],
+                bg_color_two=self.themes["app_color"]["bg_one"],
+                bg_color_hover=self.themes["app_color"]["dark_three"],
+                bg_color_pressed=self.themes["app_color"]["dark_four"]
+            )
+            error_msg.setIcon(QMessageBox.Icon.Information)
+            error_msg.setText('Output directory is not empty. Do you want to delete its contents?')
+            error_msg.setDetailedText(message)
+            error_msg.exec()
+
+            if error_msg.clickedButton() == error_msg.buttons["Yes"]:
+                # Yes is pressed, delete existing items
+                for item in items:
+                    item_path = os.path.join(return_val, item)
+                    try:
+                        if os.path.isfile(item_path) or os.path.islink(item_path):
+                            os.unlink(item_path)
+                        elif os.path.isdir(item_path):
+                            shutil.rmtree(item_path)
+                    except Exception as error:
+                        msg_bttns = {
+                            "Ok": QMessageBox.ButtonRole.AcceptRole
+                        }
+                        error_msg = QtMessage(
+                            buttons=msg_bttns,
+                            color=self.themes["app_color"]["main_bg"],
+                            bg_color_one=self.themes["app_color"]["dark_one"],
+                            bg_color_two=self.themes["app_color"]["bg_one"],
+                            bg_color_hover=self.themes["app_color"]["dark_three"],
+                            bg_color_pressed=self.themes["app_color"]["dark_four"]
+                        )
+                        error_msg.setIcon(QMessageBox.Icon.Critical)
+                        error_msg.setText(f'Error ocurred while deleting {item_path}.')
+                        error_msg.setDetailedText(f'Error found:\n{error}')
+                        error_msg.exec()
+                        return None
+                return return_val
+            else:
+                # No is pressed, create additional folder
+                basename = 'valis_output'
+                regex_pattern = re.compile(rf"^{re.escape(basename)} \((d+)\)$")
+                copy_num = 1
+
+                for item in items:
+                    item_path = os.path.join(return_val, item)
+                    if os.path.isdir(item_path):
+                        match = regex_pattern.match(item)
+                        if match:
+                            existing_num = int(match.group(1))
+                            if existing_num == copy_num:
+                                copy_num = existing_num + 1
+                    else:
+                        continue
+
+                new_folder_name = f"{basename} ({copy_num+1})"
+                new_folder_path = os.path.join(return_val, new_folder_name)
+                os.mkdir(new_folder_path)
+
+                self.output_dir_entry.set_text(new_folder_path)
+
+                return new_folder_path
+        else:
+            return return_val

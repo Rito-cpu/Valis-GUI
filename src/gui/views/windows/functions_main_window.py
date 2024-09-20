@@ -278,6 +278,7 @@ class MainFunctions():
 
     def register_settings(
             self,
+            output_dir_widget: QWidget,
             if_settings: QWidget,
             bf_settings: QWidget,
             rigid_setting: QWidget,
@@ -324,6 +325,8 @@ class MainFunctions():
                 )
                 error_msg.exec()
                 return
+            
+            output_dir_widget.check_empty()
 
             # Gather valid docker file path
             #docker_path = QFileDialog.getExistingDirectory(self, 'Select Docker Project Directory')

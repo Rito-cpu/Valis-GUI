@@ -28,6 +28,7 @@
         "main_bg": "#FCFCFA",
         "yellow_bg": "#FFC43D",
         "blue_bg": "#1B9AAA",
+        "blue_pressed": "#157985",
         "green_bg": "#06D6A0",
         "highlight_bg": "#F2B63F",
         "text_white": "white",

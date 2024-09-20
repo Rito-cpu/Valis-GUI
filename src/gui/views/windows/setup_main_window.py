@@ -338,6 +338,7 @@ class SetupMainWindow:
         self.register_setting_bttn.clicked.connect(
             lambda: MainFunctions.register_settings(
                 self,
+                self.output_dir_widget,
                 self.bf_process,
                 self.if_process,
                 self.rigid_settings,

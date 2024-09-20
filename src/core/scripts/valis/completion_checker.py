@@ -77,6 +77,7 @@ class ValisMonitoringThread(QThread):
         step_folders[-1:-1] = list(self._steps_dict.keys())
         # max_steps refers to the total number of steps that Valis will do on each sample
         max_steps = len(step_folders)
+        print(f'This is the destination directory: {self._dst_dir}')
 
         # Check for "processed" folder, determines if this is a clean registration or continuing an attempted registration
         if not os.path.exists(f"{self._dst_dir}/{self._sample_list[sample_iterator]}"):
@@ -86,18 +87,23 @@ class ValisMonitoringThread(QThread):
 
                 self.emit_step_status(step_iterator, current_step_name)
                 self.emit_sample_status(sample_iterator, current_sample_name)
-
-                # first step: monitor for the creation of the "processed" folder
+                # **************************************************************
+                # First step: monitor for the creation of the "processed" folder
+                # **************************************************************
                 if step_iterator == 0:
                     if os.path.exists(f"{self._dst_dir}/{current_sample_name}/{current_step_name}"):
                         step_iterator += 1
                         self.emit_step_status(step_iterator, step_folders[step_iterator])
+                # ***************************************************************************
                 # Intermediate steps: monitor for "overlaps" folder creation and its contents
+                # ***************************************************************************
                 elif step_iterator <= len(self._steps_dict):
                     if os.path.isfile(f"{self._dst_dir}/{current_sample_name}/overlaps/{current_sample_name}_{current_step_name}_overlap.png"):
                         step_iterator += 1
                         self.emit_step_status(step_iterator, step_folders[step_iterator])
+                # **********************************************
                 # Final step: monitor for "data" folder creation
+                # **********************************************
                 elif step_iterator < max_steps:
                     if os.path.exists(f"{self._dst_dir}/{current_sample_name}/{current_step_name}"):
                         self.emit_step_status(step_iterator+1, step_folders[step_iterator])

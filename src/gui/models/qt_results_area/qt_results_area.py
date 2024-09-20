@@ -43,11 +43,11 @@ class QtResultsArea(QWidget):
         left_side_frame.setFrameShape(QFrame.Shape.NoFrame)
         left_side_frame.setFrameShadow(QFrame.Shadow.Plain)
 
-        overall_sample_group = QGroupBox(left_side_frame)
-        overall_sample_group.setObjectName('overall_sample_group')
-        overall_sample_group.setTitle('Overall Sample Progress')
-        overall_sample_group.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        overall_sample_group.setStyleSheet(f"""
+        total_sample_group = QGroupBox(left_side_frame)
+        total_sample_group.setObjectName('total_sample_group')
+        total_sample_group.setTitle('Total Sample Progress')
+        total_sample_group.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        total_sample_group.setStyleSheet(f"""
             QGroupBox {{
                 font-size: 13px;
                 background: {self.themes['app_color']['main_bg']};
@@ -64,22 +64,17 @@ class QtResultsArea(QWidget):
             }}
         """)
 
-        self.sample_table = QtStatusTable(parent=overall_sample_group)
+        self.sample_table = QtStatusTable(parent=total_sample_group)
         self.sample_table.setObjectName('sample_table')
         self.sample_table.setMinimumWidth(400)
+        #self.sample_table.setMaximumHeight(300)
         self.sample_table.reset_table()
+        self.sample_table.set_default_state()
 
-        sample_bar_frame = QFrame(overall_sample_group)
+        sample_bar_frame = QFrame(total_sample_group)
         sample_bar_frame.setObjectName('sample_bar_frame')
         sample_bar_frame.setFrameShape(QFrame.Shape.NoFrame)
         sample_bar_frame.setFrameShadow(QFrame.Shadow.Raised)
-
-        sample_bar_title = QLabel(sample_bar_frame)
-        sample_bar_title.setObjectName('sample_bar_title')
-        sample_bar_title.setText('Overall Sample Progress')
-        sample_bar_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        sample_bar_title.setStyleSheet(f'font-size: 13px; color: {self.themes["app_color"]["text_color"]};')
-        sample_bar_title.hide()
 
         self.sample_prog_bar = QProgressBar(sample_bar_frame)
         self.sample_prog_bar.setObjectName('sample_prog_bar')
@@ -114,20 +109,22 @@ class QtResultsArea(QWidget):
 
         sample_bar_layout = QVBoxLayout(sample_bar_frame)
         sample_bar_layout.setObjectName('sample_bar_layout')
-        sample_bar_layout.setContentsMargins(0, 0, 0, 0)
+        sample_bar_layout.setContentsMargins(25, 0, 25, 0)
         sample_bar_layout.setSpacing(5)
-        sample_bar_layout.addWidget(sample_bar_title, alignment=Qt.AlignmentFlag.AlignCenter)
         sample_bar_layout.addWidget(self.sample_prog_bar)
         sample_bar_layout.addWidget(self.sample_text, alignment=Qt.AlignmentFlag.AlignCenter)
         sample_bar_frame.setFixedHeight(sample_bar_layout.sizeHint().height())
 
-        overall_sample_layout = QVBoxLayout(overall_sample_group)
-        overall_sample_layout.setObjectName('overall_sample_layout')
-        overall_sample_layout.setContentsMargins(10, 10, 10, 10)
-        overall_sample_layout.setSpacing(15)
-        overall_sample_layout.addWidget(self.sample_table)
-        overall_sample_layout.addWidget(sample_bar_frame)
-
+        total_sample_layout = QVBoxLayout(total_sample_group)
+        total_sample_layout.setObjectName('total_sample_layout')
+        total_sample_layout.setContentsMargins(10, 10, 10, 10)
+        total_sample_layout.setSpacing(15)
+        total_sample_layout.addWidget(self.sample_table)
+        total_sample_layout.addWidget(sample_bar_frame)
+        
+        total_sample_group.setMinimumHeight(275)
+        total_sample_group.setMaximumHeight(400)
+        total_sample_group.resize(total_sample_group.sizeHint().width(), 300)
 
         sample_step_group = QGroupBox(left_side_frame)
         sample_step_group.setObjectName('sample_step_group')
@@ -151,19 +148,12 @@ class QtResultsArea(QWidget):
         """)
 
         step_bar_frame = QFrame(sample_step_group)
-        step_bar_frame.setObjectName('overall_bar_frame')
+        step_bar_frame.setObjectName('step_bar_frame')
         step_bar_frame.setFrameShape(QFrame.Shape.NoFrame)
         step_bar_frame.setFrameShadow(QFrame.Shadow.Raised)
 
-        step_bar_title = QLabel(step_bar_frame)
-        step_bar_title.setObjectName('overall_bar_title')
-        step_bar_title.setText('Current Sample Progress')
-        step_bar_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        step_bar_title.setStyleSheet(f'font-size: 13px; color: {self.themes["app_color"]["text_color"]};')
-        step_bar_title.hide()
-
         self.step_prog_bar = QProgressBar(step_bar_frame)
-        self.step_prog_bar.setObjectName('overall_prog_bar')
+        self.step_prog_bar.setObjectName('step_prog_bar')
         self.step_prog_bar.setFormat('%p%')
         self.step_prog_bar.setRange(0, 1)
         self.step_prog_bar.setValue(0)
@@ -194,10 +184,9 @@ class QtResultsArea(QWidget):
         self.step_text.setStyleSheet(f'font-size: 12px; color: {self.themes["app_color"]["text_color"]};')
 
         step_bar_layout = QVBoxLayout(step_bar_frame)
-        step_bar_layout.setObjectName('overall_bar_layout')
-        step_bar_layout.setContentsMargins(0, 0, 0, 0)
+        step_bar_layout.setObjectName('step_bar_layout')
+        step_bar_layout.setContentsMargins(25, 0, 25, 0)
         step_bar_layout.setSpacing(5)
-        step_bar_layout.addWidget(step_bar_title, alignment=Qt.AlignmentFlag.AlignCenter)
         step_bar_layout.addWidget(self.step_prog_bar)
         step_bar_layout.addWidget(self.step_text, alignment=Qt.AlignmentFlag.AlignCenter)
         step_bar_frame.setFixedHeight(step_bar_layout.sizeHint().height())
@@ -211,17 +200,9 @@ class QtResultsArea(QWidget):
         left_side_layout = QVBoxLayout(left_side_frame)
         left_side_layout.setObjectName('left_side_layout')
         left_side_layout.setContentsMargins(5, 15, 0, 15)
-        left_side_layout.setSpacing(30)
-        left_side_layout.addWidget(overall_sample_group)
+        left_side_layout.setSpacing(40)
+        left_side_layout.addWidget(total_sample_group)
         left_side_layout.addWidget(sample_step_group)
-
-        #bar_layout = QVBoxLayout(bar_frame)
-        #bar_layout.setObjectName('progress_layout')
-        #bar_layout.setContentsMargins(5, 5, 5, 5)
-        #bar_layout.setSpacing(15)
-        #bar_layout.addWidget(sample_bar_frame)
-        #bar_layout.addWidget(step_bar_frame)
-        #bar_frame.setFixedHeight(bar_layout.sizeHint().height() + 10)
 
         viewer_frame = QFrame(self)
         viewer_frame.setObjectName('viewer_frame')
@@ -286,6 +267,7 @@ class QtResultsArea(QWidget):
         self._monitoring_thread.finished.disconnect(self.finish_bars)
         self._monitoring_thread.terminate()
         self.sample_table.reset_table()
+        self.sample_table.set_default_state()
         self.clear()
 
         self.sample_text.setText('Sample: Process Canceled')
