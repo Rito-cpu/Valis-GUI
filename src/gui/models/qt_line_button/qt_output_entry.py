@@ -173,8 +173,14 @@ class QtOutputEntry(QWidget):
             return None
         
         items = [entry.name for entry in os.scandir(return_val)]
-        if items:
-            message = """Existing folders/files have been found. Would you like to delete these items?
+        
+        if len(items) == 1 and '.DS_Store' in items:
+            item_path = os.path.join(return_val, items[0])
+            os.unlink(item_path)
+            print('Had to remove .DS_Store')
+            return return_val
+        elif items:
+            message = f"""Existing folders/files have been found. Would you like to delete these items?\n{items}
             \nNot deleting the contents will create a new folder inside the entered directory to store data from the current run.
             \nNote: If these existing folders/files are not from a previous run and are unrelated to the Valis process, we recommend deleting these items."""
             msg_bttns = {
@@ -224,13 +230,16 @@ class QtOutputEntry(QWidget):
             else:
                 # No is pressed, create additional folder
                 basename = 'valis_output'
-                regex_pattern = re.compile(rf"^{re.escape(basename)} \((d+)\)$")
+                regex_pattern = re.compile(rf"^{re.escape(basename)} \((\d+)\)$")
                 copy_num = 1
 
-                for item in items:
-                    item_path = os.path.join(return_val, item)
+                dir_copies = [cdir for cdir in items if basename in cdir]
+                dir_copies.sort()
+
+                for cdir in dir_copies:
+                    item_path = os.path.join(return_val, cdir)
                     if os.path.isdir(item_path):
-                        match = regex_pattern.match(item)
+                        match = regex_pattern.match(cdir)
                         if match:
                             existing_num = int(match.group(1))
                             if existing_num == copy_num:
@@ -238,11 +247,12 @@ class QtOutputEntry(QWidget):
                     else:
                         continue
 
-                new_folder_name = f"{basename} ({copy_num+1})"
+                new_folder_name = f"{basename} ({copy_num})"
                 new_folder_path = os.path.join(return_val, new_folder_name)
                 os.mkdir(new_folder_path)
 
                 self.output_dir_entry.set_text(new_folder_path)
+                self.dir_marquee_label.setText(new_folder_path)
 
                 return new_folder_path
         else:

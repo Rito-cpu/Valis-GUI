@@ -57,11 +57,11 @@ class QtImageNav(QWidget):
         inner_circle.setObjectName('inner_circle')
         inner_circle.setFrameShape(QFrame.Shape.NoFrame)
         inner_circle.setFrameShadow(QFrame.Shadow.Plain)
-        inner_circle.setFixedSize(50, 50)
+        inner_circle.setFixedSize(60, 60)
         inner_circle.setStyleSheet(f"""
             QFrame#inner_circle {{
                 background: {self.themes['app_color']['yellow_bg']};
-                border-radius: 25px;
+                border-radius: 30px;
             }}
         """)
 

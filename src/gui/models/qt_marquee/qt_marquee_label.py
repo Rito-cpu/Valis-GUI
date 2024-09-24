@@ -61,6 +61,7 @@ class QtMarqueeLabel(QLabel):
         else:   # new_text is shorter than QLabel
             self.document.clear()
             self.document.setPlainText(new_text)
+            self._pos_x = 0
             self.repaint()
 
     def set_mode(self, new_mode: str):

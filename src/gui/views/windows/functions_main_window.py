@@ -326,7 +326,7 @@ class MainFunctions():
                 error_msg.exec()
                 return
             
-            output_dir_widget.check_empty()
+            output_dir_widget.submit_bttn_clicked()
 
             # Gather valid docker file path
             #docker_path = QFileDialog.getExistingDirectory(self, 'Select Docker Project Directory')

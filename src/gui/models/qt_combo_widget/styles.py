@@ -4,6 +4,7 @@ combo_box_template = """
         color: {color};
         border: none;
         border-radius: 4px;
+        text-align: center;
         {fsize}
     }}
     QComboBox::drop-down {{
@@ -19,6 +20,7 @@ combo_box_template = """
         border: none;
         border-radius: 4px;
         selection-color: {bg};
+        text-align: center;
     }}
     QComboBox QAbstractItemView::item {{
         color: {bg};
