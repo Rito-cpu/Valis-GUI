@@ -1,4 +1,3 @@
-import os
 import json
 
 from src.core.app_config import APP_ROOT
@@ -7,8 +6,8 @@ from src.core.app_config import APP_ROOT
 class Settings(object):
     # Get the app path
     json_file = "settings.json"
-    settings_path = os.path.abspath(os.path.join(APP_ROOT, json_file))
-    if not os.path.isfile(settings_path):
+    settings_path = APP_ROOT / json_file
+    if not settings_path.is_file():
         print(f"WARNING: \"settings.json\" not found! Check in the folder {settings_path}")
 
     # Initialize settings

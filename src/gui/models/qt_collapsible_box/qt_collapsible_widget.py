@@ -1,5 +1,4 @@
 import gc
-import os
 
 from src.core.pyqt_core import *
 from src.core.app_config import IMG_RSC_PATH
@@ -54,7 +53,7 @@ class QtCollapsibleWidget(QWidget):
         header_area.setFrameShape(QFrame.Shape.NoFrame)
         header_area.setFrameShadow(QFrame.Shadow.Plain)
 
-        icon_path = os.path.join(IMG_RSC_PATH, 'downloads/bqm.png')
+        icon_path = str(IMG_RSC_PATH / "downloads" / "bqm.png")
 
         self.help_bttn = QToolButton(header_area)
         self.help_bttn.setObjectName('help_bttn')

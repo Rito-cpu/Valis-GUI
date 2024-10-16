@@ -1,4 +1,4 @@
-import os
+import pathlib
 
 from src.core.pyqt_core import *
 from src.core.json.json_themes import Themes
@@ -90,9 +90,9 @@ class QtSlideDirectory(QWidget):
         self.image_dir_entry.set_text(text)
 
     def check_entry(self):
-        slide_path = self.image_dir_entry.text()
+        slide_path = pathlib.Path(self.image_dir_entry.text())
 
-        if self.is_valid_path() and os.path.isdir(slide_path):
+        if self.is_valid_path() and slide_path.is_dir():
             data_dict = slide_search.initiate_process(slide_path)
             if data_dict:
                 self.dir_tree.clear()
@@ -125,7 +125,7 @@ class QtSlideDirectory(QWidget):
         return is_empty
 
     def is_valid_path(self):
-        return os.path.exists(self.image_dir_entry.text())
+        return pathlib.Path(self.image_dir_entry.text()).exists()
 
     def all_toggle_deactivated(self):
         # All toggle buttons are in the unchecked position
@@ -147,6 +147,6 @@ class QtSlideDirectory(QWidget):
 
     def get_data(self):
         result_dict = self.dir_tree.gather_states()
-        result_dict['src_dir'] = self.dir_tree._dir_holder
+        result_dict['src_dir'] = str(self.dir_tree._dir_holder)
 
         return result_dict

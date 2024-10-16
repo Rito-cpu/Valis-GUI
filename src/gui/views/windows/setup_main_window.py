@@ -367,38 +367,10 @@ class SetupMainWindow:
         # **************************
         # *** Results Page Setup ***
         # **************************
-        image_path_1 = '/Users/4474613/Downloads/bqm.png'
-        img_1 = QPixmap.fromImage(QImage(image_path_1))
-
-        image_path_2 = '/Users/4474613/Downloads/Untitled design.png'
-        img_2 = QPixmap.fromImage(QImage(image_path_2))
-
-        img_list = [img_1, img_2]
-        img_names = [os.path.basename(image_path_1), os.path.basename(image_path_2)]
-        #results_table_list = ['One']
-
         self.results_area = QtResultsArea(
             parent=self.ui.load_pages.results_sideways_frame
         )
         self.results_area.setObjectName('results_area')
-
-        #result_image_area = QFrame(self.ui.load_pages.results_sideways_frame)
-        #result_image_area.setObjectName('image_area')
-        #result_image_area.setFrameShape(QFrame.Shape.NoFrame)
-        #result_image_area.setFrameShadow(QFrame.Shadow.Raised)
-
-        #self.results_image_view = QtImageView(
-        #    dimensions=(200, 200),
-        #    parent=result_image_area
-        #)
-        #self.results_image_view.add_images(results_table_list[0], img_list, img_names)
-        # 325, 465
-
-        #result_image_area_layout = QVBoxLayout(result_image_area)
-        #result_image_area_layout.setObjectName('image_area_layout')
-        #result_image_area_layout.setContentsMargins(5, 5, 5, 5)
-        #result_image_area_layout.setSpacing(10)
-        #result_image_area_layout.addWidget(self.results_image_view)
 
         results_bttn_frame = QFrame(self.ui.load_pages.results_scroll_content)
         results_bttn_frame.setObjectName('results_bttn_area')
@@ -443,7 +415,6 @@ class SetupMainWindow:
         results_bttn_layout.addWidget(self.export_data_bttn)
 
         self.ui.load_pages.results_sideways_layout.addWidget(self.results_area)
-        #self.ui.load_pages.results_sideways_layout.addWidget(result_image_area)
         self.ui.load_pages.results_scroll_layout.addWidget(results_bttn_frame)
 
         # ***************************

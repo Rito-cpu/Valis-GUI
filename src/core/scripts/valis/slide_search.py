@@ -10,7 +10,6 @@ from valis import slide_io, slide_tools, valtils
 #import inspect
 import pyvips
 # import ctypes
-import os
 # import stat
 
 

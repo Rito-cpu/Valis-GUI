@@ -1,5 +1,4 @@
 import json
-import os
 
 from .json_settings import Settings
 from ..app_config import *
@@ -12,8 +11,8 @@ class Themes(object):
 
     # APP PATH
     json_file = f"src/gui/themes/{_settings['theme_name']}.json"
-    settings_path = os.path.abspath(os.path.join(APP_ROOT, json_file))
-    if not os.path.isfile(settings_path):
+    settings_path = APP_ROOT / json_file
+    if not settings_path.is_file():
         print(f"WARNING: \"gui/themes/{_settings['theme_name']}.json\" not found! check in the folder {settings_path}")
 
     # INIT SETTINGS

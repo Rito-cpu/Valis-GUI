@@ -1,20 +1,20 @@
-import os
 import sys
+import pathlib
 
 from src.core.keyword_store import *
 from src.core.scripts.valis.gui_options import *
 
 
 # Project root directory
-APP_ROOT = os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+APP_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 
 # Image resources directory
 image_dir = "resources/images"
-IMG_RSC_PATH = os.path.join(APP_ROOT, image_dir)
+IMG_RSC_PATH = APP_ROOT / image_dir
 
 # Path to scripts
 scripts_loc = "src/core/scripts"
-SCRIPTS_PATH = os.path.abspath(os.path.join(APP_ROOT, scripts_loc))
+SCRIPTS_PATH = (APP_ROOT / scripts_loc).resolve()
 
 # --- Output Directory Instance ---
 OUTPUT_DIRECTORY = None

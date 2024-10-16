@@ -1,6 +1,6 @@
-import os
 import re
 import shutil
+import pathlib
 
 from src.core.pyqt_core import *
 from src.core.json.json_themes import Themes
@@ -146,7 +146,7 @@ class QtOutputEntry(QWidget):
             self.directory_changed.emit(self)
 
     def validate_directory(self):
-        current_dir = self.output_dir_entry.text()
+        current_dir = pathlib.Path(self.output_dir_entry.text())
         if not is_existing_dir(current_dir):
             message = f"The directory '{current_dir}' does not exist. Please enter a valid directory."
             msg_bttns = {
@@ -172,20 +172,21 @@ class QtOutputEntry(QWidget):
         if return_val is None:
             return None
         
-        items = [entry.name for entry in os.scandir(return_val)]
+        return_path = pathlib.Path(return_val)
+        items = [entry.name for entry in return_path.iterdir()]
         
         if len(items) == 1 and '.DS_Store' in items:
-            item_path = os.path.join(return_val, items[0])
-            os.unlink(item_path)
-            print('Had to remove .DS_Store')
-            return return_val
+            item_path = return_path / items[0]
+            item_path.unlink()
+            return return_path
         elif items:
-            message = f"""Existing folders/files have been found. Would you like to delete these items?\n{items}
-            \nNot deleting the contents will create a new folder inside the entered directory to store data from the current run.
-            \nNote: If these existing folders/files are not from a previous run and are unrelated to the Valis process, we recommend deleting these items."""
+            message = f"""Pre-existing contents have been found in the entered output directory. Would you like to delete these items?\n{items}
+            \nNot deleting the contents will create a new folder (\'valis_output (n)\') inside the entered directory to store data from the current run.
+            \nNote: If the pre-existing contents are unrelated to the Valis process, we recommend deleting these items."""
             msg_bttns = {
                 "Yes": QMessageBox.ButtonRole.YesRole,
-                "No": QMessageBox.ButtonRole.NoRole
+                "No": QMessageBox.ButtonRole.NoRole,
+                "Cancel": QMessageBox.ButtonRole.RejectRole
             }
             error_msg = QtMessage(
                 buttons=msg_bttns,
@@ -196,18 +197,18 @@ class QtOutputEntry(QWidget):
                 bg_color_pressed=self.themes["app_color"]["dark_four"]
             )
             error_msg.setIcon(QMessageBox.Icon.Information)
-            error_msg.setText('Output directory is not empty. Do you want to delete its contents?')
+            error_msg.setText('Remove Existing Contents?')
             error_msg.setDetailedText(message)
             error_msg.exec()
 
             if error_msg.clickedButton() == error_msg.buttons["Yes"]:
                 # Yes is pressed, delete existing items
                 for item in items:
-                    item_path = os.path.join(return_val, item)
+                    item_path = return_path / item
                     try:
-                        if os.path.isfile(item_path) or os.path.islink(item_path):
-                            os.unlink(item_path)
-                        elif os.path.isdir(item_path):
+                        if item_path.is_file() or item_path.is_symlink():
+                            item_path.unlink()
+                        elif item_path.is_dir():
                             shutil.rmtree(item_path)
                     except Exception as error:
                         msg_bttns = {
@@ -226,8 +227,8 @@ class QtOutputEntry(QWidget):
                         error_msg.setDetailedText(f'Error found:\n{error}')
                         error_msg.exec()
                         return None
-                return return_val
-            else:
+                return return_path
+            elif error_msg.clickedButton() == error_msg.buttons["No"]:
                 # No is pressed, create additional folder
                 basename = 'valis_output'
                 regex_pattern = re.compile(rf"^{re.escape(basename)} \((\d+)\)$")
@@ -237,8 +238,8 @@ class QtOutputEntry(QWidget):
                 dir_copies.sort()
 
                 for cdir in dir_copies:
-                    item_path = os.path.join(return_val, cdir)
-                    if os.path.isdir(item_path):
+                    item_path = return_path / cdir
+                    if item_path.is_dir():
                         match = regex_pattern.match(cdir)
                         if match:
                             existing_num = int(match.group(1))
@@ -248,12 +249,15 @@ class QtOutputEntry(QWidget):
                         continue
 
                 new_folder_name = f"{basename} ({copy_num})"
-                new_folder_path = os.path.join(return_val, new_folder_name)
-                os.mkdir(new_folder_path)
+                new_folder_path = return_path / new_folder_name
+                new_folder_path.mkdir(exist_ok=True)
 
                 self.output_dir_entry.set_text(new_folder_path)
                 self.dir_marquee_label.setText(new_folder_path)
 
                 return new_folder_path
+            else:
+                # Cancel is pressed, do nothing
+                return None
         else:
-            return return_val
+            return return_path

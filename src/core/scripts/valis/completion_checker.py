@@ -77,13 +77,14 @@ class ValisMonitoringThread(QThread):
         step_folders[-1:-1] = list(self._steps_dict.keys())
         # max_steps refers to the total number of steps that Valis will do on each sample
         max_steps = len(step_folders)
-        print(f'This is the destination directory: {self._dst_dir}')
+        #print(f'\nInitial State:\n\tstep_iterator: {step_iterator} - {step_folders}\n\tsample_iterator{sample_iterator}\n\tMax steps: {max_steps}')
 
         # Check for "processed" folder, determines if this is a clean registration or continuing an attempted registration
         if not os.path.exists(f"{self._dst_dir}/{self._sample_list[sample_iterator]}"):
             while sample_iterator < len(self._sample_list):
                 current_sample_name = self._sample_list[sample_iterator]
                 current_step_name = step_folders[step_iterator]
+                print(f'current_sample_name: {current_sample_name}\n\tsample_iterator: {sample_iterator}\ncurrent_step_name: {current_step_name}\n\tstep_iterator: {step_iterator}')
 
                 self.emit_step_status(step_iterator, current_step_name)
                 self.emit_sample_status(sample_iterator, current_sample_name)
@@ -93,6 +94,7 @@ class ValisMonitoringThread(QThread):
                 if step_iterator == 0:
                     if os.path.exists(f"{self._dst_dir}/{current_sample_name}/{current_step_name}"):
                         step_iterator += 1
+                        #print(f'{current_step_name} folder has been created! step_iterator is {step_iterator} and emitting {step_folders[step_iterator]}')
                         self.emit_step_status(step_iterator, step_folders[step_iterator])
                 # ***************************************************************************
                 # Intermediate steps: monitor for "overlaps" folder creation and its contents
@@ -100,15 +102,18 @@ class ValisMonitoringThread(QThread):
                 elif step_iterator <= len(self._steps_dict):
                     if os.path.isfile(f"{self._dst_dir}/{current_sample_name}/overlaps/{current_sample_name}_{current_step_name}_overlap.png"):
                         step_iterator += 1
+                        #print(f'{current_sample_name} overlap image has been created! step_iterator is {step_iterator} and emitting {step_folders[step_iterator]}')
                         self.emit_step_status(step_iterator, step_folders[step_iterator])
                 # **********************************************
                 # Final step: monitor for "data" folder creation
                 # **********************************************
                 elif step_iterator < max_steps:
+                    #print(f'\tChecking for {self._dst_dir}/{current_sample_name}/{current_step_name}')
                     if os.path.exists(f"{self._dst_dir}/{current_sample_name}/{current_step_name}"):
                         self.emit_step_status(step_iterator+1, step_folders[step_iterator])
                         step_iterator = 0
                         sample_iterator += 1
+                        #print(f'{current_step_name} exists! step_iterator is reset to {step_iterator} and sample_iterator increased to {sample_iterator}')
                         self.emit_sample_status(sample_iterator, current_sample_name)
                 # While monitoring, wait one second per iteration 
                 time.sleep(1)

@@ -43,6 +43,7 @@ def launch_with_selections(settings_path: str, image_path: str, home_dir: str):
     del reader
 
     selections_dict["src_dir"] = outer_image_dict["src_dir"]
+    print(f'Destination: {selections_dict["dst_dir"]}')
 
     # convert strings in dictionary to needed objects using functions in return_selections.py
     selections_dict["matcher"] = get_matcher_obj(
@@ -154,7 +155,8 @@ def launch_with_selections(settings_path: str, image_path: str, home_dir: str):
         rigid_registrar, non_rigid_registrar, error_df = registrar.register(**registration_params)
 
         # TODO: Save this function for the export button
-        # registrar.warp_and_save_slides(selections_dict[DST_DIR] + "/" + selections_dict[NAME], crop="overlap")
+        print(f'Warping and saving slides to: {selections_dict[DST_DIR]+"/"+selections_dict[NAME]}')
+        #registrar.warp_and_save_slides(selections_dict[DST_DIR] + "/" + selections_dict[NAME], crop="overlap")
 
     # TODO: Handle 'sorted' function here once unpacked form json
     # TODO: Handle 'reference' option here once unpacked as well
@@ -167,7 +169,7 @@ if __name__ == "__main__":
     # create args to pass file locations into python script when called in launchscript.sh
 
     parser = argparse.ArgumentParser(prog="Valis_launch_script", description="launches VALIS using arguments read in "
-                                                                             "from a JSON file")
+                                                                            "from a JSON file")
     # -path is the path to the user_settings.json file, -il is the path to the sample.json file,
     # -hdir is the string representing os.expanduser("~") on the user's system.
     parser.add_argument('-path')

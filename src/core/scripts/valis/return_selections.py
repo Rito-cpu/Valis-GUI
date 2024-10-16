@@ -14,7 +14,7 @@ def get_feature_detector_obj(user_selection: str):
             """
 
     fd_obj = getattr(feature_detectors, user_selection)
-
+    
     return fd_obj
 
 
