@@ -1,6 +1,7 @@
 import json
 import shutil
 import pathlib
+import subprocess
 
 from datetime import datetime
 from src.core.pyqt_core import *
@@ -277,6 +278,14 @@ class MainFunctions():
                         obj.click()
                         self.results_page_picker(self.ui.load_pages.result_page)
 
+    def check_docker_running():
+        try:
+            return True
+        except Exception as e:
+            return False
+        except FileNotFoundError:
+            return False
+
     def register_settings(
             self,
             output_dir_widget: QWidget,
@@ -416,8 +425,10 @@ class MainFunctions():
 
                 try:
                     self.valis_process = ValisProcessObject()
+                    successful_startup = self.valis_process.start_process()
+                    if not successful_startup:
+                        return
                     MainFunctions.jump_to_results(self)
-                    self.valis_process.start_process()
 
                     cancel_bttn = self.ui.load_pages.results_scroll_content.findChild(PyPushButton, "cancel_valis_bttn")
                     cancel_bttn.clicked.connect(self.valis_process.kill)

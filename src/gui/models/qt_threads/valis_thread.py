@@ -7,13 +7,18 @@ import pathlib
 from pathlib import PureWindowsPath, PurePosixPath
 from src.core.pyqt_core import *
 from src.core.app_config import APP_ROOT, SCRIPTS_PATH
+from src.core.json.json_themes import Themes
 from src.core.validation.platform_retrieval import is_windows_platform
 from src.core.validation import is_windows_platform, is_valid_json_file, is_existing_path
+from src.gui.models.qt_message import QtMessage
 
 
 class ValisProcessObject(QProcess):
     def __init__(self):
         super().__init__()
+
+        themes = Themes()
+        self.themes = themes.items
 
         self.process_killed = False
 
@@ -68,9 +73,13 @@ class ValisProcessObject(QProcess):
         launch_build = scripts_dir / "launchscript.sh"
         #launch_build = os.path.join(scripts_dir, "launchscript.sh")
 
-        self.setProgram("bash")
-        self.setArguments([str(launch_build), selections_script, local_user_settings, local_slide_settings, home_dir])
-        self.start()
+        if self.check_docker_running():
+            self.setProgram("bash")
+            self.setArguments([str(launch_build), selections_script, local_user_settings, local_slide_settings, home_dir])
+            self.start()
+            return True
+        else:
+            return False
 
     def handle_output(self):
         output = self.readAllStandardOutput()
@@ -86,3 +95,31 @@ class ValisProcessObject(QProcess):
         subprocess.run(["docker", "kill", "pyqt_valis_container"])
         self.process_killed = True
         super().kill()
+
+    def check_docker_running(self):
+        error_bttns = {
+            "Ok": QMessageBox.ButtonRole.AcceptRole
+        }
+        error_msg = QtMessage(
+            buttons=error_bttns,
+            color=self.themes["app_color"]["main_bg"],
+            bg_color_one=self.themes["app_color"]["dark_one"],
+            bg_color_two=self.themes["app_color"]["bg_one"],
+            bg_color_hover=self.themes["app_color"]["dark_three"],
+            bg_color_pressed=self.themes["app_color"]["dark_four"]
+        )
+        error_msg.setIcon(QMessageBox.Icon.Warning)
+
+        try:
+            subprocess.run(["docker", "info"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            return True
+        except subprocess.CalledProcessError as proc_err:
+            error_msg.setText('Docker Desktop Not Running!')
+            error_msg.setDetailedText(f'Please ensure that Docker Desktop is open and running.\nDocker Desktop is required to run the valis docker container.')
+            error_msg.exec()
+            return False
+        except FileNotFoundError:
+            error_msg.setText('Docker Not Found!')
+            error_msg.setDetailedText(f'Please ensure that Docker is installed. If Docker is installed but Docker Desktop is not, please download Docker Desktop and have it running for this process.')
+            error_msg.exec()
+            return False

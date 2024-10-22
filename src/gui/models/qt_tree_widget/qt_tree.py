@@ -1,5 +1,4 @@
 import pathlib
-import os
 
 from src.core.pyqt_core import *
 from src.core.json.json_themes import Themes
@@ -206,12 +205,10 @@ class QtTree(QWidget):
 
                 sample_data: dict
                 for sample_name, sample_data in samples_dict.items():
-                    sample_path = sample_data['File']
-                    # TODO: Get leaf (maybe use .name?)
-                    #sample_path = pathlib.Path(sample_data["File"]).resolve()
-                    print(f'sample_path: {sample_path}')
-                    leaf = os.path.basename(sample_path)
-                    self._file_dict[leaf] = sample_path
+                    sample_path = pathlib.Path(sample_data["File"]).resolve()
+                    leaf = str(sample_path.name)
+
+                    self._file_dict[leaf] = str(sample_path)
                     include_sample = sample_data['Include']
                     img_type = sample_data['Image type']
 

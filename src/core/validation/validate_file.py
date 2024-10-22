@@ -5,7 +5,6 @@ import pathlib
 from typing import Optional
 
 
-
 def is_json_file(filepath: pathlib.Path) -> bool:
     """Check if the file has a JSON mime type."""
     mime_type, _ = mimetypes.guess_type(filepath)
