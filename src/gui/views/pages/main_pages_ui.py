@@ -24,7 +24,7 @@ class Ui_MainPages(object):
 
         home_menu_layout = QVBoxLayout(self.home_menu_container)
         home_menu_layout.setContentsMargins(5, 5, 5, 5)
-        home_menu_layout.setSpacing(20)
+        home_menu_layout.setSpacing(75)
         home_menu_layout.setObjectName(u"home_menu_layout")
 
         home_upper_frame = QFrame(self.home_menu_container)
@@ -35,32 +35,42 @@ class Ui_MainPages(object):
         home_label = QLabel(home_upper_frame)
         home_label.setObjectName(u"label")
         home_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        home_label.setText(QCoreApplication.translate("MainPages", u"Project Configuration", None))
+        home_label.setText(QCoreApplication.translate("MainPages", u"", None))
         home_label.setStyleSheet('font-size: 16px; font-weight: bold;')
+        home_label.hide()
 
-        self.home_logo = QFrame(home_upper_frame)
-        self.home_logo.setObjectName(u"home_logo")
-        self.home_logo.setMinimumSize(QSize((2107/5), (517/5)))
-        self.home_logo.setMaximumSize(QSize((2107/5), (517/5)))
-        self.home_logo.setFrameShape(QFrame.Shape.NoFrame)
-        self.home_logo.setFrameShadow(QFrame.Shadow.Raised)
+        home_logo_frame = QFrame(home_upper_frame)
+        home_logo_frame.setObjectName(u"home_logo_frame")
+        home_logo_frame.setMinimumSize(QSize((2107/5), (517/5)))
+        home_logo_frame.setMaximumSize(QSize((2107/5), (517/5)))
+        home_logo_frame.setFrameShape(QFrame.Shape.NoFrame)
+        home_logo_frame.setFrameShadow(QFrame.Shadow.Raised)
 
-        valis_svg = QSvgWidget(Functions.set_svg_image("valis_logo.svg"))
+        valis_logo = QSvgWidget(Functions.set_svg_image("valis_logo.svg"))
 
-        self.home_logo_layout = QVBoxLayout(self.home_logo)
-        self.home_logo_layout.setContentsMargins(0, 0, 0, 0)
-        self.home_logo_layout.setSpacing(0)
-        self.home_logo_layout.setObjectName(u"home_logo_layout")
-        self.home_logo_layout.addWidget(valis_svg, Qt.AlignmentFlag.AlignCenter, Qt.AlignmentFlag.AlignCenter)
+        home_logo_layout = QVBoxLayout(home_logo_frame)
+        home_logo_layout.setContentsMargins(0, 0, 0, 0)
+        home_logo_layout.setSpacing(0)
+        home_logo_layout.setObjectName(u"home_logo_layout")
+        home_logo_layout.addWidget(valis_logo, Qt.AlignmentFlag.AlignCenter, Qt.AlignmentFlag.AlignCenter)
 
         home_upper_layout = QVBoxLayout(home_upper_frame)
-        home_upper_layout.setContentsMargins(0, 15, 0, 0)
+        home_upper_layout.setContentsMargins(0, 30, 0, 0)
         home_upper_layout.setSpacing(75)
         home_upper_layout.addWidget(home_label, alignment=Qt.AlignmentFlag.AlignCenter)
-        home_upper_layout.addWidget(self.home_logo, alignment=Qt.AlignmentFlag.AlignCenter)
+        home_upper_layout.addWidget(home_logo_frame, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        home_tab_container = QFrame(self.home_menu_container)
+        home_tab_container.setObjectName('home_tab_container')
+        home_tab_container.setFrameShape(QFrame.Shape.NoFrame)
+        home_tab_container.setFrameShadow(QFrame.Shadow.Raised)
+
+        self.home_tab_layout = QVBoxLayout(home_tab_container)
+        self.home_tab_layout.setObjectName('home_tab_layout')
+        self.home_tab_layout.setContentsMargins(30, 0, 30, 30)
 
         home_menu_layout.addWidget(home_upper_frame, 0, Qt.AlignmentFlag.AlignHCenter)
-        home_menu_layout.addStretch(1)
+        home_menu_layout.addWidget(home_tab_container)
 
         # *********************************
         # **** Image Directory Page ****
@@ -241,7 +251,7 @@ class Ui_MainPages(object):
         self.export_title_label = QLabel(self.export_scroll_contents)
         self.export_title_label.setObjectName(u"export_title_label")
         self.export_title_label.setMaximumSize(QSize(16777215, 40))
-        self.export_title_label.setStyleSheet(u"font-size: 16pt;")
+        self.export_title_label.setStyleSheet("font-size: 18px; font-weight: bold;")
         self.export_title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.export_scroll_layout = QVBoxLayout(self.export_scroll_contents)
@@ -282,7 +292,7 @@ class Ui_MainPages(object):
 
     def retranslate_ui(self, MainPages):
         MainPages.setWindowTitle(QCoreApplication.translate("MainPages", u"Form", None))
-        self.image_dir_title.setText(QCoreApplication.translate("MainPages", u"Slide Upload ", None))
+        self.image_dir_title.setText(QCoreApplication.translate("MainPages", u"Sample Upload ", None))
         self.registration_title.setText(QCoreApplication.translate("MainPages", u"Registration Settings", None))
-        self.result_page_title.setText(QCoreApplication.translate("MainPages", u"Results", None))
-        self.export_title_label.setText(QCoreApplication.translate("MainPages", u"Export", None))
+        self.result_page_title.setText(QCoreApplication.translate("MainPages", u"Results View", None))
+        self.export_title_label.setText(QCoreApplication.translate("MainPages", u"Export Results", None))

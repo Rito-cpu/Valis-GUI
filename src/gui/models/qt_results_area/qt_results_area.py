@@ -12,6 +12,7 @@ from src.core.keyword_store import *
 from src.gui.models import QtStatusTable
 from src.gui.models.qt_message import QtMessage
 from src.gui.models.qt_image_viewer import QtImageView
+from src.gui.models.py_push_button import PyPushButton
 
 
 class QtResultsArea(QWidget):
@@ -198,12 +199,29 @@ class QtResultsArea(QWidget):
         sample_step_layout.setSpacing(15)
         sample_step_layout.addWidget(step_bar_frame)
 
+        self.cancel_valis_bttn = PyPushButton(
+            text="Cancel",
+            radius=8,
+            color=self.themes["app_color"]["main_bg"],
+            bg_color=self.themes["app_color"]["red_bg"],
+            bg_color_hover=self.themes["app_color"]["red_hover"],
+            bg_color_pressed=self.themes["app_color"]["red_pressed"],
+            disabled_bg=self.themes["app_color"]["text_color"],
+            disabled_color=self.themes["app_color"]["main_bg"],
+            font_size=14,
+            parent=left_side_frame
+        )
+        self.cancel_valis_bttn.setObjectName('cancel_valis_bttn')
+        self.cancel_valis_bttn.setFixedSize(80, 35)
+        self.cancel_valis_bttn.setDisabled(True)
+
         left_side_layout = QVBoxLayout(left_side_frame)
         left_side_layout.setObjectName('left_side_layout')
         left_side_layout.setContentsMargins(5, 15, 0, 15)
         left_side_layout.setSpacing(40)
         left_side_layout.addWidget(total_sample_group)
         left_side_layout.addWidget(sample_step_group)
+        left_side_layout.addWidget(self.cancel_valis_bttn, alignment=Qt.AlignmentFlag.AlignCenter)
 
         viewer_frame = QFrame(self)
         viewer_frame.setObjectName('viewer_frame')
@@ -241,9 +259,7 @@ class QtResultsArea(QWidget):
         self._monitoring_thread.start()
 
     def update_step_bar(self, step_val):
-        #print(f'{self.previous_sample}\n\t{step_val}')
         if step_val == self.steps_max_range:
-            print(f'\nJust reached completion for : {self.previous_sample}\n')
             self.sample_table.update_sample_status(self.previous_sample, COMPLETE_S)
             self._sample_lookup[self.previous_sample] = None
         self.step_prog_bar.setValue(step_val)
@@ -262,7 +278,7 @@ class QtResultsArea(QWidget):
 
     def finish_bars(self):
         self.sample_prog_bar.setValue(self.sample_max_range)
-        self.sample_text.setText("Step: Done")
+        self.sample_text.setText("Sample: Done")
         self.step_prog_bar.setValue(self.steps_max_range)
         self.step_text.setText("Step: Done")
 
@@ -323,7 +339,6 @@ class QtResultsArea(QWidget):
         error_msg.setIcon(QMessageBox.Icon.Warning)
         
         output_dir = APP_ROOT / "src" / "core" / "output" / "states"
-        #output_dir = os.path.join(APP_ROOT, *["src", "core", "output", "states"])
         if not is_existing_path(output_dir):
             error_msg.setText('Error: output directory not found!')
             error_msg.setDetailedText(f'The directory \"src/core/output/states\" is not found in the project tree. Please create the missing directories to continue.')
@@ -331,7 +346,6 @@ class QtResultsArea(QWidget):
             return
 
         f = open(output_dir / "user_settings.json")
-        #f = open(os.path.join(output_dir, "user_settings.json"))
         if f:
             reader = json.load(f)["user_selections"]
             do_rigid, do_micro, do_non_rigid = reader["do_rigid"], reader["micro_rigid_registrar_cls"], reader["non_rigid_registrar_cls"]
@@ -343,13 +357,11 @@ class QtResultsArea(QWidget):
             return
 
         f = open(output_dir / "sample.json")
-        #f = open(os.path.join(output_dir, "sample.json"))
         if f:
             reader: dict
             reader = json.load(f)
             f.close()
             reader.pop("src_dir", None)
-            print(f'Reader is \n{reader}')
             sample_list = list(reader.keys())
             self._table_items = reader
             self.sample_max_range = len(sample_list)
@@ -386,8 +398,6 @@ class QtResultsArea(QWidget):
         if self.dst_dir:
             if self._sample_lookup[name] is None:
                 sample_dir = pathlib.Path(self.dst_dir) / name
-                #sample_dir = os.path.join(self.dst_dir, name)
-
                 sample_locations = {}
                 for root in sample_dir.glob("**/*"):
                     if root.is_file() and root.suffix.lower() == '.png':
@@ -398,18 +408,5 @@ class QtResultsArea(QWidget):
                             sample_locations[split_name] = []
                         
                         sample_locations[split_name].append(str(root))
-
-                #for root, dirs, files in os.walk(sample_dir):
-                #    if files:
-                #        if root is sample_dir:
-                #            continue
-                #        else:
-                #            png_files = [file for file in files if file.lower().endswith('.png')]
-                #            if png_files:
-                #                split_name = os.path.split(root)
-                #                sample_locations[split_name[-1]] = [os.path.join(root, file) for file in png_files]
-                #            else: continue
-                #    else: continue
                 self._sample_lookup[name] = sample_locations
-
             self.image_viewer.import_sample_data(name, self._sample_lookup[name])

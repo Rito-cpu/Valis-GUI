@@ -169,60 +169,6 @@ class MainFunctions():
         self.group.addAnimation(self.right_box)
         self.group.start()
 
-    def launch_context_window(self):
-        """Subwindow that displays the user provided slide directory and the contents that were selected for processing.
-        """
-        msg_bttns = {
-            'Ok': QMessageBox.ButtonRole.AcceptRole
-        }
-
-        context_file_msg = QtMessage(
-            buttons=msg_bttns,
-            color=self.themes["app_color"]["main_bg"],
-            bg_color_one=self.themes["app_color"]["dark_one"],
-            bg_color_two=self.themes["app_color"]["bg_one"],
-            bg_color_hover=self.themes["app_color"]["dark_three"],
-            bg_color_pressed=self.themes["app_color"]["dark_four"],
-        )
-
-        if SLIDE_UPLOAD_STATE == INCOMPLETE:
-            context_file_msg.setText('No slide image files have been submitted.')
-            context_file_msg.setDetailedText('Please upload slide image file(s) to proceed.')
-            context_file_msg.exec()
-        elif SLIDE_UPLOAD_STATE == COMPLETE:
-            data = SUBMITTED_SLIDES
-            slide_dirs = data['slide_dirs']
-
-            parent_portion = """
-                <html>
-                    <body>
-                        <p><b>Parent Directory:</b></p>
-                        <p>%s</p>
-                        <br></br>
-                    </body>
-                </html>
-            """ % data['parent_dir']
-
-            child_portion = """
-                <html>
-                    <body>
-                        <p><b>Slide Sub-Directories:</b></p>
-                    </body>
-                </html>
-            """
-
-            child_list = ''
-            for name in slide_dirs:
-                if name == slide_dirs[0]:
-                    child_list += name
-                else:
-                    child_list += '\n%s' % name
-
-            context_file_msg.setText('Submitted Slide Image Data')
-            context_file_msg.setInformativeText(parent_portion + child_portion)
-            context_file_msg.setDetailedText(child_list)
-            context_file_msg.exec()
-
     def set_project_directory(self, output_widget: QWidget):
         """Establishes a user provided directory as a project directory for application use.
 
@@ -262,9 +208,9 @@ class MainFunctions():
             return False
 
     def clear_pressed(self):
-        global SUBMITTED_SLIDES, SLIDE_UPLOAD_STATE
+        global SUBMITTED_SLIDES, SAMPLE_UPLOAD_STATE
         SUBMITTED_SLIDES = None
-        SLIDE_UPLOAD_STATE = INCOMPLETE
+        SAMPLE_UPLOAD_STATE = INCOMPLETE
 
     def jump_to_results(self):
         """Function that brings the user to a new page upon valis registration initiation.
@@ -277,14 +223,6 @@ class MainFunctions():
                     if obj.objectName() == 'results_bttn':
                         obj.click()
                         self.results_page_picker(self.ui.load_pages.result_page)
-
-    def check_docker_running():
-        try:
-            return True
-        except Exception as e:
-            return False
-        except FileNotFoundError:
-            return False
 
     def register_settings(
             self,
@@ -314,21 +252,20 @@ class MainFunctions():
         )
         error_msg.setIcon(QMessageBox.Icon.Warning)
 
-        global SLIDE_UPLOAD_STATE, REGISTRATION_STATE, SUBMITTED_SLIDES, OUTPUT_DIRECTORY
+        global SAMPLE_UPLOAD_STATE, REGISTRATION_STATE, SUBMITTED_SLIDES, OUTPUT_DIRECTORY
         # Check if image slide upload stage has been completed
-        if SLIDE_UPLOAD_STATE == INCOMPLETE:
-            error_msg.setText("Missing Upload Process!")
+        if SAMPLE_UPLOAD_STATE == INCOMPLETE:
+            error_msg.setText("Missing Sample Upload!")
             error_msg.setDetailedText(
-                "The upload process in the Slide Directory menu is not complete." +
-                "\nThere are no found submitted slide sub-directories to use settings on." +
-                "\nPlease go back and upload slide sub-directories to apply registration settings."
+                "The sample upload is incomplete: no uploaded samples were found." +
+                "\nPlease go back and upload samples to apply registration settings."
             )
             error_msg.exec()
             return
         else:
             # Check for invalid project directory submission
             if not OUTPUT_DIRECTORY:
-                error_msg.setText('No set output directory.')
+                error_msg.setText('No Output Directory!')
                 error_msg.setDetailedText(
                     'A output directory has not yet been configured and is needed for the next step.' +
                     'Please submit a valid output directory to store results.'
@@ -337,18 +274,6 @@ class MainFunctions():
                 return
             
             output_dir_widget.submit_bttn_clicked()
-
-            # Gather valid docker file path
-            #docker_path = QFileDialog.getExistingDirectory(self, 'Select Docker Project Directory')
-            #if docker_path == '':
-                # Catch cancel button event to not trigger an error message
-            #    return
-            #elif not docker_path or not is_existing_dir(docker_path):
-            #    error_msg.setText("Invalid Docker path.")
-            #    error_msg.setDetailedText("The path to the required valis docker container returned invalid.")
-            #    error_msg.exec()
-            #    return
-
             # Gather widget states for registration
             if_data = if_settings.get_widget_settings()
             bf_data = bf_settings.get_widget_settings()
@@ -387,8 +312,8 @@ class MainFunctions():
             user_settings.update(rigid_data)
             user_settings.update(non_rigid_data)
 
-            # TODO: How to handle crashes/errors?
             if OUTPUT_DIRECTORY is not None:
+                # Create session settings folder in user output directory
                 try:
                     session_settings_dir = pathlib.Path(OUTPUT_DIRECTORY) / "session_settings"
                     session_settings_dir.mkdir(exist_ok=True)
@@ -422,17 +347,17 @@ class MainFunctions():
                     return
 
                 results_area = self.ui.load_pages.results_scroll_content.findChild(QtResultsArea, "results_area")
-
+                # Create valis-wsi QProcess thread
                 try:
                     self.valis_process = ValisProcessObject()
                     successful_startup = self.valis_process.start_process()
                     if not successful_startup:
                         return
                     MainFunctions.jump_to_results(self)
+                    self.valis_process.finished.connect(lambda: MainFunctions.valis_completed(self))
 
-                    cancel_bttn = self.ui.load_pages.results_scroll_content.findChild(PyPushButton, "cancel_valis_bttn")
-                    cancel_bttn.clicked.connect(self.valis_process.kill)
-                    cancel_bttn.setEnabled(True)
+                    results_area.cancel_valis_bttn.clicked.connect(self.valis_process.kill)
+                    results_area.cancel_valis_bttn.setEnabled(True)
                 except Exception as e:
                     self.valis_process.kill()
                     error_msg.setText('Error occurred during registration process.')
@@ -440,10 +365,10 @@ class MainFunctions():
                     error_msg.exec()
                     return
 
+                # Create monitoring script QThread
                 try:
                     results_area.prepare_menu()
                     results_area.create_thread()
-                    self.valis_process.finished.connect(lambda: MainFunctions.completion_cleanup(self))
                 except Exception as e:
                     self.valis_process.kill()
                     # TODO: Process is not killed if error thrown
@@ -458,7 +383,6 @@ class MainFunctions():
                 error_msg.setText('No home directory found.')
                 error_msg.setDetailedText('The home directory path has not been set. To continue, please configure a home directory.')
                 error_msg.exec()
-
             REGISTRATION_STATE = COMPLETE
 
     def upload_slides(self, slide_dir_widget: QtSlideDirectory):
@@ -467,7 +391,7 @@ class MainFunctions():
         Args:
             slide_dir_widget (QtSlideDirectory): custom widget that contains user interactive widgets to enable slide image uploading.
         """
-        global OUTPUT_DIRECTORY, SLIDE_UPLOAD_STATE, SUBMITTED_SLIDES
+        global OUTPUT_DIRECTORY, SAMPLE_UPLOAD_STATE, SUBMITTED_SLIDES
         # Prepare message box for user errors
         error_bttns = {
             "Ok": QMessageBox.ButtonRole.AcceptRole
@@ -484,7 +408,7 @@ class MainFunctions():
 
         if not slide_dir_widget.is_valid_path():
             # Invalid or non-existent file path provided
-            error_msg.setText("Invalid file path submitted.")
+            error_msg.setText("Invalid File Path.")
             error_msg.setDetailedText(
                 "Please ensure that the file path provided in the text entry is a valid path " +
                 "and exists within your file system."
@@ -492,14 +416,14 @@ class MainFunctions():
             error_msg.exec()
             return
         elif slide_dir_widget.check_empty_tree():
-            error_msg.setText("File Tree is not populated.")
+            error_msg.setText("File Tree Incomplete.")
             error_msg.setDetailedText(
                 "Please ensure that the file tree is populated with the desired images to be registered."
             )
             error_msg.exec()
             return
         elif slide_dir_widget.all_toggle_deactivated():
-            error_msg.setText("There are no files to be registered.")
+            error_msg.setText("No Selected Files.")
             error_msg.setDetailedText(
                 "All files within the tree have been toggled to not be included. Please include at least one file."
             )
@@ -516,22 +440,23 @@ class MainFunctions():
         slide_dict = slide_dir_widget.get_data()
         SUBMITTED_SLIDES = slide_dict
 
-        SLIDE_UPLOAD_STATE = COMPLETE
+        SAMPLE_UPLOAD_STATE = COMPLETE
 
-    def completion_cleanup(self):
+    def valis_completed(self):
+        results_area = self.ui.load_pages.results_scroll_content.findChild(QtResultsArea, "results_area")
+
         if not self.valis_process.process_killed:
-            self.ui.load_pages.results_scroll_content.findChild(PyPushButton, "cancel_valis_bttn").clicked.disconnect(self.valis_process.kill)
-            if self.ui.load_pages.results_scroll_content.findChild(QtResultsArea, "results_area")._monitoring_thread:
-                self.ui.load_pages.results_scroll_content.findChild(QtResultsArea, "results_area")._monitoring_thread.terminate()
+            results_area.cancel_valis_bttn.clicked.disconnect(self.valis_process.kill)
+            #if results_area._monitoring_thread:
+                #results_area._monitoring_thread.terminate()
             print(f'Cleaned up!')
         else:
-            #self.ui.load_pages.results_scroll_content.findChild(PyPushButton, "cancel_valis_bttn").clicked.disconnect(self.valis_process.kill)
-            self.ui.load_pages.results_scroll_content.findChild(QtResultsArea, "results_area").process_terminated()
+            results_area.process_terminated()
             print(f'Canceled!')
         self.valis_process = None
-        self.ui.load_pages.results_scroll_content.findChild(PyPushButton, 'cancel_valis_bttn').setEnabled(False)
+        results_area.cancel_valis_bttn.setEnabled(False)
 
-    def export_data(self):
+    def move_to_export_menu(self):
         """Handles the submit button on the export page to check if previous page has been completed and process further instructions for exporting
         """
         error_bttns = {
@@ -549,10 +474,10 @@ class MainFunctions():
 
         global REGISTRATION_STATE
         if REGISTRATION_STATE == INCOMPLETE:
-            error_msg.setText("Registration settings are incomplete.")
+            error_msg.setText("Registration Incomplete!")
             error_msg.setDetailedText(
-                "Registration Settings Menu is incomplete (data has not be submitted)." +
-                "\nPlease go back to the Registration Settings Menu and submit the parameters."
+                "The Registration Settings have not been submitted." +
+                "\nPlease go back to the Registration Settings menu and submit the parameters."
             )
             error_msg.exec()
             return
@@ -562,7 +487,7 @@ class MainFunctions():
             for obj in self.ui.left_menu._menu_list:
                 if obj.objectName() == 'results_bttn':
                     obj.click()
-                    self.bookmark_second_half(self.ui.load_pages.export_page)
+                    self.results_page_picker(self.ui.load_pages.export_page)
 
     def export_clicked(self, show_prog_bar, show_button):
         show_prog_bar()

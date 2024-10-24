@@ -2,7 +2,7 @@ import pathlib
 
 from src.core.pyqt_core import *
 from src.core.json.json_themes import Themes
-from src.core.app_config import SUBMITTED_SLIDES, SLIDE_UPLOAD_STATE, INCOMPLETE
+from src.core.app_config import SUBMITTED_SLIDES, SAMPLE_UPLOAD_STATE, INCOMPLETE
 from src.core.keyword_store import FLUORESCENCE_KEY, BF_KEY
 from src.gui.models import PyToggle, QtComboBox, PyPushButton
 from .qt_dir_widget import DirectoryWidget

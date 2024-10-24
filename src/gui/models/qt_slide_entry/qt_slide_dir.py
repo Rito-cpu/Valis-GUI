@@ -48,7 +48,7 @@ class QtSlideDirectory(QWidget):
         entry_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         self.image_dir_entry = QtButtonLineEdit(
-            title="Slide Directory",
+            title="Sample Directory",
             title_color=self._text_color,
             color_three=self._blue_color,
             top_margin=18,

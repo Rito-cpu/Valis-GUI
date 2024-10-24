@@ -48,7 +48,7 @@ class SetupMainWindow:
             "bttn_icon" : "icon_home.svg",
             "bttn_id" : "bttn_home",
             "bttn_text" : "Home",
-            "bttn_tooltip" : "Home page",
+            "bttn_tooltip" : "Home Menu",
             "show_top" : True,
             "is_active" : True
         },
@@ -56,7 +56,7 @@ class SetupMainWindow:
             "bttn_icon" : "parameters_icon.svg",
             "bttn_id" : "registration_bttn",
             "bttn_text" : "Registration",
-            "bttn_tooltip" : "Slide image settings",
+            "bttn_tooltip" : "Valis Setup Menu",
             "show_top" : True,
             "is_active" : False
         },
@@ -64,7 +64,7 @@ class SetupMainWindow:
             "bttn_icon" : "results_icon.svg",
             "bttn_id" : "results_bttn",
             "bttn_text" : "Results",
-            "bttn_tooltip" : "Slide registration results",
+            "bttn_tooltip" : "Valis Registration Results Menu",
             "show_top" : True,
             "is_active" : False
         },
@@ -72,7 +72,7 @@ class SetupMainWindow:
             "bttn_icon" : "icon_info.svg",
             "bttn_id" : "bttn_info",
             "bttn_text" : "Information",
-            "bttn_tooltip" : "Open informations",
+            "bttn_tooltip" : "More Information",
             "show_top" : False,
             "is_active" : False
         }
@@ -91,7 +91,7 @@ class SetupMainWindow:
             {
                 "bttn_icon" : "icon_menu.svg",
                 "bttn_id" : "bttn_top_settings",
-                "bttn_tooltip" : "Top settings",
+                "bttn_tooltip" : "Menu Specific Settings",
                 "is_active" : False
             }
         ]
@@ -155,8 +155,8 @@ class SetupMainWindow:
         # ******************************
         # **** Right Column Widgets ****
         # ******************************
-        self.slide_menu_bttn = PyPushButton(
-            text="Slide Directory Menu",
+        self.sample_menu_bttn = PyPushButton(
+            text="Sample Upload",
             radius=8,
             color=self.themes["app_color"]["text_color"],
             bg_color=self.themes["app_color"]["yellow_bg"],
@@ -165,12 +165,12 @@ class SetupMainWindow:
             highlight=self.themes["app_color"]["green_bg"],
             parent=self.ui.right_column.slide_navigation_bttn_frame
         )
-        self.slide_menu_bttn.setObjectName('slide_menu_bttn')
-        self.slide_menu_bttn.setFixedHeight(38)
-        self.slide_menu_bttn.set_highlight()
+        self.sample_menu_bttn.setObjectName('sample_menu_bttn')
+        self.sample_menu_bttn.setFixedHeight(38)
+        self.sample_menu_bttn.set_highlight()
 
         self.registration_menu_bttn = PyPushButton(
-            text="Registration Menu",
+            text="Registration Settings",
             radius=8,
             color=self.themes["app_color"]["text_color"],
             bg_color=self.themes["app_color"]["yellow_bg"],
@@ -183,7 +183,7 @@ class SetupMainWindow:
         self.registration_menu_bttn.setFixedHeight(38)
 
         self.results_menu_bttn = PyPushButton(
-            text="Results Menu",
+            text="View Results",
             radius=8,
             color=self.themes["app_color"]["text_color"],
             bg_color=self.themes["app_color"]["yellow_bg"],
@@ -197,7 +197,7 @@ class SetupMainWindow:
         self.results_menu_bttn.set_highlight()
 
         self.export_menu_bttn = PyPushButton(
-            text="Export Menu",
+            text="Export Results",
             radius=8,
             color=self.themes["app_color"]["text_color"],
             bg_color=self.themes["app_color"]["yellow_bg"],
@@ -209,16 +209,15 @@ class SetupMainWindow:
         self.export_menu_bttn.setObjectName('export_menu_bttn')
         self.export_menu_bttn.setFixedHeight(38)
 
-        self.ui.right_column.slide_navigation_bttn_layout.addWidget(self.slide_menu_bttn)
+        self.ui.right_column.slide_navigation_bttn_layout.addWidget(self.sample_menu_bttn)
         self.ui.right_column.slide_navigation_bttn_layout.addWidget(self.registration_menu_bttn)
         self.ui.right_column.results_bttn_layout.addWidget(self.results_menu_bttn)
         self.ui.right_column.results_bttn_layout.addWidget(self.export_menu_bttn)
 
-        self.slide_menu_bttn.clicked.connect(lambda: self.registration_page_picker(self.ui.load_pages.image_dir_subpage))
+        self.sample_menu_bttn.clicked.connect(lambda: self.registration_page_picker(self.ui.load_pages.image_dir_subpage))
         self.registration_menu_bttn.clicked.connect(lambda: self.registration_page_picker(self.ui.load_pages.registration_settings_subpage))
         self.results_menu_bttn.clicked.connect(lambda: self.results_page_picker(self.ui.load_pages.result_page))
         self.export_menu_bttn.clicked.connect(lambda: self.results_page_picker(self.ui.load_pages.export_page))
-        self.ui.right_column.context_file_bttn.clicked.connect(lambda: MainFunctions.launch_context_window(self))
 
         # Pages
         # Page 1 - Add logo to main page
@@ -228,8 +227,9 @@ class SetupMainWindow:
         # *********************************
         # ******** Home Page Setup ********
         # *********************************
+        home_menu = HomeTabWidget()
 
-
+        self.ui.load_pages.home_tab_layout.addWidget(home_menu)
         # ****************************************
         # ****** Slide Directory Page Setup ******
         # ****************************************
@@ -377,7 +377,7 @@ class SetupMainWindow:
         results_bttn_frame.setFrameShape(QFrame.Shape.NoFrame)
         results_bttn_frame.setFrameShadow(QFrame.Shadow.Raised)
 
-        self.export_data_bttn = PyPushButton(
+        self.results_to_export_bttn = PyPushButton(
             text="Export Results",
             radius=8,
             color=self.themes["app_color"]["text_color"],
@@ -387,32 +387,15 @@ class SetupMainWindow:
             font_size=14,
             parent=results_bttn_frame
         )
-        self.export_data_bttn.setObjectName('export_data_bttn')
-        self.export_data_bttn.clicked.connect(lambda: MainFunctions.export_data(self))
-        self.export_data_bttn.setFixedSize(200, 35)
-
-        self.cancel_valis_bttn = PyPushButton(
-            text="Cancel",
-            radius=8,
-            color=self.themes["app_color"]["main_bg"],
-            bg_color=self.themes["app_color"]["red_bg"],
-            bg_color_hover=self.themes["app_color"]["red_hover"],
-            bg_color_pressed=self.themes["app_color"]["red_pressed"],
-            disabled_bg=self.themes["app_color"]["text_color"],
-            disabled_color=self.themes["app_color"]["main_bg"],
-            font_size=14,
-            parent=results_bttn_frame
-        )
-        self.cancel_valis_bttn.setObjectName('cancel_valis_bttn')
-        self.cancel_valis_bttn.setFixedSize(80, 35)
-        self.cancel_valis_bttn.setDisabled(True)
+        self.results_to_export_bttn.setObjectName('export_data_bttn')
+        self.results_to_export_bttn.clicked.connect(lambda: MainFunctions.move_to_export_menu(self))
+        self.results_to_export_bttn.setFixedSize(200, 35)
 
         results_bttn_layout = QHBoxLayout(results_bttn_frame)
         results_bttn_layout.setObjectName('results_bttn_layout')
         results_bttn_layout.setContentsMargins(5, 5, 5, 5)
         results_bttn_layout.setSpacing(15)
-        results_bttn_layout.addWidget(self.cancel_valis_bttn)
-        results_bttn_layout.addWidget(self.export_data_bttn)
+        results_bttn_layout.addWidget(self.results_to_export_bttn)
 
         self.ui.load_pages.results_sideways_layout.addWidget(self.results_area)
         self.ui.load_pages.results_scroll_layout.addWidget(results_bttn_frame)

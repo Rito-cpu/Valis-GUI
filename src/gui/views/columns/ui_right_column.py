@@ -116,46 +116,6 @@ class Ui_RightColumn(object):
         self.results_column_layout.addWidget(self.results_button_frame)
         self.results_column_layout.addStretch(1)
 
-        # *****************************
-        # **** Context File Window ****
-        # *****************************
-        context_file_frame = QFrame(RightColumn)
-        context_file_frame.setObjectName('context_frame')
-        context_file_frame.setFrameShape(QFrame.Shape.NoFrame)
-        context_file_frame.setFrameShadow(QFrame.Shadow.Raised)
-
-        context_label = QLabel(context_file_frame)
-        context_label.setObjectName('context_label')
-        context_label.setText('Context File:')
-        context_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        context_label.setStyleSheet('font-size: 12px; text-decoration: underline;')
-
-        new_window_path = os.path.join(IMG_RSC_PATH, 'svg_icons/new_window_icon.svg')
-
-        self.context_file_bttn = QToolButton(context_file_frame)
-        self.context_file_bttn.setObjectName('context_file_bttn')
-        self.context_file_bttn.setIcon(QIcon(new_window_path))
-        self.context_file_bttn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.context_file_bttn.setIconSize(QSize(19, 19))
-        self.context_file_bttn.setStyleSheet("""
-            QToolButton {
-                background: white;
-                border: none;
-                border-radius: 6px;
-            }
-            QToolButton:pressed {
-                background: gray;
-            }
-        """)
-
-        context_file_layout = QHBoxLayout(context_file_frame)
-        context_file_layout.setObjectName('context_file_layout')
-        context_file_layout.setContentsMargins(5, 5, 5, 5)
-        context_file_layout.setSpacing(15)
-        context_file_layout.addWidget(context_label, alignment=Qt.AlignmentFlag.AlignCenter)
-        context_file_layout.addWidget(self.context_file_bttn)
-        # context_file_frame.setFixedWidth(context_file_layout.sizeHint().width() + 10)
-
         # ******************
         # **** Finalize ****
         # ******************
@@ -166,14 +126,13 @@ class Ui_RightColumn(object):
         self.menus.setCurrentIndex(1)
 
         self.main_pages_layout.addWidget(self.menus)
-        self.main_pages_layout.addWidget(context_file_frame, alignment=Qt.AlignmentFlag.AlignCenter)
 
         QMetaObject.connectSlotsByName(RightColumn)
     # setupUi
 
     def retranslateUi(self, RightColumn):
         RightColumn.setWindowTitle(QCoreApplication.translate("RightColumn", u"Form", None))
-        self.slide_navigation_label.setText(QCoreApplication.translate("RightColumn", u"Slide Navigation Menu", None))
+        self.slide_navigation_label.setText(QCoreApplication.translate("RightColumn", u"Setup Navigation", None))
         self.label_1.setText(QCoreApplication.translate("RightColumn", u"Menu 1 - Right Menu", None))
-        self.results_subpage_label.setText(QCoreApplication.translate("RightColumn", u"Results Navigation Menu", None))
+        self.results_subpage_label.setText(QCoreApplication.translate("RightColumn", u"Results Navigation", None))
     # retranslateUi

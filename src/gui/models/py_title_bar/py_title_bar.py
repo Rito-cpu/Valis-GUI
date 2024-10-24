@@ -255,7 +255,7 @@ class PyTitleBar(QWidget):
         self.minimize_button = PyTitleButton(
             self._parent,
             self._app_parent,
-            tooltip_text = "Minimize app",
+            tooltip_text = "Minimize App",
             dark_one = self._dark_one,
             bg_color = self._bttn_bg_color,
             bg_color_hover = self._bttn_bg_color_hover,
@@ -293,7 +293,7 @@ class PyTitleBar(QWidget):
         self.close_button = PyTitleButton(
             self._parent,
             self._app_parent,
-            tooltip_text = "Close app",
+            tooltip_text = "Close App",
             dark_one = self._dark_one,
             bg_color = self._bttn_bg_color,
             bg_color_hover = self._bttn_bg_color_hover,

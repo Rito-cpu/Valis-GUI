@@ -141,13 +141,13 @@ class MainWindow(QMainWindow):
         """
         MainFunctions.set_page(self, page)
 
-        slide_menu_bttn = self.ui.right_column.slide_navigation_bttn_frame.findChild(PyPushButton, 'slide_menu_bttn')
+        sample_menu_bttn = self.ui.right_column.slide_navigation_bttn_frame.findChild(PyPushButton, 'sample_menu_bttn')
         registration_menu_bttn = self.ui.right_column.slide_navigation_bttn_frame.findChild(PyPushButton, 'registration_menu_bttn')
         if page == self.ui.load_pages.image_dir_subpage:
-            slide_menu_bttn.set_highlight()
+            sample_menu_bttn.set_highlight()
             registration_menu_bttn.remove_highlight()
         elif page == self.ui.load_pages.registration_settings_subpage:
-            slide_menu_bttn.remove_highlight()
+            sample_menu_bttn.remove_highlight()
             registration_menu_bttn.set_highlight()
 
         self.first_two_pages = page
@@ -188,15 +188,17 @@ class MainWindow(QMainWindow):
             "No": QMessageBox.ButtonRole.NoRole
         }
 
-        exit_message_box = QtMessage(buttons=exit_buttons,
-                        color=self.themes["app_color"]["main_bg"],
-                        bg_color_one=self.themes["app_color"]["dark_one"],
-                        bg_color_two=self.themes["app_color"]["bg_one"],
-                        bg_color_hover=self.themes["app_color"]["dark_three"],
-                        bg_color_pressed=self.themes["app_color"]["dark_four"])
+        exit_message_box = QtMessage(
+            buttons=exit_buttons,
+            color=self.themes["app_color"]["main_bg"],
+            bg_color_one=self.themes["app_color"]["dark_one"],
+            bg_color_two=self.themes["app_color"]["bg_one"],
+            bg_color_hover=self.themes["app_color"]["dark_three"],
+            bg_color_pressed=self.themes["app_color"]["dark_four"]
+        )
         exit_message_box.setIcon(QMessageBox.Icon.Warning)
-        exit_message_box.setText("Are you sure you want to exit?")
-        exit_message_box.setInformativeText("Any unsaved work will be lost.")
+        exit_message_box.setText("Exit Application?")
+        exit_message_box.setInformativeText("All unsaved work will be lost.")
         exit_message_box.exec()
 
         if exit_message_box.clickedButton() == exit_message_box.buttons["Yes"]:

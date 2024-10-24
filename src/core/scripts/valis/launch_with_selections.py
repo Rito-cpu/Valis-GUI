@@ -23,7 +23,7 @@ from valis import registration
 import argparse
 
 
-def launch_with_selections(settings_path: str, image_path: str, home_dir: str):
+def launch_with_selections(user_settings_path: str, slide_settings_path: str, home_dir: str):
     """
     Args:
         settings_path: the full filepath to the user_settings.json file within the docker container
@@ -33,17 +33,16 @@ def launch_with_selections(settings_path: str, image_path: str, home_dir: str):
     """
 
     # read in JSON file as a dictionary
-    f = open(settings_path)
-    reader = json.load(f)
+    json_file = open(user_settings_path)
+    reader = json.load(json_file)
     selections_dict = reader['user_selections']
-    f = open(image_path)
-    reader = json.load(f)
+    json_file = open(slide_settings_path)
+    reader = json.load(json_file)
     outer_image_dict = reader
-    f.close()
+    json_file.close()
     del reader
 
     selections_dict["src_dir"] = outer_image_dict["src_dir"]
-    print(f'Destination: {selections_dict["dst_dir"]}')
 
     # convert strings in dictionary to needed objects using functions in return_selections.py
     selections_dict["matcher"] = get_matcher_obj(
@@ -92,27 +91,26 @@ def launch_with_selections(settings_path: str, image_path: str, home_dir: str):
         '''
 
     # create list of sample directories and their corresponding names
-    for k, v in outer_image_dict.items():
-        if k == "src_dir":
+    for sample_name, sample_dict in outer_image_dict.items():
+        if sample_name == "src_dir":
             continue
-        name_list.append(k)
-        samples = v["files"]
-        directory_list.append(samples)
+        name_list.append(sample_name)
+        slide_data = sample_dict["files"]
+        directory_list.append(slide_data)
 
     for i in range(0, len(directory_list)):
-        #k refers to each sample directory, v refers to the individual images in those samples
-        for k, v in directory_list[i].items():
-
+        #slide_number refers to each slide within sample directory, slide_settings refers to the individual image settings in those samples
+        for slide_number, slide_settings in directory_list[i].items():
             # if individual image is marked as "include," update value of image in directory_list to be its filepath
             # also add file to "processor_dict" with "/root" replacement and image type (this will be important if
             # the user has manually changed an image type in pre-registration settings).
 
-            if v["Include"]:
-                directory_list[i][k] = v["File"]
-                processor_dict.update({v["File"].replace(home_dir, "/root"): v["Image type"]})
+            if slide_settings["Include"]:
+                directory_list[i][slide_number] = slide_settings["File"]
+                processor_dict.update({slide_settings["File"].replace(home_dir, "/root"): slide_settings["Image type"]})
             else:
                 # if the user has chosen not to include an image, simply change the value to None
-                directory_list[i][k] = None
+                directory_list[i][slide_number] = None
 
         # change all "home_dir" values to "/root" in dictionary
         directory_list[i] = {key: value.replace(home_dir, "/root") for key, value in directory_list[i].items() if value}
@@ -127,7 +125,10 @@ def launch_with_selections(settings_path: str, image_path: str, home_dir: str):
     # generates a new list of image types based on newly updated directory list
     for i in range(0, len(directory_list)):
         processor_dict_list.append(
-            {key: value for key, value in processor_dict.items() if key in list(directory_list[i].values())})
+            {
+                key: value for key, value in processor_dict.items() if key in list(directory_list[i].values())
+            }
+        )
 
     # replaces stored string values referring to image type within each sample with the correct processor object
     for i in processor_dict_list:
