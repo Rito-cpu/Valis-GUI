@@ -229,7 +229,9 @@ class SetupMainWindow:
         # *********************************
         home_menu = HomeTabWidget()
 
-        self.ui.load_pages.home_tab_layout.addWidget(home_menu)
+        self.ui.load_pages.home_tab_layout.addStretch(1)
+        self.ui.load_pages.home_tab_layout.addWidget(home_menu, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.ui.load_pages.home_tab_layout.addStretch(1)
         # ****************************************
         # ****** Slide Directory Page Setup ******
         # ****************************************
@@ -417,7 +419,6 @@ class SetupMainWindow:
             dimensions=(200, 200),
             parent=export_image_area
         )
-        # self.export_image_view.add_images(results_table_list[0], img_list, img_names)
 
         self.export_type_combo = QtComboBox(
             bg_color=self.themes["app_color"]["yellow_bg"],

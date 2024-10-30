@@ -156,7 +156,6 @@ def launch_with_selections(user_settings_path: str, slide_settings_path: str, ho
         rigid_registrar, non_rigid_registrar, error_df = registrar.register(**registration_params)
 
         # TODO: Save this function for the export button
-        print(f'Warping and saving slides to: {selections_dict[DST_DIR]+"/"+selections_dict[NAME]}')
         #registrar.warp_and_save_slides(selections_dict[DST_DIR] + "/" + selections_dict[NAME], crop="overlap")
 
     # TODO: Handle 'sorted' function here once unpacked form json
@@ -166,7 +165,6 @@ def launch_with_selections(user_settings_path: str, slide_settings_path: str, ho
 
 
 if __name__ == "__main__":
-
     # create args to pass file locations into python script when called in launchscript.sh
 
     parser = argparse.ArgumentParser(prog="Valis_launch_script", description="launches VALIS using arguments read in "

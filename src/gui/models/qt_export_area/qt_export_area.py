@@ -92,32 +92,40 @@ class QtExportArea(QWidget):
         table_layout.addWidget(selection_frame, alignment=Qt.AlignmentFlag.AlignCenter)
         table_frame.setMaximumHeight(table_layout.sizeHint().height() + 10)
 
-        options_frame = QGroupBox(self)
-        options_frame.setTitle('Options')
-        general_groupbox = """
+        export_options_gb = QGroupBox(self)
+        export_options_gb.setObjectName('export_options_gb')
+        export_options_gb.setTitle('File Export Options')
+        export_options_gb.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        export_options_gb.setStyleSheet(f"""
             QGroupBox {{
-                font-size: {_font_size}px;
-                background-color: {_bg_color};
-                border: none;
-                border-radius: {_border_radius}px;
-                margin-top: {_top_margin}px;
-                color: {_color};
+                font-size: 13px;
+                background: {self.themes['app_color']['main_bg']};
+                border: 1px solid {self.themes['app_color']['text_color']};
+                border-radius: 8px;
+                margin-top: 9px;
             }}
-            QGroupBox:title {{
+            QGroupBox::title {{
+                color: {self.themes['app_color']['text_color']};
                 subcontrol-origin: margin;
-                left: {_left_margin}px;
+                subcontrol-position: top-center;
+                padding-left: 7px;
+                padding-right: 7px;
             }}
-        """.format(
-            _font_size=14,
-            _bg_color=self.themes['app_color']['blue_bg'],
-            _border_radius=13,
-            _top_margin=23,
-            _left_margin=23,
-            _color=self.themes['app_color']['text_color']
-        )
-        options_frame.setStyleSheet(general_groupbox)
+        """)
 
-        percentage_frame = QFrame(options_frame)
+        export_options_inner_frame = QFrame(export_options_gb)
+        export_options_inner_frame.setObjectName('export_options_inner_frame')
+        export_options_inner_frame.setFrameShape(QFrame.Shape.NoFrame)
+        export_options_inner_frame.setFrameShadow(QFrame.Shadow.Plain)
+        export_options_inner_frame.setStyleSheet(f"""
+            QFrame#export_options_inner_frame{{
+                background: {self.themes['app_color']['blue_bg']};
+                border: none;
+                border-radius: 8px;
+            }}
+        """)
+
+        percentage_frame = QFrame(export_options_inner_frame)
         percentage_frame.setObjectName('percentage_frame')
         percentage_frame.setFrameShape(QFrame.Shape.NoFrame)
         percentage_frame.setFrameShadow(QFrame.Shadow.Raised)
@@ -136,6 +144,15 @@ class QtExportArea(QWidget):
         self.percentage_combo.addItems(['Test One', 'Test Two', 'Test Three'])
         self.percentage_combo.setFixedHeight(30)
         self.percentage_combo.setMinimumWidth(120)
+        self.percentage_combo.hide()
+
+        test = QSpinBox(percentage_frame)
+        test.setRange(1, 100)
+        test.setValue(25)
+        test.setStyleSheet(f"""
+            QSpinBox{{
+                        }}
+        """)
 
         percentage_layout = QHBoxLayout(percentage_frame)
         percentage_layout.setObjectName('percentage_layout')
@@ -143,8 +160,9 @@ class QtExportArea(QWidget):
         percentage_layout.setSpacing(15)
         percentage_layout.addWidget(percentage_label, alignment=Qt.AlignmentFlag.AlignLeft)
         percentage_layout.addWidget(self.percentage_combo)
+        percentage_layout.addWidget(test)
 
-        channel_frame = QFrame(options_frame)
+        channel_frame = QFrame(export_options_inner_frame)
         channel_frame.setObjectName('channel_frame')
         channel_frame.setFrameShape(QFrame.Shape.NoFrame)
         channel_frame.setFrameShadow(QFrame.Shadow.Raised)
@@ -174,14 +192,22 @@ class QtExportArea(QWidget):
         channel_layout.addWidget(channel_label, alignment=Qt.AlignmentFlag.AlignLeft)
         channel_layout.addWidget(self._merge_channels_toggle)
 
-        options_layout = QVBoxLayout(options_frame)
-        options_layout.setObjectName('options_layout')
-        options_layout.setContentsMargins(45, 20, 45, 20)
-        options_layout.setSpacing(15)
-        options_layout.addWidget(percentage_frame, alignment=Qt.AlignmentFlag.AlignCenter)
-        options_layout.addWidget(channel_frame, alignment=Qt.AlignmentFlag.AlignCenter)
-        options_frame.setMinimumWidth(table_frame.sizeHint().width())
-        options_frame.setMaximumHeight(options_layout.sizeHint().height() + 50)
+        export_options_inner_layout = QVBoxLayout(export_options_inner_frame)
+        export_options_inner_layout.setObjectName('export_options_inner_layout')
+        export_options_inner_layout.setContentsMargins(45, 20, 45, 20)
+        export_options_inner_layout.setSpacing(15)
+        export_options_inner_layout.addWidget(percentage_frame, alignment=Qt.AlignmentFlag.AlignCenter)
+        export_options_inner_layout.addWidget(channel_frame, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        export_options_gb_layout = QVBoxLayout(export_options_gb)
+        export_options_gb_layout.setObjectName('export_options_gb_layout')
+        export_options_gb_layout.setContentsMargins(10, 10, 10, 10)
+        export_options_gb_layout.setSpacing(15)
+        #export_options_layout.addWidget(percentage_frame, alignment=Qt.AlignmentFlag.AlignCenter)
+        #export_options_layout.addWidget(channel_frame, alignment=Qt.AlignmentFlag.AlignCenter)
+        export_options_gb_layout.addWidget(export_options_inner_frame)
+        export_options_gb.setMinimumWidth(table_frame.sizeHint().width())
+        export_options_gb.setMaximumHeight(export_options_gb_layout.sizeHint().height() + 50)
 
         self.bar_frame = QFrame(self)
         self.bar_frame.setObjectName('bar_frame')
@@ -290,7 +316,7 @@ class QtExportArea(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(45)
         main_layout.addWidget(table_frame)
-        main_layout.addWidget(options_frame)
+        main_layout.addWidget(export_options_gb)
         main_layout.addWidget(self.bar_frame)
         main_layout.addStretch(1)
 

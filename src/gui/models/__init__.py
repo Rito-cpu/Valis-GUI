@@ -25,5 +25,6 @@ from .qt_slide_entry import QtSlideDirectory
 from .qt_tree_widget import QtTree
 from .qt_bar import ValisBar
 from .qt_threads import ValisProcessObject
-from .qt_collapsible_box import QtCollapsibleWidget
+from .qt_collapsible_box import QtCollapsibleWidget, QtSectionalWidget
 from .qt_home_tabs import HomeTabWidget
+from .qt_clickable_icon import QtMenuIcon

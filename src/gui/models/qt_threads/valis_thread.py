@@ -41,23 +41,18 @@ class ValisProcessObject(QProcess):
         # APP_CONFIG is valis_gui_main
         scripts_dir = SCRIPTS_PATH / "valis"
         output_dir = APP_ROOT / "src" / "core" / "output" / "states"
-        #scripts_dir = os.path.join(SCRIPTS_PATH, "valis")
-        #output_dir = os.path.join(APP_ROOT, *["src", "core", "output", "states"])
 
         selections_script = scripts_dir / "launch_with_selections.py"
-        #selections_script = os.path.join(scripts_dir, "launch_with_selections.py")
         if not is_existing_path(selections_script):
             print("Error: launch_with_selections.py not found!")
             return
 
         local_user_settings = output_dir / "user_settings.json"
-        #json_dir = os.path.join(output_dir, "user_settings.json")
         if not is_valid_json_file(local_user_settings):
             print("Error: user_settings.json not found!")
             return
 
         local_slide_settings = output_dir / "sample.json"
-        #img_dir = os.path.join(output_dir, "sample.json")
         if not is_valid_json_file(local_slide_settings):
             print("Error: sample.json not found!")
             return
@@ -71,7 +66,6 @@ class ValisProcessObject(QProcess):
 
         # run launchscript.sh with generated arguments
         launch_build = scripts_dir / "launchscript.sh"
-        #launch_build = os.path.join(scripts_dir, "launchscript.sh")
 
         if self.check_docker_running():
             self.setProgram("bash")

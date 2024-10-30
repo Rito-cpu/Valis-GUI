@@ -17,6 +17,8 @@ class HomeTabWidget(QTabWidget):
         themes = Themes()
         self.themes = themes.items
 
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+
         self._setup_widget()
 
     def _setup_widget(self):
@@ -30,5 +32,11 @@ class HomeTabWidget(QTabWidget):
         self.setTabToolTip(0, "Start New Valis Registration Session")
         self.setTabToolTip(1, "Use Previous Valis Registration Session")
         self.tabBar().setCursor(Qt.CursorShape.PointingHandCursor)
+
+        self.setMinimumSize(800, 430)
+        self.setMaximumSize(self.minimumSize()*1.5)
+
+    def hyper_link_clicked(self, bttn_name: str):
+        pass
 
         
