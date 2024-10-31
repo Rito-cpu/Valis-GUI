@@ -4,7 +4,7 @@ from src.core.image_functions import Functions
 from src.core.app_config import IMG_RSC_PATH
 from src.gui.models.qt_message import QtMessage
 from src.gui.models.qt_collapsible_box import QtSectionalWidget
-from .qt_hyperlink import HyperlinkLabel
+from src.gui.models.qt_clickable_label import QtClickableLabel
 
 
 class NewTab(QWidget):
@@ -42,13 +42,21 @@ class NewTab(QWidget):
         starting_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         starting_label.setText("Getting Started with VALIS!")
         starting_label.setStyleSheet('font-weight: bold; font-size: 22px;')
-        #starting_label.setFont(section_font)
 
-        sectional_house = QFrame(container_frame)
+        section_scroll_area = QScrollArea(container_frame)
+        section_scroll_area.setObjectName("section_scroll_area")
+        section_scroll_area.setStyleSheet("background: transparent;")
+        section_scroll_area.setFrameShape(QFrame.Shape.NoFrame)
+        section_scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        section_scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        section_scroll_area.setWidgetResizable(True)
+
+        sectional_house = QFrame(section_scroll_area)
         sectional_house.setObjectName('sectional_house')
         sectional_house.setFrameShape(QFrame.Shape.NoFrame)
         sectional_house.setFrameShadow(QFrame.Shadow.Plain)
         sectional_house.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        section_scroll_area.setWidget(sectional_house)
 
         navigation_frame = QtSectionalWidget(
             section_title="Quick Navigation",
@@ -58,6 +66,7 @@ class NewTab(QWidget):
             icon_size=63,
             parent=sectional_house
         )
+
         documentation_frame = QtSectionalWidget(
             section_title="Documentation",
             icon_name="internet_icon.svg",
@@ -67,14 +76,14 @@ class NewTab(QWidget):
             parent=sectional_house
         )
 
-        sectional_layout = QVBoxLayout(sectional_house)
+        sectional_layout = QGridLayout(sectional_house)
         sectional_layout.setObjectName('sectional_layout')
-        sectional_layout.setContentsMargins(30, 10, 30, 10)
-        sectional_layout.setSpacing(28)
+        sectional_layout.setContentsMargins(80, 10, 80, 10)
+        sectional_layout.setSpacing(20)
         sectional_layout.addWidget(navigation_frame)
         sectional_layout.addWidget(documentation_frame)
 
-        self.valis_docs_label = HyperlinkLabel(
+        self.valis_docs_label = QtClickableLabel(
             text='Valis Docs',
             font_size=12,
             parent=container_frame
@@ -83,7 +92,7 @@ class NewTab(QWidget):
         self.valis_docs_label.setHyperLink("https://valis.readthedocs.io/en/latest/index.html#")
         self.valis_docs_label.linkActivated.connect(self.open_hyperlink)
 
-        self.valis_install_label = HyperlinkLabel(
+        self.valis_install_label = QtClickableLabel(
             text='Valis Installation',
             font_size=12,
             parent=container_frame
@@ -97,9 +106,9 @@ class NewTab(QWidget):
         container_layout.setContentsMargins(10, 10, 10, 10)
         container_layout.setSpacing(15)
         container_layout.addWidget(starting_label, alignment=Qt.AlignmentFlag.AlignCenter)
-        container_layout.addWidget(sectional_house, alignment=Qt.AlignmentFlag.AlignCenter)
-        container_layout.addWidget(self.valis_docs_label, alignment=Qt.AlignmentFlag.AlignCenter)
-        container_layout.addWidget(self.valis_install_label, alignment=Qt.AlignmentFlag.AlignCenter)
+        container_layout.addWidget(section_scroll_area)
+        #container_layout.addWidget(self.valis_docs_label, alignment=Qt.AlignmentFlag.AlignCenter)
+        #container_layout.addWidget(self.valis_install_label, alignment=Qt.AlignmentFlag.AlignCenter)
 
         main_layout = QVBoxLayout(self)
         main_layout.setObjectName('main_layout')
@@ -145,5 +154,3 @@ class NewTab(QWidget):
 
     def label_clicked(self, obj_name):
         print(f'{obj_name} Hyperlink clicked!')
-
-

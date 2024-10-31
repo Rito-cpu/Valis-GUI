@@ -28,3 +28,4 @@ from .qt_threads import ValisProcessObject
 from .qt_collapsible_box import QtCollapsibleWidget, QtSectionalWidget
 from .qt_home_tabs import HomeTabWidget
 from .qt_clickable_icon import QtMenuIcon
+from .qt_clickable_label import QtClickableLabel

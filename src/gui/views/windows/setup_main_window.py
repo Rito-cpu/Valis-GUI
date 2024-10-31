@@ -229,9 +229,9 @@ class SetupMainWindow:
         # *********************************
         home_menu = HomeTabWidget()
 
-        self.ui.load_pages.home_tab_layout.addStretch(1)
-        self.ui.load_pages.home_tab_layout.addWidget(home_menu, alignment=Qt.AlignmentFlag.AlignCenter)
-        self.ui.load_pages.home_tab_layout.addStretch(1)
+        #self.ui.load_pages.home_tab_layout.addStretch(1)
+        self.ui.load_pages.home_tab_layout.addWidget(home_menu)
+        #self.ui.load_pages.home_tab_layout.addStretch(1)
         # ****************************************
         # ****** Slide Directory Page Setup ******
         # ****************************************

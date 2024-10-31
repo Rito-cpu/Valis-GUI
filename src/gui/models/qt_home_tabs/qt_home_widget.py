@@ -33,8 +33,8 @@ class HomeTabWidget(QTabWidget):
         self.setTabToolTip(1, "Use Previous Valis Registration Session")
         self.tabBar().setCursor(Qt.CursorShape.PointingHandCursor)
 
-        self.setMinimumSize(800, 430)
-        self.setMaximumSize(self.minimumSize()*1.5)
+        #self.setMinimumSize(800, 430)
+        #self.setMaximumSize(self.minimumSize()*1.5)
 
     def hyper_link_clicked(self, bttn_name: str):
         pass

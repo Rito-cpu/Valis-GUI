@@ -2,6 +2,7 @@ from src.core.pyqt_core import *
 from src.core.image_functions import Functions
 from src.core.json.json_themes import Themes
 from src.gui.models.qt_clickable_icon import QtMenuIcon
+from src.gui.models.qt_clickable_label import QtClickableLabel
 
 
 class QtSectionalWidget(QWidget):
@@ -32,18 +33,19 @@ class QtSectionalWidget(QWidget):
         self._title_font = title_font
         self._icon_size = icon_size
         self.is_expanded = False
-        self.animation_duration = 200
+        self.animation_duration = 400
 
         self._setup_widget()
 
-        self.sectional_icon.clicked.connect(self.toggle_collapsed)
+        self.title_label.clicked.connect(self.title_clicked)
+        self.section_icon.clicked.connect(self.toggle_collapsed)
 
     def _setup_widget(self):
-        outermost_frame = QFrame(self)
-        outermost_frame.setObjectName('outermost_frame')
-        outermost_frame.setFrameShape(QFrame.Shape.NoFrame)
-        outermost_frame.setFrameShadow(QFrame.Shadow.Plain)
-        outermost_frame.setStyleSheet(f"""
+        self.outermost_frame = QFrame(self)
+        self.outermost_frame.setObjectName('outermost_frame')
+        self.outermost_frame.setFrameShape(QFrame.Shape.NoFrame)
+        self.outermost_frame.setFrameShadow(QFrame.Shadow.Plain)
+        self.outermost_frame.setStyleSheet(f"""
             QFrame#outermost_frame {{
                 border: 1px solid {self.themes['app_color']['blue_bg']};
                 border-radius: 6px;
@@ -51,110 +53,154 @@ class QtSectionalWidget(QWidget):
             }}
         """)
 
-        sectional_title = QLabel(outermost_frame)
-        sectional_title.setObjectName('sectional_title')
-        sectional_title.setText(self._section_title)
-        sectional_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        sectional_title.setStyleSheet(f'color: {self.themes["app_color"]["blue_bg"]}; font-size: {self._title_font}px; font-weight: bold;')
+        icon_frame = QFrame(self.outermost_frame)
+        icon_frame.setObjectName('icon_frame')
+        icon_frame.setFrameShape(QFrame.Shape.NoFrame)
+        icon_frame.setFrameShadow(QFrame.Shadow.Plain)
 
-        self.sectional_icon = QtMenuIcon(
+        self.section_icon = QtMenuIcon(
             icon_name=self._icon_path,
             icon_size=self._icon_size,
             set_checkable=True,
-            parent=outermost_frame
+            parent=self.outermost_frame
         )
-        self.sectional_icon.setObjectName('sectional_icon')
+        self.section_icon.setObjectName('sectional_icon')
 
-        self.info_area_stack = QStackedWidget(outermost_frame)
+        icon_layout = QVBoxLayout(icon_frame)
+        icon_layout.setObjectName('icon_layout')
+        icon_layout.setContentsMargins(0, 0, 0, 0)
+        icon_layout.addWidget(self.section_icon, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        right_side_frame = QFrame(self.outermost_frame)
+        right_side_frame.setObjectName('right_side_frame')
+        right_side_frame.setFrameShape(QFrame.Shape.NoFrame)
+        right_side_frame.setFrameShadow(QFrame.Shadow.Plain)
+
+        self.title_label = QtClickableLabel(
+            text=self._section_title,
+            font_size=self._title_font,
+            bold=True,
+            hyperlink_label=False,
+            parent=right_side_frame
+        )
+
+        self.info_area_stack = QStackedWidget(right_side_frame)
         self.info_area_stack.setObjectName('info_area_stack')
+        #self.info_area_stack.setStyleSheet('border: 2px solid black;')
+        self.info_area_stack.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
-        self.collapsed_text = QTextEdit(self.info_area_stack)
-        self.collapsed_text.setObjectName('collapsed_info')
-        self.collapsed_text.setMinimumWidth(325)
-        self.collapsed_text.setReadOnly(True)
-        self.collapsed_text.setText(self._collapsed_info)
-        self.collapsed_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.collapsed_text.setStyleSheet(f'border: none; background: {self.themes["app_color"]["main_bg"]};')
+        self.collapsed_text_area = QTextEdit(self.info_area_stack)
+        self.collapsed_text_area.setObjectName('collapsed_info')
+        self.collapsed_text_area.setMinimumWidth(325)
+        self.collapsed_text_area.setReadOnly(True)
+        self.collapsed_text_area.setText(self._collapsed_info)
+        self.collapsed_text_area.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.collapsed_text_area.setStyleSheet(f'border: none; background: {self.themes["app_color"]["main_bg"]};')
+        self.adjust_collapsed_widget_height()
 
-        self.expanded_wid = QWidget(self.info_area_stack)
-        self.expanded_wid.setFixedHeight(500)
+        self.expanded_widget_area = QWidget(self.info_area_stack)
+        self.expanded_widget_area.setFixedHeight(200)
+        label = QLabel(self.expanded_widget_area)
+        label.setText('Testing')
+        test_lay = QVBoxLayout(self.expanded_widget_area)
+        test_lay.setContentsMargins(0, 0, 0, 0)
+        test_lay.addWidget(label)
+        self.stack_expanded_height = self.expanded_widget_area.size().height()
 
-        self.info_area_stack.addWidget(self.collapsed_text)
-        self.info_area_stack.addWidget(self.expanded_wid)
-        self.info_area_stack.setCurrentIndex(0)
-        self.adjust_height_to_content()
+        self.info_area_stack.addWidget(self.collapsed_text_area)
+        self.info_area_stack.addWidget(self.expanded_widget_area)
+        self.info_area_stack.setCurrentWidget(self.collapsed_text_area)
+        self.set_stack_widget_height(self.is_expanded)
 
-        grid_filler = QWidget()
-        outermost_frame_layout = QGridLayout(outermost_frame)
-        outermost_frame_layout.setObjectName('outermost_frame_layout')
-        outermost_frame_layout.setContentsMargins(5, 5, 30, 5)
-        outermost_frame_layout.setSpacing(5)
-        outermost_frame_layout.addWidget(self.sectional_icon, 0, 0, 3, 1, alignment=Qt.AlignmentFlag.AlignCenter)
-        outermost_frame_layout.addWidget(sectional_title, 0, 1, 1, 3, alignment=Qt.AlignmentFlag.AlignCenter)
-        outermost_frame_layout.addWidget(self.info_area_stack, 1, 1, 2, 3, alignment=Qt.AlignmentFlag.AlignCenter)
-        outermost_frame_layout.addWidget(grid_filler, 2, 3, 1, 1)
+        right_side_layout = QVBoxLayout(right_side_frame)
+        right_side_layout.setObjectName("right_side_layout")
+        right_side_layout.setContentsMargins(0, 0, 0, 0)
+        right_side_layout.setSpacing(10)
+        right_side_layout.addWidget(self.title_label, alignment=Qt.AlignmentFlag.AlignCenter)
+        right_side_layout.addWidget(self.info_area_stack)
 
-        #outermost_frame.setMinimumSize(QSize(int(outermost_frame_layout.sizeHint().width()*1.3), outermost_frame_layout.sizeHint().height()))
-        #outermost_frame.setMaximumSize(QSize(int(outermost_frame_layout.sizeHint().width()*2), outermost_frame_layout.sizeHint().height()))
-        self.outermost_frame = outermost_frame
-        self.collapsed_height = outermost_frame.sizeHint().height()
-        self.expanded_height = self.collapsed_height + self.expanded_wid.sizeHint().height()
-        #outermost_frame.resize(QSize(int(outermost_frame_layout.sizeHint().width()*1.5), outermost_frame_layout.sizeHint().height()))
+        outermost_frame_layout = QHBoxLayout(self.outermost_frame)
+        outermost_frame_layout.setContentsMargins(20, 10, 10, 10)
+        outermost_frame_layout.setSpacing(20)
+        outermost_frame_layout.addWidget(icon_frame, alignment=Qt.AlignmentFlag.AlignCenter)
+        outermost_frame_layout.addWidget(right_side_frame)
+
+        #grid_filler = QWidget()
+        #outermost_frame_layout = QGridLayout(self.outermost_frame)
+        #outermost_frame_layout.setObjectName('outermost_frame_layout')
+        #outermost_frame_layout.setContentsMargins(5, 15, 30, 15)
+        #outermost_frame_layout.setSpacing(15)
+        #outermost_frame_layout.addWidget(self.section_icon, 0, 0, 3, 1, alignment=Qt.AlignmentFlag.AlignCenter)
+        #outermost_frame_layout.addWidget(title_label, 0, 1, 1, 3, alignment=Qt.AlignmentFlag.AlignCenter)
+        #outermost_frame_layout.addWidget(self.info_area_stack, 1, 1, 2, 3, alignment=Qt.AlignmentFlag.AlignCenter)
+        #outermost_frame_layout.addWidget(grid_filler, 2, 3, 1, 1)
 
         main_layout = QVBoxLayout(self)
         main_layout.setObjectName('main_layout')
         main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.addWidget(outermost_frame)
+        main_layout.addWidget(self.outermost_frame)
+
+        # --- Create collapsible animation settings ---
+        self.collapsed_height = self.sizeHint().height() + 4
+        self.expanded_height = self.collapsed_height + self.expanded_widget_area.size().height()
+
+        self.toggle_animation = QParallelAnimationGroup()
+        self.toggle_animation.addAnimation(QPropertyAnimation(self, b"minimumHeight"))
+        self.toggle_animation.addAnimation(QPropertyAnimation(self, b"maximumHeight"))
+        self.toggle_animation.addAnimation(QPropertyAnimation(self.outermost_frame, b"maximumHeight"))
+
+        start_height = self.collapsed_height if not self.is_expanded else self.expanded_height
+        end_height = self.expanded_height if not self.is_expanded else self.collapsed_height
+
+        for index in range(0, self.toggle_animation.animationCount() - 1):
+            section_animation: QPropertyAnimation
+            section_animation = self.toggle_animation.animationAt(index)
+            section_animation.setDuration(self.animation_duration)
+            section_animation.setStartValue(start_height)
+            section_animation.setEndValue(end_height)
+        
+        content_animation: QPropertyAnimation
+        content_animation = self.toggle_animation.animationAt(self.toggle_animation.animationCount() - 1)
+        content_animation.setDuration(self.animation_duration)
+        content_animation.setStartValue(start_height)
+        content_animation.setEndValue(end_height)
+
+        #self.setMinimumWidth(self.sizeHint().width() * 2)
+        self.setMaximumWidth(self.sizeHint().width() * 2)
+
+    def title_clicked(self):
+        icon_pos = self.section_icon.pos()
+        event = QMouseEvent(QEvent.Type.MouseButtonPress, QPointF(icon_pos), Qt.MouseButton.LeftButton, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
+        self.section_icon.mousePressEvent(event)
 
     def toggle_collapsed(self):
         # Set the current index first before starting the animation
         self.is_expanded = not self.is_expanded
-        self.info_area_stack.setCurrentWidget(self.expanded_wid if self.is_expanded else self.collapsed_text)
-        
-        # Recalculate heights if needed for the new state
-        self.update_heights()
+
+        if self.is_expanded:
+            self.info_area_stack.setCurrentWidget(self.expanded_widget_area)
+            self.toggle_animation.setDirection(QAbstractAnimation.Direction.Forward)
+        else:
+            self.info_area_stack.setCurrentWidget(self.collapsed_text_area)
+            self.toggle_animation.setDirection(QAbstractAnimation.Direction.Backward)
+        self.set_stack_widget_height(self.is_expanded)
 
         # Start the animation
-        self.animate_resize()
+        self.toggle_animation.start()
 
-    def update_heights(self):
-        if not self.is_expanded:
-            # Adjust collapsed height once
-            self.adjust_height_to_content()
-        self.expanded_height = self.collapsed_height + self.expanded_wid.sizeHint().height()
+    def set_stack_widget_height(self, is_expanded: bool):
+        if is_expanded:
+            self.info_area_stack.setFixedHeight(self.stack_expanded_height)
+        else:
+            self.info_area_stack.setFixedHeight(self.stack_minimized_height)
 
+    def adjust_collapsed_widget_height(self):
+        doc_height = self.collapsed_text_area.document().size().height()
+        margin_top = self.collapsed_text_area.contentsMargins().top()
+        margin_bottom = self.collapsed_text_area.contentsMargins().bottom()
 
-    def animate_resize(self):
-        # Use the updated collapsed and expanded heights for animation
-        start_height = self.collapsed_height if not self.is_expanded else self.expanded_height
-        end_height = self.expanded_height if not self.is_expanded else self.collapsed_height
-
-        self.animation = QPropertyAnimation(self.outermost_frame, b"maximumHeight")
-        self.animation.setDuration(self.animation_duration)
-        self.animation.setStartValue(start_height)
-        self.animation.setEndValue(end_height)
-        self.animation.start()
-
-    def adjust_height_to_content(self):
-        doc_height = self.collapsed_text.document().size().height()
-        margin_top = self.collapsed_text.contentsMargins().top()
-        margin_bottom = self.collapsed_text.contentsMargins().bottom()
-
-        # Set the height of the collapsed text area only, not the whole stack
-        self.collapsed_text.setFixedHeight(doc_height + margin_top + margin_bottom + 4)
-        # Allow `info_area_stack` to grow/shrink during animation
-        self.info_area_stack.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-    def adjust_height_to_content2(self):
-        doc_height = self.collapsed_text.document().size().height()
-        margin_top = self.collapsed_text.contentsMargins().top()
-        margin_bottom = self.collapsed_text.contentsMargins().bottom()
-
-        self.collapsed_text.setFixedHeight(doc_height + margin_top + margin_bottom + 4)
-        self.info_area_stack.setFixedHeight(self.collapsed_text.size().height()+4)
-    # TODO: Configure resizing
-    #def sizeHint(self):
-    #    return QSize(int(self.minimumSize().width()*1.5), self.minimumSize().height())
+        self.collapsed_text_area.setFixedHeight(doc_height + margin_top + margin_bottom + 4)
+        self.stack_minimized_height = self.collapsed_text_area.size().height()+4
 
     def paintEvent(self, event):
         painter = QPainter(self)
