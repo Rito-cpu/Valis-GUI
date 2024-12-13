@@ -103,7 +103,7 @@ class NewTab(QWidget):
 
         container_layout = QVBoxLayout(container_frame)
         container_layout.setObjectName('container_layout')
-        container_layout.setContentsMargins(10, 10, 10, 10)
+        container_layout.setContentsMargins(10, 25, 10, 10)
         container_layout.setSpacing(15)
         container_layout.addWidget(starting_label, alignment=Qt.AlignmentFlag.AlignCenter)
         container_layout.addWidget(section_scroll_area)

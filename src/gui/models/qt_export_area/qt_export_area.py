@@ -28,7 +28,29 @@ class QtExportArea(QWidget):
         self._select_non_rigid_bttn.clicked.connect(self.select_all_non_rigid)
 
     def _setup_widget(self):
-        table_frame = QFrame(self)
+        # Create toggle groupbox to make space
+        export_sample_table_gb = QGroupBox(self)
+        export_sample_table_gb.setObjectName('export_sample_table_gb')
+        export_sample_table_gb.setTitle('Export Sample Table')
+        export_sample_table_gb.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        export_sample_table_gb.setStyleSheet(f"""
+            QGroupBox {{
+                font-size: 13px;
+                background: {self.themes['app_color']['main_bg']};
+                border: 1px solid {self.themes['app_color']['text_color']};
+                border-radius: 8px;
+                margin-top: 9px;
+            }}
+            QGroupBox::title {{
+                color: {self.themes['app_color']['text_color']};
+                subcontrol-origin: margin;
+                subcontrol-position: top-center;
+                padding-left: 7px;
+                padding-right: 7px;
+            }}
+        """)
+
+        table_frame = QFrame(export_sample_table_gb)
         table_frame.setObjectName('table_frame')
         table_frame.setFrameShape(QFrame.Shape.NoFrame)
         table_frame.setFrameShadow(QFrame.Shadow.Raised)
@@ -92,6 +114,11 @@ class QtExportArea(QWidget):
         table_layout.addWidget(selection_frame, alignment=Qt.AlignmentFlag.AlignCenter)
         table_frame.setMaximumHeight(table_layout.sizeHint().height() + 10)
 
+        export_table_gb_layout = QVBoxLayout(export_sample_table_gb)
+        export_table_gb_layout.setObjectName('export_table_gb_layout')
+        export_table_gb_layout.setContentsMargins(10, 10, 10, 10)
+        export_table_gb_layout.addWidget(table_frame)
+
         export_options_gb = QGroupBox(self)
         export_options_gb.setObjectName('export_options_gb')
         export_options_gb.setTitle('File Export Options')
@@ -136,31 +163,19 @@ class QtExportArea(QWidget):
         percentage_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         percentage_label.setStyleSheet(f'font-size: 12px; color: {self.themes["app_color"]["main_bg"]};')
 
-        self.percentage_combo = QtComboBox(
-            bg_color=self.themes["app_color"]["yellow_bg"],
-            text_color=self.themes["app_color"]["text_color"],
-            parent=percentage_frame
-        )
-        self.percentage_combo.addItems(['Test One', 'Test Two', 'Test Three'])
-        self.percentage_combo.setFixedHeight(30)
-        self.percentage_combo.setMinimumWidth(120)
-        self.percentage_combo.hide()
-
-        test = QSpinBox(percentage_frame)
-        test.setRange(1, 100)
-        test.setValue(25)
-        test.setStyleSheet(f"""
-            QSpinBox{{
-                        }}
-        """)
+        percentage_spinbox = QSpinBox(percentage_frame)
+        percentage_spinbox.setObjectName('percentage_spinbox')
+        percentage_spinbox.setRange(1, 100)
+        percentage_spinbox.setValue(25)
+        percentage_spinbox.setStyleSheet('background: white; border-color: black; color: black;')
+        percentage_spinbox.setFixedHeight(28)
 
         percentage_layout = QHBoxLayout(percentage_frame)
         percentage_layout.setObjectName('percentage_layout')
         percentage_layout.setContentsMargins(0, 0, 0, 0)
         percentage_layout.setSpacing(15)
         percentage_layout.addWidget(percentage_label, alignment=Qt.AlignmentFlag.AlignLeft)
-        percentage_layout.addWidget(self.percentage_combo)
-        percentage_layout.addWidget(test)
+        percentage_layout.addWidget(percentage_spinbox)
 
         channel_frame = QFrame(export_options_inner_frame)
         channel_frame.setObjectName('channel_frame')
@@ -192,12 +207,76 @@ class QtExportArea(QWidget):
         channel_layout.addWidget(channel_label, alignment=Qt.AlignmentFlag.AlignLeft)
         channel_layout.addWidget(self._merge_channels_toggle)
 
+        # TODO: add level option (combobox, def=0, precalc values), merge slides (toggle, but only if the images are IF) non-rigid (toggle, default is whatever suer selected when valis was run),
+        # dest dir (input to save slides, default can be where they save the registration results)
+        level_frame = QFrame(export_options_inner_frame)
+        level_frame.setObjectName('level_frame')
+        level_frame.setFrameShape(QFrame.Shape.NoFrame)
+        level_frame.setFrameShadow(QFrame.Shadow.Raised)
+
+        level_label = QLabel(level_frame)
+        level_label.setObjectName('level_label')
+        level_label.setText('Level:')
+        level_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        level_label.setStyleSheet(f'font-size: 12px; color: {self.themes["app_color"]["main_bg"]};')
+
+        level_combobox = QtComboBox(
+            bg_color=self.themes["app_color"]["yellow_bg"],
+            text_color=self.themes["app_color"]["text_color"],
+            font_size=14,
+            parent=level_frame
+        )
+        level_combobox.setObjectName('level_combobox')
+        level_combobox.addItems(['0', '1', '2', '3'])
+        level_combobox.setCurrentIndex(0)  # default level is 0
+        level_combobox.setFixedSize(50, 28)
+
+        level_frame_layout = QHBoxLayout(level_frame)
+        level_frame_layout.setObjectName('level_frame_layout')
+        level_frame_layout.setContentsMargins(0, 0, 0, 0)
+        level_frame_layout.setSpacing(15)
+        level_frame_layout.addWidget(level_label, alignment=Qt.AlignmentFlag.AlignLeft)
+        level_frame_layout.addWidget(level_combobox)
+
+        merge_slides_frame = QFrame(export_options_inner_frame)
+        merge_slides_frame.setObjectName('merge_slides_frame')
+        merge_slides_frame.setFrameShape(QFrame.Shape.NoFrame)
+        merge_slides_frame.setFrameShadow(QFrame.Shadow.Raised)
+
+        merge_slides_label = QLabel(merge_slides_frame)
+        merge_slides_label.setObjectName('merge_slides_label')
+        merge_slides_label.setText('Merge Slides:')
+        merge_slides_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        merge_slides_label.setStyleSheet(f'font-size: 12px; color: {self.themes["app_color"]["main_bg"]};')
+
+        merge_slides_toggle = PyToggle(
+            width=34,
+            height=20,
+            ellipse_y=2,
+            bg_color = self.themes['app_color']['text_color'],
+            circle_color = self.themes['app_color']['yellow_bg'],
+            active_color = self.themes['app_color']['main_bg'],
+            parent=merge_slides_frame
+        )
+        merge_slides_toggle.setObjectName('merge_slides_toggle')
+        merge_slides_toggle.setChecked(False)
+        merge_slides_toggle.setEnabled(False)   # Only enable if the slides are immunofluorescent
+
+        merge_slides_layout = QHBoxLayout(merge_slides_frame)
+        merge_slides_layout.setObjectName('merge_slides_layout')
+        merge_slides_layout.setContentsMargins(0, 0, 0, 0)
+        merge_slides_layout.setSpacing(15)
+        merge_slides_layout.addWidget(merge_slides_label, alignment=Qt.AlignmentFlag.AlignLeft)
+        merge_slides_layout.addWidget(merge_slides_toggle)
+
         export_options_inner_layout = QVBoxLayout(export_options_inner_frame)
         export_options_inner_layout.setObjectName('export_options_inner_layout')
         export_options_inner_layout.setContentsMargins(45, 20, 45, 20)
         export_options_inner_layout.setSpacing(15)
         export_options_inner_layout.addWidget(percentage_frame, alignment=Qt.AlignmentFlag.AlignCenter)
         export_options_inner_layout.addWidget(channel_frame, alignment=Qt.AlignmentFlag.AlignCenter)
+        export_options_inner_layout.addWidget(level_frame, alignment=Qt.AlignmentFlag.AlignCenter)
+        export_options_inner_layout.addWidget(merge_slides_frame, alignment=Qt.AlignmentFlag.AlignCenter)
 
         export_options_gb_layout = QVBoxLayout(export_options_gb)
         export_options_gb_layout.setObjectName('export_options_gb_layout')
@@ -315,7 +394,7 @@ class QtExportArea(QWidget):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(45)
-        main_layout.addWidget(table_frame)
+        main_layout.addWidget(export_sample_table_gb)
         main_layout.addWidget(export_options_gb)
         main_layout.addWidget(self.bar_frame)
         main_layout.addStretch(1)
