@@ -252,8 +252,8 @@ class QtOutputEntry(QWidget):
                 new_folder_path = return_path / new_folder_name
                 new_folder_path.mkdir(exist_ok=True)
 
-                self.output_dir_entry.set_text(new_folder_path)
-                self.dir_marquee_label.setText(new_folder_path)
+                self.output_dir_entry.set_text(str(new_folder_path))
+                self.dir_marquee_label.setText(str(new_folder_path))
 
                 return new_folder_path
             else:

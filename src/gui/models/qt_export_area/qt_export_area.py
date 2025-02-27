@@ -189,7 +189,7 @@ class QtExportArea(QWidget):
         compression_factor_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         compression_factor_label.setStyleSheet(f'font-size: 12px; color: {self.themes["app_color"]["main_bg"]};')
 
-        compression_factor_entry = QtNumEntry(compression_factor_frame)
+        compression_factor_entry = QtNumEntry(parent=compression_factor_frame)
         compression_factor_entry.setObjectName('compression_factor_entry')
         compression_factor_entry.setFixedSize(30, 26)
         compression_factor_entry.setDecimals(2)
