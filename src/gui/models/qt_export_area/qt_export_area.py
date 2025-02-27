@@ -2,6 +2,7 @@ from src.core.pyqt_core import *
 from src.core.json.json_themes import Themes
 from src.core.keyword_store import *
 from src.gui.models import QtExportSampleTable, PyPushButton, PyToggle, QtComboBox
+from src.gui.models.qt_spinbox import QtNumEntry
 
 
 class QtExportArea(QWidget):
@@ -177,6 +178,32 @@ class QtExportArea(QWidget):
         percentage_layout.addWidget(percentage_label, alignment=Qt.AlignmentFlag.AlignLeft)
         percentage_layout.addWidget(percentage_spinbox)
 
+        compression_factor_frame = QFrame(export_options_inner_frame)
+        compression_factor_frame.setObjectName('compression_factor_frame')
+        compression_factor_frame.setFrameShape(QFrame.Shape.NoFrame)
+        compression_factor_frame.setFrameShadow(QFrame.Shadow.Raised)
+
+        compression_factor_label = QLabel(compression_factor_frame)
+        compression_factor_label.setObjectName('compression_factor_label')
+        compression_factor_label.setText('Compression Factor:')
+        compression_factor_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        compression_factor_label.setStyleSheet(f'font-size: 12px; color: {self.themes["app_color"]["main_bg"]};')
+
+        compression_factor_entry = QtNumEntry(compression_factor_frame)
+        compression_factor_entry.setObjectName('compression_factor_entry')
+        compression_factor_entry.setFixedSize(30, 26)
+        compression_factor_entry.setDecimals(2)
+        compression_factor_entry.setRange(0, 100)
+        compression_factor_entry.setSingleStep(1.0)
+        compression_factor_entry.setValue(10)
+
+        compression_factor_layout = QHBoxLayout(compression_factor_frame)
+        compression_factor_layout.setObjectName('compression_factor_layout')
+        compression_factor_layout.setContentsMargins(0, 0, 0, 0)
+        compression_factor_layout.setSpacing(15)
+        compression_factor_layout.addWidget(compression_factor_label, alignment=Qt.AlignmentFlag.AlignCenter)
+        compression_factor_layout.addWidget(compression_factor_entry)
+
         channel_frame = QFrame(export_options_inner_frame)
         channel_frame.setObjectName('channel_frame')
         channel_frame.setFrameShape(QFrame.Shape.NoFrame)
@@ -209,74 +236,14 @@ class QtExportArea(QWidget):
 
         # TODO: add level option (combobox, def=0, precalc values), merge slides (toggle, but only if the images are IF) non-rigid (toggle, default is whatever suer selected when valis was run),
         # dest dir (input to save slides, default can be where they save the registration results)
-        level_frame = QFrame(export_options_inner_frame)
-        level_frame.setObjectName('level_frame')
-        level_frame.setFrameShape(QFrame.Shape.NoFrame)
-        level_frame.setFrameShadow(QFrame.Shadow.Raised)
-
-        level_label = QLabel(level_frame)
-        level_label.setObjectName('level_label')
-        level_label.setText('Level:')
-        level_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        level_label.setStyleSheet(f'font-size: 12px; color: {self.themes["app_color"]["main_bg"]};')
-
-        level_combobox = QtComboBox(
-            bg_color=self.themes["app_color"]["yellow_bg"],
-            text_color=self.themes["app_color"]["text_color"],
-            font_size=14,
-            parent=level_frame
-        )
-        level_combobox.setObjectName('level_combobox')
-        level_combobox.addItems(['0', '1', '2', '3'])
-        level_combobox.setCurrentIndex(0)  # default level is 0
-        level_combobox.setFixedSize(50, 28)
-
-        level_frame_layout = QHBoxLayout(level_frame)
-        level_frame_layout.setObjectName('level_frame_layout')
-        level_frame_layout.setContentsMargins(0, 0, 0, 0)
-        level_frame_layout.setSpacing(15)
-        level_frame_layout.addWidget(level_label, alignment=Qt.AlignmentFlag.AlignLeft)
-        level_frame_layout.addWidget(level_combobox)
-
-        merge_slides_frame = QFrame(export_options_inner_frame)
-        merge_slides_frame.setObjectName('merge_slides_frame')
-        merge_slides_frame.setFrameShape(QFrame.Shape.NoFrame)
-        merge_slides_frame.setFrameShadow(QFrame.Shadow.Raised)
-
-        merge_slides_label = QLabel(merge_slides_frame)
-        merge_slides_label.setObjectName('merge_slides_label')
-        merge_slides_label.setText('Merge Slides:')
-        merge_slides_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        merge_slides_label.setStyleSheet(f'font-size: 12px; color: {self.themes["app_color"]["main_bg"]};')
-
-        merge_slides_toggle = PyToggle(
-            width=34,
-            height=20,
-            ellipse_y=2,
-            bg_color = self.themes['app_color']['text_color'],
-            circle_color = self.themes['app_color']['yellow_bg'],
-            active_color = self.themes['app_color']['main_bg'],
-            parent=merge_slides_frame
-        )
-        merge_slides_toggle.setObjectName('merge_slides_toggle')
-        merge_slides_toggle.setChecked(False)
-        merge_slides_toggle.setEnabled(False)   # Only enable if the slides are immunofluorescent
-
-        merge_slides_layout = QHBoxLayout(merge_slides_frame)
-        merge_slides_layout.setObjectName('merge_slides_layout')
-        merge_slides_layout.setContentsMargins(0, 0, 0, 0)
-        merge_slides_layout.setSpacing(15)
-        merge_slides_layout.addWidget(merge_slides_label, alignment=Qt.AlignmentFlag.AlignLeft)
-        merge_slides_layout.addWidget(merge_slides_toggle)
 
         export_options_inner_layout = QVBoxLayout(export_options_inner_frame)
         export_options_inner_layout.setObjectName('export_options_inner_layout')
         export_options_inner_layout.setContentsMargins(45, 20, 45, 20)
         export_options_inner_layout.setSpacing(15)
         export_options_inner_layout.addWidget(percentage_frame, alignment=Qt.AlignmentFlag.AlignCenter)
+        export_options_inner_layout.addWidget(compression_factor_frame, alignment=Qt.AlignmentFlag.AlignCenter)
         export_options_inner_layout.addWidget(channel_frame, alignment=Qt.AlignmentFlag.AlignCenter)
-        export_options_inner_layout.addWidget(level_frame, alignment=Qt.AlignmentFlag.AlignCenter)
-        export_options_inner_layout.addWidget(merge_slides_frame, alignment=Qt.AlignmentFlag.AlignCenter)
 
         export_options_gb_layout = QVBoxLayout(export_options_gb)
         export_options_gb_layout.setObjectName('export_options_gb_layout')

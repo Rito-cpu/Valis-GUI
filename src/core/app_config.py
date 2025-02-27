@@ -1,5 +1,7 @@
 import sys
 import pathlib
+#import valis
+#import pyvips
 
 from src.core.keyword_store import *
 from src.core.scripts.valis.gui_options import *

@@ -15,3 +15,8 @@ env/
 # OS-specific files
 .DS_Store
 Thumbs.db
+
+# Pyinstller directories/files
+/build/
+/dist/
+*.spec

@@ -4,14 +4,15 @@ from .styles import box_template
 
 
 class QtNumEntry(QDoubleSpinBox):
-    def __init__(self,
-                font_size: int=11,
-                font_color: str="white",
-                bg_color: str="lightblue",
-                parent=None
-                ):
+    def __init__(
+        self,
+        font_size: int=11,
+        font_color: str="white",
+        bg_color: str="lightblue",
+        parent=None
+    ):
         super().__init__()
-        if parent != None:
+        if parent is not None:
             self.setParent(parent)
 
         self.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.PlusMinus)
