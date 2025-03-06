@@ -27,6 +27,7 @@ class QtOutputEntry(QWidget):
         themes = Themes()
         self.themes = themes.items
         self._font_size = font_size
+        self._valid_output = None
 
         self._setup_widget()
 
@@ -139,15 +140,40 @@ class QtOutputEntry(QWidget):
         self.dir_marquee_label.setText(new_text)
 
     def submit_bttn_clicked(self):
-        return_val = self.check_empty()
-        if return_val is None:
-            return
-        else:
+        output_dir = self.validate_directory()
+        if output_dir:
+            self._valid_output = output_dir
+            self.output_dir_entry.set_text(str(output_dir))
+            self.dir_marquee_label.setText(str(output_dir))
             self.directory_changed.emit(self)
+        else:
+            return
 
     def validate_directory(self):
         current_dir = pathlib.Path(self.output_dir_entry.text())
-        if not is_existing_dir(current_dir):
+        msg_bttns = {
+            "Ok": QMessageBox.ButtonRole.AcceptRole
+        }
+        error_msg = QtMessage(
+            buttons=msg_bttns,
+            color=self.themes["app_color"]["main_bg"],
+            bg_color_one=self.themes["app_color"]["dark_one"],
+            bg_color_two=self.themes["app_color"]["bg_one"],
+            bg_color_hover=self.themes["app_color"]["dark_three"],
+            bg_color_pressed=self.themes["app_color"]["dark_four"]
+        )
+        error_msg.setIcon(QMessageBox.Icon.Warning)
+
+        if self.output_dir_entry.text() == "":
+            message = f"Cannot enter empty text. Please enter a valid directory."
+            error_msg.setText('Empty text entered.')
+            error_msg.setDetailedText(message)
+            error_msg.exec()
+
+            self.dir_marquee_label.clear()
+            self._valid_output = None
+            return None
+        elif not is_existing_dir(current_dir):
             message = f"The directory '{current_dir}' does not exist. Please enter a valid directory."
             msg_bttns = {
                 "Ok": QMessageBox.ButtonRole.AcceptRole
@@ -164,31 +190,18 @@ class QtOutputEntry(QWidget):
             error_msg.setText('Non-existing directory entered.')
             error_msg.setDetailedText(message)
             error_msg.exec()
+
+            self.dir_marquee_label.clear()
+            self._valid_output = None
             return None
         return current_dir
 
-    def check_empty(self):
-        return_val = self.validate_directory()
-        if return_val is None:
-            return None
-        
-        return_path = pathlib.Path(return_val)
-        items = [entry.name for entry in return_path.iterdir()]
-        
-        if len(items) == 1 and '.DS_Store' in items:
-            item_path = return_path / items[0]
-            item_path.unlink()
-            return return_path
-        elif items:
-            message = f"""Pre-existing contents have been found in the entered output directory. Would you like to delete these items?\n{items}
-            \nNot deleting the contents will create a new folder (\'valis_output (n)\') inside the entered directory to store data from the current run.
-            \nNote: If the pre-existing contents are unrelated to the Valis process, we recommend deleting these items."""
+    def create_result_instance(self):
+        if self._valid_output:
             msg_bttns = {
-                "Yes": QMessageBox.ButtonRole.YesRole,
-                "No": QMessageBox.ButtonRole.NoRole,
-                "Cancel": QMessageBox.ButtonRole.RejectRole
+                "Ok": QMessageBox.ButtonRole.AcceptRole
             }
-            error_msg = QtMessage(
+            info_msg = QtMessage(
                 buttons=msg_bttns,
                 color=self.themes["app_color"]["main_bg"],
                 bg_color_one=self.themes["app_color"]["dark_one"],
@@ -196,68 +209,17 @@ class QtOutputEntry(QWidget):
                 bg_color_hover=self.themes["app_color"]["dark_three"],
                 bg_color_pressed=self.themes["app_color"]["dark_four"]
             )
-            error_msg.setIcon(QMessageBox.Icon.Information)
-            error_msg.setText('Remove Existing Contents?')
-            error_msg.setDetailedText(message)
-            error_msg.exec()
+            info_msg.setIcon(QMessageBox.Icon.Information)
 
-            if error_msg.clickedButton() == error_msg.buttons["Yes"]:
-                # Yes is pressed, delete existing items
-                for item in items:
-                    item_path = return_path / item
-                    try:
-                        if item_path.is_file() or item_path.is_symlink():
-                            item_path.unlink()
-                        elif item_path.is_dir():
-                            shutil.rmtree(item_path)
-                    except Exception as error:
-                        msg_bttns = {
-                            "Ok": QMessageBox.ButtonRole.AcceptRole
-                        }
-                        error_msg = QtMessage(
-                            buttons=msg_bttns,
-                            color=self.themes["app_color"]["main_bg"],
-                            bg_color_one=self.themes["app_color"]["dark_one"],
-                            bg_color_two=self.themes["app_color"]["bg_one"],
-                            bg_color_hover=self.themes["app_color"]["dark_three"],
-                            bg_color_pressed=self.themes["app_color"]["dark_four"]
-                        )
-                        error_msg.setIcon(QMessageBox.Icon.Critical)
-                        error_msg.setText(f'Error ocurred while deleting {item_path}.')
-                        error_msg.setDetailedText(f'Error found:\n{error}')
-                        error_msg.exec()
-                        return None
-                return return_path
-            elif error_msg.clickedButton() == error_msg.buttons["No"]:
-                # No is pressed, create additional folder
-                basename = 'valis_output'
-                regex_pattern = re.compile(rf"^{re.escape(basename)} \((\d+)\)$")
+            final_output = pathlib.Path(self._valid_output / "valis_results")
+            if final_output.is_dir():
                 copy_num = 1
+                while(final_output.is_dir()):
+                    final_output = pathlib.Path(self._valid_output / f"valis_results ({copy_num})")
+                    copy_num += 1
+            info_msg.setText('Output Storage.')
+            info_msg.setDetailedText(f'Results will be stored under \"{final_output.name}\" in destination directory.')
+            info_msg.exec()
+            final_output.mkdir(parents=True, exist_ok=True)
 
-                dir_copies = [cdir for cdir in items if basename in cdir]
-                dir_copies.sort()
-
-                for cdir in dir_copies:
-                    item_path = return_path / cdir
-                    if item_path.is_dir():
-                        match = regex_pattern.match(cdir)
-                        if match:
-                            existing_num = int(match.group(1))
-                            if existing_num == copy_num:
-                                copy_num = existing_num + 1
-                    else:
-                        continue
-
-                new_folder_name = f"{basename} ({copy_num})"
-                new_folder_path = return_path / new_folder_name
-                new_folder_path.mkdir(exist_ok=True)
-
-                self.output_dir_entry.set_text(str(new_folder_path))
-                self.dir_marquee_label.setText(str(new_folder_path))
-
-                return new_folder_path
-            else:
-                # Cancel is pressed, do nothing
-                return None
-        else:
-            return return_path
+            return final_output

@@ -17,6 +17,7 @@ class QtExportArea(QWidget):
             self.parent = parent
 
         self._sample_data = sample_data
+        self._results_dir = None
 
         themes = Themes()
         self.themes = themes.items
@@ -358,6 +359,13 @@ class QtExportArea(QWidget):
 
         self.bar_frame.hide()
 
+        plot_area = QFrame(self)
+        plot_area.setObjectName('plot_area')
+        plot_area.setFrameShape(QFrame.Shape.NoFrame)
+        plot_area.setFrameShadow(QFrame.Shadow.Plain)
+
+        # TODO: Gather data from excel results in each sample and display in plot
+
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(45)
@@ -377,3 +385,7 @@ class QtExportArea(QWidget):
 
     def select_all_non_rigid(self):
         self.export_sample_table.select_all(NON_RIGID_KEY)
+
+    def set_results_dir(self, dir):
+        print(f'We received results directory: {dir}')
+        self._results_dir = dir

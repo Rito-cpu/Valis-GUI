@@ -409,6 +409,7 @@ class SetupMainWindow:
             sample_data=export_obj_data,
             parent=self.ui.load_pages.export_sideways_frame
         )
+        self.export_area.setObjectName("export_area")
 
         export_image_area = QFrame(self.ui.load_pages.export_sideways_frame)
         export_image_area.setObjectName('export_image_area')

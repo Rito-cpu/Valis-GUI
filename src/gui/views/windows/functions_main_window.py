@@ -176,7 +176,7 @@ class MainFunctions():
             directory (str): user defined directory path 
             label (QtMarqueeLabel): custom QWidget that displays a scrolling text
         """
-        directory = pathlib.Path(output_widget.get_text())
+        directory = pathlib.Path(output_widget._valid_output)
         if is_existing_dir(directory):
             global OUTPUT_DIRECTORY
             OUTPUT_DIRECTORY = str(directory)
@@ -225,12 +225,12 @@ class MainFunctions():
                         self.results_page_picker(self.ui.load_pages.result_page)
 
     def register_settings(
-            self,
-            output_dir_widget: QWidget,
-            if_settings: QWidget,
-            bf_settings: QWidget,
-            rigid_setting: QWidget,
-            non_rigid_setting: QWidget,
+        self,
+        output_dir_widget: QWidget,
+        if_settings: QWidget,
+        bf_settings: QWidget,
+        rigid_setting: QWidget,
+        non_rigid_setting: QWidget,
     ):
         """Gathers the state of the widgets contained in the settings menu for valis registration.
 
@@ -274,6 +274,15 @@ class MainFunctions():
                 return
             
             output_dir_widget.submit_bttn_clicked()
+            if output_dir_widget._valid_output:
+                new_dest = output_dir_widget.create_result_instance()
+                OUTPUT_DIRECTORY = str(new_dest)
+            else:
+                error_msg.setIcon(QMessageBox.Icon.Warning)
+                error_msg.setText('Output directory modified.')
+                error_msg.setDetailedText('The output directory has been modified. Please enter a valid directory to save to.')
+                error_msg.exec()
+                return
             # Gather widget states for registration
             if_data = if_settings.get_widget_settings()
             bf_data = bf_settings.get_widget_settings()
@@ -367,7 +376,7 @@ class MainFunctions():
 
                 # Create monitoring script QThread
                 try:
-                    results_area.prepare_menu()
+                    results_area.prepare_menu(OUTPUT_DIRECTORY)
                     results_area.create_thread()
                 except Exception as e:
                     self.valis_process.kill()
@@ -488,6 +497,10 @@ class MainFunctions():
                 if obj.objectName() == 'results_bttn':
                     obj.click()
                     self.results_page_picker(self.ui.load_pages.export_page)
+        
+        results_area = self.ui.load_pages.results_scroll_content.findChild(QtResultsArea, "results_area")
+        export_area = self.ui.load_pages.export_scroll_contents.findChild(QtExportArea, "export_area")
+        export_area.set_results_dir(results_area.get_dest_dir())
 
     def export_clicked(self, show_prog_bar, show_button):
         show_prog_bar()

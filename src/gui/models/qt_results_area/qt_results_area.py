@@ -27,7 +27,7 @@ class QtResultsArea(QWidget):
 
         self._monitoring_thread = None
         self._table_items = None
-        self._dst_dir = None
+        self._dest_dir = None
         self._sample_lookup = {}
 
         themes = Themes()
@@ -247,7 +247,7 @@ class QtResultsArea(QWidget):
 
     def create_thread(self):
         self._monitoring_thread = completion_checker.ValisMonitoringThread(
-            self.dst_dir,
+            self._dest_dir,
             self.steps_dict,
             self.sample_list
         )
@@ -292,9 +292,10 @@ class QtResultsArea(QWidget):
         self.sample_text.setText('Sample: Process Canceled')
         self.step_text.setText('Step: Process Canceled')
 
-    def prepare_menu(self):
+    def prepare_menu(self, output_dest):
         self.clear()
-        self.dst_dir, self.steps_dict, self.sample_list = self.extract_script_data()
+        self._dest_dir = output_dest
+        self.extract_script_data()
 
         self.step_prog_bar.setRange(0, self.steps_max_range)
         self.step_prog_bar.setValue(1)
@@ -315,7 +316,7 @@ class QtResultsArea(QWidget):
 
         self._monitoring_thread = None
         self._table_items = None
-        self.dst_dir = None
+        self._dest_dir = None
         self.steps_dict = None
         self.sample_list = None
         self.previous_sample = None
@@ -338,7 +339,7 @@ class QtResultsArea(QWidget):
         )
         error_msg.setIcon(QMessageBox.Icon.Warning)
         
-        output_dir = APP_ROOT / "src" / "core" / "output" / "states"
+        output_dir = pathlib.Path(pathlib.Path(self._dest_dir) / "session_settings")
         if not is_existing_path(output_dir):
             error_msg.setText('Error: output directory not found!')
             error_msg.setDetailedText(f'The directory \"src/core/output/states\" is not found in the project tree. Please create the missing directories to continue.')
@@ -386,8 +387,8 @@ class QtResultsArea(QWidget):
                 del steps_dict[key]
 
         self.steps_max_range = len(steps_dict) + 2
-
-        return dst_dir, steps_dict, sample_list
+        self.steps_dict = steps_dict
+        self.sample_list = sample_list
 
     def fill_table(self):
         if self._table_items:
@@ -395,9 +396,9 @@ class QtResultsArea(QWidget):
 
     def get_result_locations(self, name: str):
         # Is this check even necessary
-        if self.dst_dir:
+        if self._dest_dir:
             if self._sample_lookup[name] is None:
-                sample_dir = pathlib.Path(self.dst_dir) / name
+                sample_dir = pathlib.Path(self._dest_dir) / name
                 sample_locations = {}
                 for root in sample_dir.glob("**/*"):
                     if root.is_file() and root.suffix.lower() == '.png':
@@ -410,3 +411,6 @@ class QtResultsArea(QWidget):
                         sample_locations[split_name].append(str(root))
                 self._sample_lookup[name] = sample_locations
             self.image_viewer.import_sample_data(name, self._sample_lookup[name])
+
+    def get_dest_dir(self):
+        return self._dest_dir
