@@ -215,7 +215,7 @@ class QtOutputEntry(QWidget):
             if final_output.is_dir():
                 copy_num = 1
                 while(final_output.is_dir()):
-                    final_output = pathlib.Path(self._valid_output / f"valis_results ({copy_num})")
+                    final_output = pathlib.Path(self._valid_output / f"valis_results({copy_num})")
                     copy_num += 1
             info_msg.setText('Output Storage.')
             info_msg.setDetailedText(f'Results will be stored under \"{final_output.name}\" in destination directory.')

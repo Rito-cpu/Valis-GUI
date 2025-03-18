@@ -233,7 +233,7 @@ class SetupMainWindow:
         self.ui.load_pages.home_tab_layout.addWidget(home_menu)
         #self.ui.load_pages.home_tab_layout.addStretch(1)
         # ****************************************
-        # ****** Slide Directory Page Setup ******
+        # ****** Sample Upload Page Setup ******
         # ****************************************
         self.slide_directory = QtSlideDirectory(
             text_color=self.themes['app_color']['text_color'],
@@ -411,35 +411,6 @@ class SetupMainWindow:
         )
         self.export_area.setObjectName("export_area")
 
-        export_image_area = QFrame(self.ui.load_pages.export_sideways_frame)
-        export_image_area.setObjectName('export_image_area')
-        export_image_area.setFrameShape(QFrame.Shape.NoFrame)
-        export_image_area.setFrameShadow(QFrame.Shadow.Raised)
-
-        self.export_image_view = QtImageView(
-            dimensions=(200, 200),
-            parent=export_image_area
-        )
-
-        self.export_type_combo = QtComboBox(
-            bg_color=self.themes["app_color"]["yellow_bg"],
-            text_color=self.themes["app_color"]["text_color"],
-            parent=export_image_area
-        )
-        self.export_type_combo.setObjectName('export_type_combo')
-        # self.sample_type_combo.addItems(self._detectors)
-        self.export_type_combo.addItems(['Original', 'Processed', 'Aligned (Rigid)', 'Aligned (Non-Rigid)', 'Deformation', 'Error'])
-        self.export_type_combo.setCurrentIndex(0)
-        self.export_type_combo.setFixedHeight(30)
-        self.export_type_combo.setMinimumWidth(250)
-
-        export_image_area_layout = QVBoxLayout(export_image_area)
-        export_image_area_layout.setObjectName('export_image_area_layout')
-        export_image_area_layout.setContentsMargins(5, 5, 5, 5)
-        export_image_area_layout.setSpacing(10)
-        export_image_area_layout.addWidget(self.export_image_view)
-        export_image_area_layout.addWidget(self.export_type_combo, alignment=Qt.AlignmentFlag.AlignCenter)
-
         export_bttn_frame = QFrame(self.ui.load_pages.export_scroll_contents)
         export_bttn_frame.setObjectName('export_bttn_frame')
         export_bttn_frame.setFrameShape(QFrame.Shape.NoFrame)
@@ -495,9 +466,6 @@ class SetupMainWindow:
         export_bttn_layout.addWidget(self.cancel_export_bttn)
 
         self.ui.load_pages.export_sideways_layout.addWidget(self.export_area)
-        # self.ui.load_pages.export_sideways_layout.addWidget(self.export_image_view)
-        self.ui.load_pages.export_sideways_layout.addWidget(export_image_area)
-        # self.ui.load_pages.export_scroll_layout.addWidget(self.export_slides_bttn, alignment=Qt.AlignmentFlag.AlignCenter)
         self.ui.load_pages.export_scroll_layout.addWidget(export_bttn_frame)
 
         # PAGE 2

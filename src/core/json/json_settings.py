@@ -7,7 +7,6 @@ class Settings(object):
     # Get the app path
     json_file = "settings.json"
     settings_path = APP_ROOT / json_file
-    print(f"This is the settings path: {settings_path}")
     if not settings_path.is_file():
         print(f"WARNING: \"settings.json\" not found! Check in the folder {settings_path}")
 

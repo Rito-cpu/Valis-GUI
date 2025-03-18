@@ -30,8 +30,18 @@ class QtExportArea(QWidget):
         self._select_non_rigid_bttn.clicked.connect(self.select_all_non_rigid)
 
     def _setup_widget(self):
+        horizontal_scene = QFrame(self)
+        horizontal_scene.setObjectName('horizontal_scene')
+        horizontal_scene.setFrameShape(QFrame.Shape.NoFrame)
+        horizontal_scene.setFrameShadow(QFrame.Shadow.Plain)
+
+        left_side_frame = QFrame(horizontal_scene)
+        left_side_frame.setObjectName('left_side_frame')
+        left_side_frame.setFrameShape(QFrame.Shape.NoFrame)
+        left_side_frame.setFrameShadow(QFrame.Shadow.Plain)
+
         # Create toggle groupbox to make space
-        export_sample_table_gb = QGroupBox(self)
+        export_sample_table_gb = QGroupBox(left_side_frame)
         export_sample_table_gb.setObjectName('export_sample_table_gb')
         export_sample_table_gb.setTitle('Export Sample Table')
         export_sample_table_gb.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -121,7 +131,7 @@ class QtExportArea(QWidget):
         export_table_gb_layout.setContentsMargins(10, 10, 10, 10)
         export_table_gb_layout.addWidget(table_frame)
 
-        export_options_gb = QGroupBox(self)
+        export_options_gb = QGroupBox(left_side_frame)
         export_options_gb.setObjectName('export_options_gb')
         export_options_gb.setTitle('File Export Options')
         export_options_gb.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -192,7 +202,7 @@ class QtExportArea(QWidget):
 
         compression_factor_entry = QtNumEntry(parent=compression_factor_frame)
         compression_factor_entry.setObjectName('compression_factor_entry')
-        compression_factor_entry.setFixedSize(30, 26)
+        compression_factor_entry.setFixedSize(75, 26)
         compression_factor_entry.setDecimals(2)
         compression_factor_entry.setRange(0, 100)
         compression_factor_entry.setSingleStep(1.0)
@@ -256,7 +266,7 @@ class QtExportArea(QWidget):
         export_options_gb.setMinimumWidth(table_frame.sizeHint().width())
         export_options_gb.setMaximumHeight(export_options_gb_layout.sizeHint().height() + 50)
 
-        self.bar_frame = QFrame(self)
+        self.bar_frame = QFrame(left_side_frame)
         self.bar_frame.setObjectName('bar_frame')
         self.bar_frame.setFrameShape(QFrame.Shape.NoFrame)
         self.bar_frame.setFrameShadow(QFrame.Shadow.Raised)
@@ -359,20 +369,55 @@ class QtExportArea(QWidget):
 
         self.bar_frame.hide()
 
-        plot_area = QFrame(self)
-        plot_area.setObjectName('plot_area')
-        plot_area.setFrameShape(QFrame.Shape.NoFrame)
-        plot_area.setFrameShadow(QFrame.Shadow.Plain)
+        self.plot_area = QStackedWidget(horizontal_scene)
+        self.plot_area.setObjectName('plot_area')
+        self.plot_area.setFrameShape(QFrame.Shape.NoFrame)
+        self.plot_area.setFrameShadow(QFrame.Shadow.Plain)
+
+        self._default_face = QWidget(self.plot_area)
+        self._default_face.setObjectName('default_face')
+        self._default_face.setStyleSheet(f"""
+            QWidget#default_face {{
+                border: 1px solid {self.themes['app_color']['bg_three']};
+                border-radius: 6px;
+                background: transparent;
+        }}""")
+
+        default_label = QLabel(self._default_face)
+        default_label.setObjectName('default_label')
+        default_label.setText('No Plot Available')
+        default_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        default_label.setStyleSheet(f'font-size: 14px; color: {self.themes["app_color"]["text_color"]};')
+
+        default_layout = QVBoxLayout(self._default_face)
+        default_layout.setObjectName('default_layout')
+        default_layout.setContentsMargins(0, 0, 0, 0)
+        default_layout.addWidget(default_label, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        self.plot_area.insertWidget(0, self._default_face)
 
         # TODO: Gather data from excel results in each sample and display in plot
 
+        left_side_layout = QVBoxLayout(left_side_frame)
+        left_side_layout.setObjectName('left_side_layout')
+        left_side_layout.setContentsMargins(0, 0, 0, 0)
+        left_side_layout.setSpacing(45)
+        left_side_layout.addWidget(export_sample_table_gb)
+        left_side_layout.addWidget(export_options_gb)
+        left_side_layout.addWidget(self.bar_frame)
+        #left_side_layout.addStretch(1)
+
+        horizontal_layout = QHBoxLayout(horizontal_scene)
+        horizontal_layout.setObjectName('horizontal_layout')
+        horizontal_layout.setContentsMargins(0, 0, 0, 0)
+        horizontal_layout.setSpacing(10)
+        horizontal_layout.addWidget(left_side_frame)
+        horizontal_layout.addWidget(self.plot_area)
+
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.setSpacing(45)
-        main_layout.addWidget(export_sample_table_gb)
-        main_layout.addWidget(export_options_gb)
-        main_layout.addWidget(self.bar_frame)
-        main_layout.addStretch(1)
+        main_layout.setContentsMargins(5, 5, 5, 5)
+        main_layout.setSpacing(0)
+        main_layout.addWidget(horizontal_scene)
 
     def show_bar_frame(self):
         self.bar_frame.show()
@@ -385,6 +430,31 @@ class QtExportArea(QWidget):
 
     def select_all_non_rigid(self):
         self.export_sample_table.select_all(NON_RIGID_KEY)
+
+    def clear_plot(self):
+        if self.plot_area.count() > 1:
+            self.plot_area.setCurrentIndex(1)
+            self.plot_area.removeWidget(self.plot_area.currentWidget())
+
+    def set_plot(self, data):
+        # TODO: 1. Get output directory, 2. Get list of sample folders (minus session_settings), 3. Use data/sample_summary.csv (rigid_D or non_rigid_D) from each sample to get data
+        plot_widget = QWidget(self.plot_area)
+        plot_widget.setObjectName('plot_widget')
+        plot_widget.setStyleSheet(f"""
+            QWidget#plot_widget {{
+                background: transparent;
+                border: 1px solid {self.themes['app_color']['bg_three']};
+                border-radius: 6px;
+            }}""")
+
+        plot_layout = QVBoxLayout(plot_widget)
+        plot_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.plot_area.insertWidget(plot_widget, 1)
+
+    def default_plot(self):
+        self.plot_area.setCurrentWidget(self._default_face)
+        self.clear_plot()
 
     def set_results_dir(self, dir):
         print(f'We received results directory: {dir}')

@@ -14,11 +14,18 @@ from src.gui.models.qt_message import QtMessage
 
 
 class ValisProcessObject(QProcess):
-    def __init__(self):
+    def __init__(
+        self,
+        dest_dir,
+        parent=None
+    ):
         super().__init__()
 
         themes = Themes()
         self.themes = themes.items
+        self.dest_dir = dest_dir
+        print(f'Received this path: {self.dest_dir}')
+        # TODO: Changed local settings to dest dir
 
         self.process_killed = False
 
@@ -40,19 +47,18 @@ class ValisProcessObject(QProcess):
 
         # APP_CONFIG is valis_gui_main
         scripts_dir = SCRIPTS_PATH / "valis"
-        output_dir = APP_ROOT / "src" / "core" / "output" / "states"
 
         selections_script = scripts_dir / "launch_with_selections.py"
         if not is_existing_path(selections_script):
             print("Error: launch_with_selections.py not found!")
             return
 
-        local_user_settings = output_dir / "user_settings.json"
+        local_user_settings = pathlib.Path(self.dest_dir) / "session_settings" / "user_settings.json"
         if not is_valid_json_file(local_user_settings):
             print("Error: user_settings.json not found!")
             return
 
-        local_slide_settings = output_dir / "sample.json"
+        local_slide_settings = pathlib.Path(self.dest_dir) / "session_settings" / "sample.json"
         if not is_valid_json_file(local_slide_settings):
             print("Error: sample.json not found!")
             return
@@ -66,6 +72,13 @@ class ValisProcessObject(QProcess):
 
         # run launchscript.sh with generated arguments
         launch_build = scripts_dir / "launchscript.sh"
+        #print(f'Starting list...')
+        #print(str(launch_build))
+        #print(selections_script)
+        #print(local_user_settings)
+        #print(local_slide_settings)
+        #print(home_dir)
+        #print(f'End list...')
 
         if self.check_docker_running():
             self.setProgram("bash")

@@ -100,11 +100,12 @@ class QtSectionalWidget(QWidget):
 
         self.expanded_widget_area = QWidget(self.info_area_stack)
         self.expanded_widget_area.setFixedHeight(200)
-        label = QLabel(self.expanded_widget_area)
-        label.setText('Testing')
-        test_lay = QVBoxLayout(self.expanded_widget_area)
-        test_lay.setContentsMargins(0, 0, 0, 0)
-        test_lay.addWidget(label)
+        null_label = QLabel(self.expanded_widget_area)
+        null_label.setText('Empty')
+        self.expanded_layout = QVBoxLayout(self.expanded_widget_area)
+        self.expanded_layout.setObjectName('expanded_layout')
+        self.expanded_layout.setContentsMargins(30, 0, 15, 0)
+        self.expanded_layout.addWidget(null_label)
         self.stack_expanded_height = self.expanded_widget_area.size().height()
 
         self.info_area_stack.addWidget(self.collapsed_text_area)
@@ -167,6 +168,23 @@ class QtSectionalWidget(QWidget):
 
         #self.setMinimumWidth(self.sizeHint().width() * 2)
         self.setMaximumWidth(self.sizeHint().width() * 2)
+
+    def clear_expanded_content(self):
+        if self.expanded_layout.count() > 0:
+            # Clear existing widgets inside expanded_widget_area
+            for widget_index in reversed(range(self.expanded_layout.count())):
+                widget = self.expanded_layout.itemAt(widget_index).widget()
+                if widget:
+                    widget.deleteLater()
+
+    def set_expanded_content(self, new_content: QWidget):
+        # Clear the expanded area before adding new widget
+        self.clear_expanded_content()
+        # Add new widget (new content) to expanded_widget_area
+        new_content.setParent(self.expanded_widget_area)
+        self.expanded_layout.addWidget(new_content)
+        
+        self.stack_expanded_height = self.expanded_widget_area.size().height()
 
     def title_clicked(self):
         icon_pos = self.section_icon.pos()

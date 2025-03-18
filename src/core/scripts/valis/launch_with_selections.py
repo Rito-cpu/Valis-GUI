@@ -166,15 +166,23 @@ def launch_with_selections(user_settings_path: str, slide_settings_path: str, ho
 
 if __name__ == "__main__":
     # create args to pass file locations into python script when called in launchscript.sh
-
-    parser = argparse.ArgumentParser(prog="Valis_launch_script", description="launches VALIS using arguments read in "
-                                                                            "from a JSON file")
+    parser = argparse.ArgumentParser(
+        prog="Valis_launch_script",
+        description="launches VALIS using arguments read in from a JSON file"
+    )
     # -path is the path to the user_settings.json file, -il is the path to the sample.json file,
     # -hdir is the string representing os.expanduser("~") on the user's system.
     parser.add_argument('-path')
     parser.add_argument('-il')
     parser.add_argument("-hdir")
 
-    args = parser.parse_args()
+    try:
+        args = parser.parse_args()
+        print(f'These are the parsed args: {args}')
+    except SystemExit as e:
+        print(f"Error parsing args: {e}")
+        sys.exit(1)
+
+    # args = parser.parse_args()
 
     launch_with_selections(args.path, args.il, args.hdir)

@@ -328,17 +328,19 @@ class MainFunctions():
                     session_settings_dir.mkdir(exist_ok=True)
                     
                     json_user_settings = json.dumps({'user_selections': user_settings}, indent=2)
-                    local_user_settings = (APP_ROOT / "src" / "core"/ "output" / "states" / "user_settings.json").resolve()
+                    # local_user_settings = (APP_ROOT / "src" / "core"/ "output" / "states" / "user_settings.json").resolve()
+                    local_user_settings = (session_settings_dir / "user_settings.json").resolve()
                     with open(local_user_settings, 'w') as outfile:
                         outfile.write(json_user_settings)
-                    shutil.copyfile(local_user_settings, session_settings_dir / local_user_settings.name)
+                    #shutil.copyfile(local_user_settings, session_settings_dir / local_user_settings.name)
 
                     slides_dict = SUBMITTED_SLIDES
                     json_slides_settings = json.dumps(slides_dict, indent=2)
-                    local_slide_settings = (APP_ROOT / "src" / "core" / "output" / "states" / "sample.json").resolve()
+                    # local_slide_settings = (APP_ROOT / "src" / "core" / "output" / "states" / "sample.json").resolve()
+                    local_slide_settings = (session_settings_dir / "sample.json").resolve()
                     with open(local_slide_settings, 'w') as outfile:
                         outfile.write(json_slides_settings)
-                    shutil.copyfile(local_slide_settings, session_settings_dir / local_slide_settings.name)
+                    #shutil.copyfile(local_slide_settings, session_settings_dir / local_slide_settings.name)
                 except FileExistsError as file_error:
                     error_msg.setText('File Already Exists!')
                     error_msg.setDetailedText(f'An error occurred while trying to create a file/folder: \n{str(e)}')
@@ -358,7 +360,7 @@ class MainFunctions():
                 results_area = self.ui.load_pages.results_scroll_content.findChild(QtResultsArea, "results_area")
                 # Create valis-wsi QProcess thread
                 try:
-                    self.valis_process = ValisProcessObject()
+                    self.valis_process = ValisProcessObject(dest_dir=OUTPUT_DIRECTORY)
                     successful_startup = self.valis_process.start_process()
                     if not successful_startup:
                         return

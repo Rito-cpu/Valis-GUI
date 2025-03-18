@@ -93,10 +93,10 @@ class QtSlideDirectory(QWidget):
         slide_path = pathlib.Path(self.image_dir_entry.text())
 
         if self.is_valid_path() and slide_path.is_dir():
-            data_dict = slide_search.initiate_process(slide_path)
+            data_dict = slide_search.initiate_process(str(slide_path))
             if data_dict:
                 self.dir_tree.clear()
-                self.dir_tree.set_temp_dir(slide_path)
+                self.dir_tree.set_temp_dir(str(slide_path))
                 self.dir_tree.use_directory_widget()
                 self.dir_tree.add_data(data_dict)
             else:
