@@ -140,7 +140,7 @@ class QtTree(QWidget):
             font_size=14,
             parent=button_container
         )
-        self.update_slides_bttn.setObjectName('submit_slides_bttn')
+        self.update_slides_bttn.setObjectName('update_slides_bttn')
         self.update_slides_bttn.setFixedSize(60, 28)
 
         self.clear_bttn = PyPushButton(

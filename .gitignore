@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.log
 
 # Virtual environment
 venv/
@@ -11,6 +12,8 @@ env/
 # IDE/editor directories
 .vscode/
 .idea/
+.git/
+.dockerignore
 
 # OS-specific files
 .DS_Store

@@ -1,3 +1,7 @@
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
 from src.core.pyqt_core import *
 from src.core.json.json_themes import Themes
 from src.core.keyword_store import *

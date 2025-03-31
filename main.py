@@ -17,8 +17,6 @@ if __name__ == '__main__':
     valis_app = QApplication(sys.argv)
     valis_app.setStyle("fusion")    # Set the look/style of the application
 
-    # os.environ["QT_FONT_DPI"] = str(my_app.primaryScreen().logicalDotsPerInch())
-
     # Initialize window
     main_window = MainWindow()
     main_window.show()

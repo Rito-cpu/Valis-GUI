@@ -67,9 +67,6 @@ pydantic-compat==0.1.2
 pyinstaller==6.11.1
 pyinstaller-hooks-contrib==2024.10
 pyparsing==3.1.2
-PyQt6==6.7.0
-PyQt6-Qt6==6.7.0
-PyQt6-sip==13.6.0
 python-dateutil==2.9.0.post0
 pytz==2024.1
 pyvips==2.2.3
@@ -80,7 +77,8 @@ rsa==4.9
 scikit-image==0.19.3
 scikit-learn==1.5.0
 scipy==1.13.1
-scyjava==1.9.1
+scyjava==1.10.2
+seaborn==0.13.2
 shapely==2.0.4
 SimpleITK==2.3.1
 six==1.16.0

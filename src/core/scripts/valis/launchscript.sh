@@ -1,12 +1,20 @@
 #!/usr/bin/env bash
 
-# this is the command run in the terminal to launch the docker container, the $ values represent the variables passed
-# from on_register_press.py
+SCRIPT_PATH=$1
+USER_SETTINGS=$2
+SLIDE_SETTINGS=$3
+HOME_DIR=$4
 
 echo "Launching Python script with arguments:"
-echo "Script Path: $1"
-echo "User Settings Path: $2"
-echo "Slide Settings Path: $3"
-echo "Home Dir: $4"
+echo "Script Path: $SCRIPT_PATH"
+echo "User Settings Path: $USER_SETTINGS"
+echo "Slide Settings Path: $SLIDE_SETTINGS"
+echo "Home Dir: $HOME_DIR"
 
-docker run --rm --name pyqt_valis_container --memory=20g -v ~:/root cdgatenbee/valis-wsi python3 $1 -path $2 -il $3 -hdir $4
+
+
+docker run --rm \
+    --name pyqt_valis_container \
+    --memory=20g \
+    -v "$HOME_DIR:/root" \
+    cdgatenbee/valis-wsi python3 "$SCRIPT_PATH" -path "$USER_SETTINGS" -il "$SLIDE_SETTINGS" -hdir "$HOME_DIR"

@@ -2,20 +2,9 @@ import pathlib
 import os
 import pandas as pd
 import sys
-# sys.path.append("/Users/gatenbcd/Dropbox/Documents/image_processing/valis_project/valis")
 from valis import slide_io, slide_tools, valtils
-
-# sys.path.append("/Users/gatenbcd/Dropbox/Documents/image_processing/valis_project/valis/gui")
-#import gui_options
-#import inspect
 import pyvips
-# import ctypes
-# import stat
 
-
-# gui_options.PROCESSOR_KEY = "image processors"
-# IF_PROCESSOR_KEY = "if processor"
-# BF_PROCESSOR_KEY = "bf processor"
 
 SAMPLE_NAME_KEY = "Sample"
 """str: Name of sample"""
@@ -216,10 +205,10 @@ def guess_image_type(sample_df):
 
 def initiate_process(user_path: str):
     path_obj = pathlib.Path(user_path)
-    path_list = [x for x in path_obj.iterdir() if not os.path.split(x)[1].startswith(".")]
+    path_list = [item for item in path_obj.iterdir() if not os.path.split(item)[1].startswith(".")]
 
-    all_subirs = all([x.is_dir() for x in path_list])
-    has_rounds = all([slide_tools.determine_if_staining_round(d)[0] for d in path_obj.iterdir()])
+    all_subirs = all([item.is_dir() for item in path_list])
+    has_rounds = all([slide_tools.determine_if_staining_round(subdir)[0] for subdir in path_obj.iterdir()])
 
     if not all_subirs or has_rounds:
         # sample_name, img_list = get_image_list(user_path)
@@ -252,16 +241,9 @@ def initiate_process(user_path: str):
 
         json_dict[sample_name] = sample_dict_for_json
 
-    import json
-    with open("sample.json", "w") as outfile:
-        json.dump(json_dict, outfile)
-
-    sample_df = pd.concat(sample_dict)
-
-    # sample_df.to_csv("samples.csv")
     return json_dict
 
-
+"""
 if __name__ == "__main__":
     sample_list = []
 
@@ -314,4 +296,4 @@ if __name__ == "__main__":
     sample_df = pd.concat(sample_dict)
 
     sample_df.to_csv("samples.csv")
-
+"""

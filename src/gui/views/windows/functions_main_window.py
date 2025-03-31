@@ -371,7 +371,7 @@ class MainFunctions():
                     results_area.cancel_valis_bttn.setEnabled(True)
                 except Exception as e:
                     self.valis_process.kill()
-                    error_msg.setText('Error occurred during registration process.')
+                    error_msg.setText('Registration Error.')
                     error_msg.setDetailedText(f'An error occurred while trying to register settings: {str(e)}')
                     error_msg.exec()
                     return

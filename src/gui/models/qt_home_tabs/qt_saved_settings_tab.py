@@ -94,7 +94,7 @@ class SavedSettingsTab(QWidget):
             font_size=16,
             parent=dir_entry_frame
         )
-        self.find_settings_bttn.setObjectName(u"register_setting_bttn")
+        self.find_settings_bttn.setObjectName(u"find_settings_bttn")
         self.find_settings_bttn.setFixedHeight(40)
         self.find_settings_bttn.setMaximumWidth(960)
 

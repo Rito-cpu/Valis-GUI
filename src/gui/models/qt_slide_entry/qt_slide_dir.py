@@ -90,34 +90,53 @@ class QtSlideDirectory(QWidget):
         self.image_dir_entry.set_text(text)
 
     def check_entry(self):
-        slide_path = pathlib.Path(self.image_dir_entry.text())
+        clean_string = str(self.image_dir_entry.text()).strip()
+        slide_path = pathlib.Path(clean_string)
 
-        if self.is_valid_path() and slide_path.is_dir():
-            data_dict = slide_search.initiate_process(str(slide_path))
-            if data_dict:
-                self.dir_tree.clear()
-                self.dir_tree.set_temp_dir(str(slide_path))
-                self.dir_tree.use_directory_widget()
-                self.dir_tree.add_data(data_dict)
-            else:
-                msg_bttns = {
-                    "Ok": QMessageBox.ButtonRole.AcceptRole,
-                }
+        try:
+            if self.is_valid_path() and slide_path.is_dir():
+                data_dict = slide_search.initiate_process(str(slide_path))
+                if data_dict:
+                    self.dir_tree.clear()
+                    self.dir_tree.set_temp_dir(str(slide_path))
+                    self.dir_tree.use_directory_widget()
+                    self.dir_tree.add_data(data_dict)
+                else:
+                    msg_bttns = {
+                        "Ok": QMessageBox.ButtonRole.AcceptRole,
+                    }
 
-                exit_message_box = QtMessage(
-                    buttons=msg_bttns,
-                    color=self.themes["app_color"]["main_bg"],
-                    bg_color_one=self.themes["app_color"]["dark_one"],
-                    bg_color_two=self.themes["app_color"]["bg_one"],
-                    bg_color_hover=self.themes["app_color"]["dark_three"],
-                    bg_color_pressed=self.themes["app_color"]["dark_four"]
-                )
-                exit_message_box.setIcon(QMessageBox.Icon.Critical)
-                exit_message_box.setText("No slide data found.")
-                exit_message_box.setDetailedText("No valid slide image files were found in the directory entered.")
-                exit_message_box.exec()
+                    exit_message_box = QtMessage(
+                        buttons=msg_bttns,
+                        color=self.themes["app_color"]["main_bg"],
+                        bg_color_one=self.themes["app_color"]["dark_one"],
+                        bg_color_two=self.themes["app_color"]["bg_one"],
+                        bg_color_hover=self.themes["app_color"]["dark_three"],
+                        bg_color_pressed=self.themes["app_color"]["dark_four"]
+                    )
+                    exit_message_box.setIcon(QMessageBox.Icon.Critical)
+                    exit_message_box.setText("No slide data found.")
+                    exit_message_box.setDetailedText("No valid slide image files were found in the directory entered.")
+                    exit_message_box.exec()
 
-                self.dir_tree.clear()
+                    self.dir_tree.clear()
+        except Exception as e:
+            msg_bttns = {
+                "Ok": QMessageBox.ButtonRole.AcceptRole,
+            }
+
+            exit_message_box = QtMessage(
+                buttons=msg_bttns,
+                color=self.themes["app_color"]["main_bg"],
+                bg_color_one=self.themes["app_color"]["dark_one"],
+                bg_color_two=self.themes["app_color"]["bg_one"],
+                bg_color_hover=self.themes["app_color"]["dark_three"],
+                bg_color_pressed=self.themes["app_color"]["dark_four"]
+            )
+            exit_message_box.setIcon(QMessageBox.Icon.Critical)
+            exit_message_box.setText("Encountered an error.")
+            exit_message_box.setDetailedText(f"Error: {e}")
+            exit_message_box.exec()
 
     def check_empty_tree(self):
         is_empty = self.dir_tree.check_empty()
@@ -125,7 +144,8 @@ class QtSlideDirectory(QWidget):
         return is_empty
 
     def is_valid_path(self):
-        return pathlib.Path(self.image_dir_entry.text()).exists()
+        clean_string = str(self.image_dir_entry.text()).strip()
+        return pathlib.Path(clean_string).exists()
 
     def all_toggle_deactivated(self):
         # All toggle buttons are in the unchecked position

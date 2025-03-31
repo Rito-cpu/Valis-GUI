@@ -77,8 +77,9 @@ class QtExportSampleTable(QWidget):
         # for d in data:
         #     if (do_non_rigid and d.non_rigid_complete) or (do_non_rigid == False and d.rigid_complete):
         #         self.add_sample(d)
-        for d in data:
-            self.add_sample(d)
+        if data is not None:
+            for d in data:
+                self.add_sample(d)
 
     def reset_table(self):
         self.sample_table.clear()

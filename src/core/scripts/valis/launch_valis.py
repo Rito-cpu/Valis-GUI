@@ -9,12 +9,13 @@
 
 import os
 import sys
+import pathlib
 
 # this particular line of code may not work on windows because of the use of a backslash.
 # A simple if statement using sys.platform.startswith("win32") should be able to fix this.
 # Alternatively, if you can modify the import statements entirely so that this code is no longer needed,
 # that would be ideal.
-sys.path.append("/".join(os.path.realpath(__file__).split("/")[0:-3]))
+#sys.path.append("/".join(os.path.realpath(__file__).split("/")[0:-3]))
 
 from return_selections import *
 import json
@@ -81,14 +82,6 @@ def launch_with_selections(user_settings_path: str, slide_settings_path: str, ho
     name_list = []
     processor_dict = {}
     processor_dict_list = []
-
-    r'''
-    Explanation of home_dir and "/root":
-        home_dir refers to the "~" directory of the users host system (Users/Username on POSIX, C:\Users\username on windows).
-        "/root" refers to the directory within the docker container to which the host system is mounted. In order for 
-        this code to work correctly, any instance of home_dir passed into the container must be corrected to "/root" so 
-        that the filepath is accurate to the file structure of the linux-based docker container. 
-        '''
 
     # create list of sample directories and their corresponding names
     for sample_name, sample_dict in outer_image_dict.items():
@@ -170,19 +163,18 @@ if __name__ == "__main__":
         prog="Valis_launch_script",
         description="launches VALIS using arguments read in from a JSON file"
     )
-    # -path is the path to the user_settings.json file, -il is the path to the sample.json file,
-    # -hdir is the string representing os.expanduser("~") on the user's system.
+    #print(f'This is what were appending:\n{"/".join(os.path.realpath(__file__).split("/")[0:-3])}')
+
+    # -path: path to the user_settings.json file
+    # -il: path to the sample.json file
+    # -hdir: string representing os.expanduser("~") on the user's system
     parser.add_argument('-path')
     parser.add_argument('-il')
     parser.add_argument("-hdir")
 
     try:
         args = parser.parse_args()
-        print(f'These are the parsed args: {args}')
     except SystemExit as e:
-        print(f"Error parsing args: {e}")
         sys.exit(1)
-
-    # args = parser.parse_args()
 
     launch_with_selections(args.path, args.il, args.hdir)

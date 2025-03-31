@@ -145,6 +145,7 @@ def get_matchers():
     return m_list
 
 
+"""
 if __name__ == "__main__":
     # Get feature detector options
     default_fd, feature_detector_combobox_vals = get_feature_detectors()
@@ -161,3 +162,4 @@ if __name__ == "__main__":
     BF_PROCESSOR_OPTIONS = all_processors[BF_PROCESSOR_KEY]
     DEFAULT_PROCESSOR_BF = default_processors[BF_PROCESSOR_KEY]
     default_bf_processor_args = BF_PROCESSOR_OPTIONS[DEFAULT_PROCESSOR_BF]
+"""

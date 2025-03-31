@@ -7,15 +7,19 @@ from src.core.keyword_store import *
 from src.core.scripts.valis.gui_options import *
 
 
-# Project root directory
-APP_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
+if getattr(sys, 'frozen', False):
+    # If running as pyinstaller packaged app
+    APP_ROOT = pathlib.Path(sys._MEIPASS)
+else:
+    # Project root directory
+    APP_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 
 # Image resources directory
 image_dir = "resources/images"
 IMG_RSC_PATH = APP_ROOT / image_dir
 
 # Path to scripts
-scripts_loc = "src/core/scripts"
+scripts_loc = "src/core/scripts/valis"
 SCRIPTS_PATH = (APP_ROOT / scripts_loc).resolve()
 
 # --- Output Directory Instance ---

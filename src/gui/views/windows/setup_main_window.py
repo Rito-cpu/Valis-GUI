@@ -3,7 +3,6 @@ from src.core.pyqt_core import *
 from src.core.json.json_settings import Settings
 from src.core.json.json_themes import Themes
 from src.core.image_functions import Functions
-from src.core.scripts.test_script import *
 from src.core.keyword_store import *
 from src.gui.models import *
 from src.gui.views.windows.ui_main_window import UI_MainWindow
@@ -406,7 +405,7 @@ class SetupMainWindow:
         # **** Export Page Setup ****
         # ***************************
         self.export_area = QtExportArea(
-            sample_data=export_obj_data,
+            sample_data=None,
             parent=self.ui.load_pages.export_sideways_frame
         )
         self.export_area.setObjectName("export_area")
