@@ -22,6 +22,9 @@ IMG_RSC_PATH = APP_ROOT / image_dir
 scripts_loc = "src/core/scripts/valis"
 SCRIPTS_PATH = (APP_ROOT / scripts_loc).resolve()
 
+# Docker Container name
+DOCKER_SESSION_CONTAINER: str = "valis_session_container"
+
 # --- Output Directory Instance ---
 OUTPUT_DIRECTORY = None
 

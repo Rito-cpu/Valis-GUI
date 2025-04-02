@@ -224,6 +224,27 @@ class MainFunctions():
                         obj.click()
                         self.results_page_picker(self.ui.load_pages.result_page)
 
+    def cancel_valis_registration(self):
+        try:
+            # Find the PID of the valis process inside the container
+            get_pid = subprocess.run([
+                "docker", "exec", DOCKER_SESSION_CONTAINER,
+                "pgrep", "-f", "launch_valis.py"
+            ], stdout=subprocess.PIPE, text=True)
+
+            pid = get_pid.stdout.strip()
+            if pid:
+                # Send SIGTERM to gracefully stop the process
+                subprocess.run([
+                    "docker", "exec", DOCKER_SESSION_CONTAINER,
+                    "kill", "-SIGTERM", pid
+                ], check=True)
+                print(f"Cancelled valis process (PID {pid}) inside container.")
+            else:
+                print("No running valis process found.")
+        except Exception as e:
+            print(f"Failed to cancel valis process: {e}")
+
     def register_settings(
         self,
         output_dir_widget: QWidget,
@@ -367,7 +388,7 @@ class MainFunctions():
                     MainFunctions.jump_to_results(self)
                     self.valis_process.finished.connect(lambda: MainFunctions.valis_completed(self))
 
-                    results_area.cancel_valis_bttn.clicked.connect(self.valis_process.kill)
+                    results_area.cancel_valis_bttn.clicked.connect(self.cancel_valis_registration(self))
                     results_area.cancel_valis_bttn.setEnabled(True)
                 except Exception as e:
                     self.valis_process.kill()

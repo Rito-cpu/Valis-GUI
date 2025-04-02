@@ -1,3 +1,4 @@
+from src.core.app_config import DOCKER_SESSION_CONTAINER
 from src.core.pyqt_core import *
 from src.core.json.json_settings import Settings
 from src.core.json.json_themes import Themes
@@ -202,6 +203,12 @@ class MainWindow(QMainWindow):
         exit_message_box.exec()
 
         if exit_message_box.clickedButton() == exit_message_box.buttons["Yes"]:
+            from subprocess import run
+            try:
+                run(["docker", "stop", DOCKER_SESSION_CONTAINER], check=True)
+                print("Docker container stopped.")
+            except Exception as e:
+                print(f"Error stopping Docker container: {e}")
             QApplication.instance().closeAllWindows()
             event.accept()
         else:

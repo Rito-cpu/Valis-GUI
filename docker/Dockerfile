@@ -27,4 +27,5 @@ RUN python -m pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Set entrypoint (can still override with CMD if needed)
-ENTRYPOINT ["python3", "/app/launch_valis.py"]
+#ENTRYPOINT ["python3", "/app/launch_valis.py"]
+CMD ["tail", "-f", "/dev/null"]
