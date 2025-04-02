@@ -5,6 +5,7 @@ import subprocess
 import pathlib
 import sys
 import json
+import re
 
 from pathlib import PureWindowsPath, PurePosixPath
 from src.core.pyqt_core import *
@@ -16,6 +17,9 @@ from src.gui.models.qt_message import QtMessage
 
 
 class ValisProcessObject(QProcess):
+    valis_step_signal = pyqtSignal(str)
+    valis_percent_signal = pyqtSignal(int)
+
     def __init__(
         self,
         dest_dir,
@@ -28,6 +32,8 @@ class ValisProcessObject(QProcess):
         self.dest_dir = dest_dir
 
         self.process_killed = False
+
+        self.errorOccurred.connect(self.abnormal_error)
 
     def start_process(self):
         if is_windows_platform():
@@ -167,10 +173,25 @@ class ValisProcessObject(QProcess):
         else:
             return False
 
+    def parse_valis_output(self, new_line: str):
+        if "====" in new_line:
+            step = new_line.strip("= ").strip()
+            print(f"[VALIS STEP] {step}")
+            self.valis_step_signal.emit(step)
+        elif re.search(r"(\d+)%\|", new_line):
+            match = re.search(r"(\d+)%\|", new_line)
+            if match:
+                percent = int(match.group(1))
+                print(f"[VALIS PROGRESS] {percent}%")
+                self.valis_percent_signal.emit(step)
+
     def handle_output(self):
         output = self.readAllStandardOutput()
         output_str = output.data().decode('utf-8')
         print(output_str)
+
+        for line in output_str.splitlines():
+            self.parse_valis_output(line)
 
     def handle_error(self):
         error = self.readAllStandardError()
@@ -178,9 +199,34 @@ class ValisProcessObject(QProcess):
         print(error_str)
 
     def kill(self):
-        subprocess.run(["docker", "kill", "pyqt_valis_container"])
+        try:
+            # Find the PID of the valis process inside the container
+            get_pid = subprocess.run([
+                "docker", "exec", DOCKER_SESSION_CONTAINER,
+                "pgrep", "-f", "launch_valis.py"
+            ], stdout=subprocess.PIPE, text=True)
+
+            pid = get_pid.stdout.strip()
+            if pid:
+                # Send SIGTERM to gracefully stop the process
+                subprocess.run([
+                    "docker", "exec", DOCKER_SESSION_CONTAINER,
+                    "kill", "-SIGTERM", pid
+                ], check=True)
+                print(f"Cancelled valis process (PID {pid}) inside container.")
+            else:
+                print("No running valis process found.")
+        except Exception as e:
+            print(f"Failed to cancel valis process: {e}")
+        
+        #subprocess.run(["docker", "kill", DOCKER_SESSION_CONTAINER])
         self.process_killed = True
         super().kill()
+
+    def abnormal_error(self):
+        error = self.readAllStandardError()
+        error_str = error.data().decode('utf-8')
+        print(error_str)
 
     def check_docker_running(self):
         error_bttns = {

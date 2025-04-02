@@ -111,7 +111,7 @@ class QtStatusTable(QWidget):
         self.status_table.clear()
         self.status_table.setHorizontalHeaderLabels(['Sample', 'Status'])
         self.status_table.setRowCount(0)
-        self.status_table.setSpan(0, 0, 1, 1)
+        self.status_table.setSpan(0, 0, 1, 2)
         self.table_data = None
         self.data_status = None
 

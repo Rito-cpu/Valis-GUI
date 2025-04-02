@@ -1,9 +1,5 @@
-# this file holds the logic for determining the state of the progress bar. The process is defined in a single
-# QThread object and run as a thread in progress_bar.py
-
-
-# processed masks overlaps rigid registration non_rigid_registration data
 import os
+import pathlib
 import time
 from src.core.pyqt_core import QThread, pyqtSignal
 
@@ -20,6 +16,9 @@ class ValisMonitoringThread(QThread):
         self._dst_dir = path
         self._steps_dict = steps_dict
         self._sample_list = sample_list
+        self._expected_files = {
+            "processed": None,
+        }
 
     def create_flag_file(self, flag_name: str):
         """Creates an empty flag file.
@@ -75,13 +74,14 @@ class ValisMonitoringThread(QThread):
         # (passed in from on_register_press.py through progress_bar.py). Also create a list of the sample names.
         step_folders = ["processed", "data"]
         step_folders[-1:-1] = list(self._steps_dict.keys())
-        print(f'For this process, we are looking for these step folders:\n{step_folders}')
         # HINT: [processed, rigid, data]
         # max_steps refers to the total number of steps that Valis will do on each sample
         max_steps = len(step_folders)
 
         # Check for "processed" folder, determines if this is a clean registration or continuing an attempted registration
-        if not os.path.exists(f"{self._dst_dir}/{self._sample_list[sample_iterator]}"):
+        existing_proc_folder = pathlib.Path(self._dst_dir) / self._sample_list[sample_iterator]
+        # if not os.path.exists(f"{self._dst_dir}/{self._sample_list[sample_iterator]}"):
+        if not existing_proc_folder.exists():
             while sample_iterator < len(self._sample_list):
                 current_sample_name = self._sample_list[sample_iterator]
                 current_step_name = step_folders[step_iterator]
@@ -92,29 +92,34 @@ class ValisMonitoringThread(QThread):
                 # First step: monitor for the creation of the "processed" folder
                 # **************************************************************
                 if step_iterator == 0:
-                    if os.path.exists(f"{self._dst_dir}/{current_sample_name}/{current_step_name}"):
+                    created_proc_folder = pathlib.Path(self._dst_dir) / current_sample_name / current_step_name
+                    if created_proc_folder.exists():
+                    #if os.path.exists(f"{self._dst_dir}/{current_sample_name}/{current_step_name}"):
                         step_iterator += 1
                         self.emit_step_status(step_iterator, step_folders[step_iterator])
                 # ***************************************************************************
                 # Intermediate steps: monitor for "overlaps" folder creation and its contents
                 # ***************************************************************************
                 elif step_iterator <= len(self._steps_dict):
-                    if os.path.isfile(f"{self._dst_dir}/{current_sample_name}/overlaps/{current_sample_name}_{current_step_name}_overlap.png"):
+                    overlap_file = f"{current_sample_name}_{current_step_name}_overlap.png"
+                    created_overlaps_folder = pathlib.Path(self._dst_dir) / current_sample_name / "overlaps" / overlap_file
+                    if created_overlaps_folder.is_file():
+                    #if os.path.isfile(f"{self._dst_dir}/{current_sample_name}/overlaps/{current_sample_name}_{current_step_name}_overlap.png"):
                         step_iterator += 1
                         self.emit_step_status(step_iterator, step_folders[step_iterator])
                 # **********************************************
                 # Final step: monitor for "data" folder creation
                 # **********************************************
                 elif step_iterator < max_steps:
-                    print(f'We are in the last step\n\tLooking for: {self._dst_dir}/{current_sample_name}/{current_step_name}')
-                    if os.path.exists(f"{self._dst_dir}/{current_sample_name}/{current_step_name}"):
+                    created_data_folder = pathlib.Path(self._dst_dir) / current_sample_name / current_step_name
+                    if created_data_folder.exists():
+                    #if os.path.exists(f"{self._dst_dir}/{current_sample_name}/{current_step_name}"):
                         self.emit_step_status(step_iterator+1, step_folders[step_iterator])
                         step_iterator = 0
                         sample_iterator += 1
                         self.emit_sample_status(sample_iterator, current_sample_name)
                 # While monitoring, wait one second per iteration 
-                time.sleep(1)
-            print(f'We have just finished the while loop, closing script...')
+                time.sleep(0.5)
         else:
             # TODO: If not a clean run
 
@@ -163,8 +168,3 @@ class ValisMonitoringThread(QThread):
                     # (which will happen after the final sample is registered) the loop breaks.
                     break
                 time.sleep(1)
-
-"""an alternative that would simplify this whole process would be to insert some kind of checkfile into any 
-registration that indicates whether it was failed or completed, and then creating a new folder for following 
-registrations if that checkfile is detected so that the completion checker does not need to account for already 
-existing files from a previous registration."""

@@ -13,6 +13,17 @@ def start_docker_container():
     home_dir = Path.home()
     output_mount = home_dir  # You can refine this if you want to mount a subfolder
 
+    # Check if a container with the name exists (even if stopped)
+    result = subprocess.run(
+        ["docker", "ps", "-a", "--filter", f"name={DOCKER_SESSION_CONTAINER}", "--format", "{{.Status}}"],
+        stdout=subprocess.PIPE,
+        text=True
+    )
+
+    if result.stdout:
+        print(f"Found a leftover container: {DOCKER_SESSION_CONTAINER}. Removing...")
+        subprocess.run(["docker", "rm", "-f", DOCKER_SESSION_CONTAINER])
+
     # Check if container is already running
     try:
         result = subprocess.run(
@@ -32,9 +43,9 @@ def start_docker_container():
     docker_command = [
         "docker", "run", "-d",
         "--name", DOCKER_SESSION_CONTAINER,
-        "--memory=20g",
+        "--memory=16g",
         "--cpus=4",
-        "-v", f"{str(output_mount)}:/root",
+        "-v", f"{str(output_mount)}:/root:cached",
         "valis-wsi:dev",
         "tail", "-f", "/dev/null"  # Keep the container alive
     ]
@@ -44,6 +55,7 @@ def start_docker_container():
         print("Docker container started in detached mode.")
     except subprocess.CalledProcessError as e:
         print(f"Failed to start Docker container: {e}")
+        return
 
 
 if __name__ == '__main__':

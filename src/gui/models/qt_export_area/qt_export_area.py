@@ -1,12 +1,12 @@
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+import pathlib
+import pandas as pd
 
 from src.core.pyqt_core import *
 from src.core.json.json_themes import Themes
 from src.core.keyword_store import *
 from src.gui.models import QtExportSampleTable, PyPushButton, PyToggle, QtComboBox
 from src.gui.models.qt_spinbox import QtNumEntry
+from src.gui.models.qt_mpl_canvas import QtMplCanvas
 
 
 class QtExportArea(QWidget):
@@ -439,9 +439,9 @@ class QtExportArea(QWidget):
         if self.plot_area.count() > 1:
             self.plot_area.setCurrentIndex(1)
             self.plot_area.removeWidget(self.plot_area.currentWidget())
+            self._results_dir = None
 
-    def set_plot(self, data):
-        # TODO: 1. Get output directory, 2. Get list of sample folders (minus session_settings), 3. Use data/sample_summary.csv (rigid_D or non_rigid_D) from each sample to get data
+    def set_plot(self):
         plot_widget = QWidget(self.plot_area)
         plot_widget.setObjectName('plot_widget')
         plot_widget.setStyleSheet(f"""
@@ -450,11 +450,35 @@ class QtExportArea(QWidget):
                 border: 1px solid {self.themes['app_color']['bg_three']};
                 border-radius: 6px;
             }}""")
+        
+        error_dict = self._get_sample_errors()
+        if error_dict:
+            error_plot = QtMplCanvas(error_data=error_dict, parent=plot_widget)
 
         plot_layout = QVBoxLayout(plot_widget)
         plot_layout.setContentsMargins(0, 0, 0, 0)
+        plot_layout.addWidget(error_plot)
 
-        self.plot_area.insertWidget(plot_widget, 1)
+        self.plot_area.insertWidget(1, plot_widget)
+        self.plot_area.setCurrentIndex(1)
+
+    def _get_sample_errors(self):
+        # TODO: Error in this method, print out status
+        if self._results_dir is not None:
+            error_data = {}
+            results_dir = pathlib.Path(self._results_dir)
+            for folder in results_dir.iterdir():
+                if folder.is_dir() and folder != "session_settings":
+                    # Get summary.csv file
+                    sub_path = results_dir / folder / "data" / f"{folder}_summary.csv"
+                    if sub_path.is_file():
+                        error_key = "rigid_D"
+                        df = pd.read_csv(str(sub_path))
+                        if error_key in df.columns:
+                            error_data[folder] = df[error_key].dropna().mean()
+            return error_data
+        else:
+            return None
 
     def default_plot(self):
         self.plot_area.setCurrentWidget(self._default_face)
@@ -463,3 +487,5 @@ class QtExportArea(QWidget):
     def set_results_dir(self, dir):
         print(f'We received results directory: {dir}')
         self._results_dir = dir
+
+        self.set_plot()

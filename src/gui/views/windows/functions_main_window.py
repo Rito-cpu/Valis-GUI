@@ -224,7 +224,7 @@ class MainFunctions():
                         obj.click()
                         self.results_page_picker(self.ui.load_pages.result_page)
 
-    def cancel_valis_registration(self):
+    def cancel_valis_registration(self, process_obj):
         try:
             # Find the PID of the valis process inside the container
             get_pid = subprocess.run([
@@ -242,6 +242,8 @@ class MainFunctions():
                 print(f"Cancelled valis process (PID {pid}) inside container.")
             else:
                 print("No running valis process found.")
+            
+            process_obj.process_killed = True
         except Exception as e:
             print(f"Failed to cancel valis process: {e}")
 
@@ -388,7 +390,7 @@ class MainFunctions():
                     MainFunctions.jump_to_results(self)
                     self.valis_process.finished.connect(lambda: MainFunctions.valis_completed(self))
 
-                    results_area.cancel_valis_bttn.clicked.connect(self.cancel_valis_registration(self))
+                    results_area.cancel_valis_bttn.clicked.connect(self.valis_process.kill)
                     results_area.cancel_valis_bttn.setEnabled(True)
                 except Exception as e:
                     self.valis_process.kill()

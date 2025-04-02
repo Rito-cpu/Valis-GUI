@@ -143,23 +143,3 @@ def get_matchers():
     m_list.insert(0, m_list.pop(m_list.index(feature_matcher.DEFAULT_MATCH_FILTER)))
 
     return m_list
-
-
-"""
-if __name__ == "__main__":
-    # Get feature detector options
-    default_fd, feature_detector_combobox_vals = get_feature_detectors()
-
-    # Get image processor options
-    default_processors, all_processors = get_image_processers()
-
-    ## Get default immunofluorescent image processor and options
-    IF_PROCESSOR_OPTIONS = all_processors[IF_PROCESSOR_KEY]
-    DEFAULT_PROCESSOR_IF = default_processors[IF_PROCESSOR_KEY]
-    default_if_processor_args = IF_PROCESSOR_OPTIONS[DEFAULT_PROCESSOR_IF]
-
-    ## Get default brightfield image processor and options
-    BF_PROCESSOR_OPTIONS = all_processors[BF_PROCESSOR_KEY]
-    DEFAULT_PROCESSOR_BF = default_processors[BF_PROCESSOR_KEY]
-    default_bf_processor_args = BF_PROCESSOR_OPTIONS[DEFAULT_PROCESSOR_BF]
-"""
