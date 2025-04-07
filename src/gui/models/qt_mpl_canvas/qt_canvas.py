@@ -17,8 +17,11 @@ class QtMplCanvas(FigureCanvasQTAgg):
         if parent is not None:
             self.setParent(parent)
 
+        print(f'\nThis is the error dict: {error_data}')
         sample_names = list(error_data.keys())
         errors = list(error_data.values())
+        print(f'Sample names: {sample_names}')
+        print(f'Errors: {errors}\n')
 
         ax.bar(sample_names, errors)
         ax.set_title("Registration Error per Sample")

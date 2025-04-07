@@ -351,19 +351,15 @@ class MainFunctions():
                     session_settings_dir.mkdir(exist_ok=True)
                     
                     json_user_settings = json.dumps({'user_selections': user_settings}, indent=2)
-                    # local_user_settings = (APP_ROOT / "src" / "core"/ "output" / "states" / "user_settings.json").resolve()
-                    local_user_settings = (session_settings_dir / "user_settings.json").resolve()
-                    with open(local_user_settings, 'w') as outfile:
+                    user_settings_path = (session_settings_dir / "user_settings.json").resolve()
+                    with open(user_settings_path, 'w') as outfile:
                         outfile.write(json_user_settings)
-                    #shutil.copyfile(local_user_settings, session_settings_dir / local_user_settings.name)
 
                     slides_dict = SUBMITTED_SLIDES
-                    json_slides_settings = json.dumps(slides_dict, indent=2)
-                    # local_slide_settings = (APP_ROOT / "src" / "core" / "output" / "states" / "sample.json").resolve()
-                    local_slide_settings = (session_settings_dir / "sample.json").resolve()
-                    with open(local_slide_settings, 'w') as outfile:
-                        outfile.write(json_slides_settings)
-                    #shutil.copyfile(local_slide_settings, session_settings_dir / local_slide_settings.name)
+                    json_sample_settings = json.dumps(slides_dict, indent=2)
+                    sample_settings_path = (session_settings_dir / "sample.json").resolve()
+                    with open(sample_settings_path, 'w') as outfile:
+                        outfile.write(json_sample_settings)
                 except FileExistsError as file_error:
                     error_msg.setText('File Already Exists!')
                     error_msg.setDetailedText(f'An error occurred while trying to create a file/folder: \n{str(e)}')
@@ -388,7 +384,9 @@ class MainFunctions():
                     if not successful_startup:
                         return
                     MainFunctions.jump_to_results(self)
+                    self.ui.left_menu.setDisabled(True)
                     self.valis_process.finished.connect(lambda: MainFunctions.valis_completed(self))
+
 
                     results_area.cancel_valis_bttn.clicked.connect(self.valis_process.kill)
                     results_area.cancel_valis_bttn.setEnabled(True)
@@ -487,6 +485,7 @@ class MainFunctions():
         else:
             results_area.process_terminated()
             print(f'Canceled!')
+        self.ui.left_menu.setDisabled(False)
         self.valis_process = None
         results_area.cancel_valis_bttn.setEnabled(False)
 

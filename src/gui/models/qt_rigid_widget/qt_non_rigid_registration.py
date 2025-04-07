@@ -26,7 +26,7 @@ class NonRigidSettings(QGroupBox):
         if parent != None:
             self.setParent(parent)
 
-        self.setTitle(title)
+        #self.setTitle(title)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         self._non_rigid_methods = non_rigid_methods
@@ -40,7 +40,6 @@ class NonRigidSettings(QGroupBox):
             bg_color=self.themes['app_color']['blue_bg'],
             title_size=title_size,
             border_radius=border_radius,
-            margin_top=margin_top,
             font_size=font_size
         )
         self.setStyleSheet(groupbox_style)

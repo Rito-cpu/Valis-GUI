@@ -1,7 +1,10 @@
+import pathlib
+
 from src.core.pyqt_core import *
 from src.core.json.json_themes import Themes
 from src.gui.models.qt_line_button import QtOutputEntry, QtButtonLineEdit
 from src.gui.models.py_push_button import PyPushButton
+from .qt_file_obj import QtFileWidget
 
 tab_description = '''
 <p style=\"text-align: center\">This tab gives the ability to enter valis gui settings that were saved 
@@ -20,8 +23,10 @@ class SavedSettingsTab(QWidget):
         
         themes = Themes()
         self.themes = themes.items
+        self._obj_counter = 0
 
         self._setup_widget()
+        self.add_file_bttn.clicked.connect(self.add_file)
 
     def _setup_widget(self):
         container_frame = QFrame(self)
@@ -75,34 +80,44 @@ class SavedSettingsTab(QWidget):
         dir_entry_frame.setFrameShadow(QFrame.Shadow.Plain)
 
         self.settings_dir_entry = QtButtonLineEdit(
-            title="Valis Settings",
+            title="Session Settings",
             title_color=self.themes["app_color"]["text_color"],
             color_three=self.themes['app_color']['blue_bg'],
             top_margin=18,
+            mode="file",
             parent=dir_entry_frame
         )
         self.settings_dir_entry.setObjectName('settings_dir_entry')
         self.settings_dir_entry.setMaximumWidth(975)
 
-        self.find_settings_bttn = PyPushButton(
-            text="Find Settings",
+        button_frame = QFrame(dir_entry_frame)
+        button_frame.setObjectName('button_frame')
+        button_frame.setFrameShape(QFrame.Shape.NoFrame)
+        button_frame.setFrameShadow(QFrame.Shadow.Plain)
+
+        self.add_file_bttn = PyPushButton(
+            text="Add File",
             radius=8,
             color=self.themes["app_color"]["white"],
             bg_color=self.themes["app_color"]["dark_one"],
             bg_color_hover=self.themes["app_color"]["dark_three"],
             bg_color_pressed=self.themes["app_color"]["dark_four"],
             font_size=16,
-            parent=dir_entry_frame
+            parent=button_frame
         )
-        self.find_settings_bttn.setObjectName(u"find_settings_bttn")
-        self.find_settings_bttn.setFixedHeight(40)
-        self.find_settings_bttn.setMaximumWidth(960)
+        self.add_file_bttn.setObjectName("find_settings_bttn")
+        self.add_file_bttn.setFixedHeight(40)
+        self.add_file_bttn.setMaximumWidth(960)
+
+        button_layout = QVBoxLayout(button_frame)
+        button_layout.setContentsMargins(95, 5, 95, 5)
+        button_layout.addWidget(self.add_file_bttn)
 
         dir_entry_layout = QGridLayout(dir_entry_frame)
         dir_entry_layout.setObjectName('dir_entry_layout')
         dir_entry_layout.setContentsMargins(40, 10, 40, 10)
         dir_entry_layout.addWidget(self.settings_dir_entry)
-        dir_entry_layout.addWidget(self.find_settings_bttn)
+        dir_entry_layout.addWidget(button_frame)
         dir_entry_frame.setMaximumHeight(dir_entry_layout.sizeHint().height() + 4)
 
         # TODO: Create modified results box for found settings
@@ -121,6 +136,21 @@ class SavedSettingsTab(QWidget):
         main_layout.setObjectName('main_layout')
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.addWidget(container_frame)
+
+    def add_file(self):
+        # TODO: Restrict counter to a max of 2 files
+        # TODO: Add file to list
+        # TODO: Add QMessage for incorrect file type
+        # TODO: Add QMessage for file already in list
+        # TODO: Add QMessage for removing file with x button
+        # TODO: Add check for both a sample and settings file existence
+        input_file = pathlib.Path(self.settings_dir_entry.text())
+        if input_file.exists() and input_file.is_file() and input_file.suffix == ".json":
+            # Create file object
+            self._obj_counter += 1
+            file_obj = QtFileWidget(file_name=input_file.name, parent=self.box_container)
+            file_obj.setObjectName(f"file_obj_{self._obj_counter}")
+            self.box_layout.addWidget(file_obj)
 
     def create_box(self, parent_frame: QFrame):
         groupbox_template = """
@@ -149,31 +179,27 @@ class SavedSettingsTab(QWidget):
         )
 
         main_gb = QGroupBox()
-        main_gb.setTitle("Testing")
+        main_gb.setTitle("Uploaded Files")
         main_gb.setStyleSheet(gb_style)
 
-        box_container = QFrame(parent_frame)
-        box_container.setObjectName('box_container')
-        box_container.setFrameShape(QFrame.Shape.NoFrame)
-        box_container.setFrameShadow(QFrame.Shadow.Plain)
-        box_container.setStyleSheet(f"""
+        self.box_container = QFrame(parent_frame)
+        self.box_container.setObjectName('box_container')
+        self.box_container.setFrameShape(QFrame.Shape.NoFrame)
+        self.box_container.setFrameShadow(QFrame.Shadow.Plain)
+        self.box_container.setStyleSheet(f"""
             QFrame#box_container{{
-                background: {self.themes['app_color']['blue_bg']};
+                background: {self.themes['app_color']['main_bg']};
                 border: none;
                 border-radius: 10px;
             }}
         """)
 
-        lab = QLabel(box_container)
-        lab.setText('Selected Files')
-
-        box_layout = QVBoxLayout(box_container)
-        box_layout.setContentsMargins(10, 10, 10, 10)
-        box_layout.setSpacing(5)
-        box_layout.addWidget(lab)
+        self.box_layout = QVBoxLayout(self.box_container)
+        self.box_layout.setContentsMargins(10, 10, 10, 10)
+        self.box_layout.setSpacing(5)
 
         lele = QVBoxLayout(main_gb)
         lele.setContentsMargins(10, 10, 10, 10)
-        lele.addWidget(box_container)
+        lele.addWidget(self.box_container)
 
         return main_gb

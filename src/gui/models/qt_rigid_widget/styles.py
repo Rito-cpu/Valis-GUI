@@ -5,12 +5,6 @@ groupbox_template = """
         font-size: {title_size}px;
         border: none;
         border-radius: {border_radius}px;
-        margin-top: {margin_top}px;
-    }}
-    QGroupBox:title {{
-        color: {color_two};
-        subcontrol-origin: margin;
-        left: 17px;
     }}
     QLabel {{
         color: {color};

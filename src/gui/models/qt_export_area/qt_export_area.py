@@ -1,4 +1,5 @@
 import pathlib
+import json
 import pandas as pd
 
 from src.core.pyqt_core import *
@@ -414,7 +415,7 @@ class QtExportArea(QWidget):
         horizontal_layout = QHBoxLayout(horizontal_scene)
         horizontal_layout.setObjectName('horizontal_layout')
         horizontal_layout.setContentsMargins(0, 0, 0, 0)
-        horizontal_layout.setSpacing(10)
+        horizontal_layout.setSpacing(35)
         horizontal_layout.addWidget(left_side_frame)
         horizontal_layout.addWidget(self.plot_area)
 
@@ -441,41 +442,43 @@ class QtExportArea(QWidget):
             self.plot_area.removeWidget(self.plot_area.currentWidget())
             self._results_dir = None
 
-    def set_plot(self):
+    def set_plot(self, perform_rigid: bool):
         plot_widget = QWidget(self.plot_area)
         plot_widget.setObjectName('plot_widget')
         plot_widget.setStyleSheet(f"""
             QWidget#plot_widget {{
                 background: transparent;
-                border: 1px solid {self.themes['app_color']['bg_three']};
+                border: 2px solid black;
                 border-radius: 6px;
             }}""")
         
-        error_dict = self._get_sample_errors()
+        error_dict = self._get_sample_errors(perform_rigid)
         if error_dict:
             error_plot = QtMplCanvas(error_data=error_dict, parent=plot_widget)
 
         plot_layout = QVBoxLayout(plot_widget)
-        plot_layout.setContentsMargins(0, 0, 0, 0)
+        plot_layout.setContentsMargins(3, 3, 3, 3)
         plot_layout.addWidget(error_plot)
 
         self.plot_area.insertWidget(1, plot_widget)
         self.plot_area.setCurrentIndex(1)
 
-    def _get_sample_errors(self):
-        # TODO: Error in this method, print out status
+    def _get_sample_errors(self, do_rigid: bool):
         if self._results_dir is not None:
+            rigid_dict = {
+                True: "rigid_D",
+                False: "non_rigid_D"
+            }
             error_data = {}
             results_dir = pathlib.Path(self._results_dir)
             for folder in results_dir.iterdir():
-                if folder.is_dir() and folder != "session_settings":
+                if folder.is_dir() and folder.name != "session_settings":
                     # Get summary.csv file
-                    sub_path = results_dir / folder / "data" / f"{folder}_summary.csv"
-                    if sub_path.is_file():
-                        error_key = "rigid_D"
-                        df = pd.read_csv(str(sub_path))
-                        if error_key in df.columns:
-                            error_data[folder] = df[error_key].dropna().mean()
+                    summary_file = folder / "data" / f"{folder.name}_summary.csv"
+                    if summary_file.is_file():
+                        df = pd.read_csv(str(summary_file))
+                        if rigid_dict[do_rigid] in df.columns:
+                            error_data[folder.name] = float(df[rigid_dict[do_rigid]].dropna().mean())
             return error_data
         else:
             return None
@@ -485,7 +488,16 @@ class QtExportArea(QWidget):
         self.clear_plot()
 
     def set_results_dir(self, dir):
-        print(f'We received results directory: {dir}')
         self._results_dir = dir
 
-        self.set_plot()
+        try:
+            user_settings_path = (pathlib.Path(self._results_dir) / "session_settings" / "user_settings.json").resolve()
+            json_file = open(user_settings_path)
+            reader = json.load(json_file)
+            selections_dict = reader['user_selections']
+            perform_rigid = selections_dict['do_rigid']
+            print(f'Retrieved perform rigid: {perform_rigid}')
+            self.set_plot(perform_rigid)
+        except Exception as e:
+            print(f"Failed to retrieve the settings file for plot!\n{e}")
+

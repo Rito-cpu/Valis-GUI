@@ -25,6 +25,7 @@ class QtButtonLineEdit(QGroupBox):
             top_margin: int=15,
             bg: str="white",
             left_spacing: int=14,
+            mode: str = "folder",
             parent=None
         ):
         super(QtButtonLineEdit, self).__init__()
@@ -43,6 +44,7 @@ class QtButtonLineEdit(QGroupBox):
         self._top_margin = top_margin
         self._bg = bg
         self._left_spacing = left_spacing
+        self._mode = mode
 
         self.setTitle(title)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
@@ -186,15 +188,25 @@ class QtButtonLineEdit(QGroupBox):
         """
         home = str(pathlib.Path.home())
 
-        #if PROJECT_DIRECTORY is None:
-        #    print('There is no saved directory to start from, using default...')
-        #else:
-        #    print(f'Project directory found! \n\t{PROJECT_DIRECTORY}')
+        dialog = QFileDialog(self)
+        dialog.setDirectory(home)
+        if self._mode == "folder":
+            dialog.setWindowTitle("Select a Directory")
+            dialog.setFileMode(QFileDialog.FileMode.Directory)
+            dialog.setOption(QFileDialog.Option.ShowDirsOnly, True)
+        else:
+            dialog.setWindowTitle("Select a File")
+            dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
+            dialog.setNameFilter("All Files (*)")
 
-        folder_name = QFileDialog.getExistingDirectory(
-            parent=self,
-            caption='Select a directory',
-            directory=home
-        )
+        if dialog.exec():
+            selected_path = dialog.selectedFiles()[0]
+            self.enhanced_line_edit.setText(selected_path)
 
-        self.enhanced_line_edit.setText(folder_name)
+        #folder_name = QFileDialog.getExistingDirectory(
+        #    parent=self,
+        #    caption='Select a directory',
+        #    directory=home,
+        #)
+
+        #self.enhanced_line_edit.setText(folder_name)
