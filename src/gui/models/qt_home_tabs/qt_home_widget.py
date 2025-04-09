@@ -5,6 +5,8 @@ from .qt_saved_settings_tab import SavedSettingsTab
 
 
 class HomeTabWidget(QTabWidget):
+    pass_data = pyqtSignal(dict)
+
     def __init__(
         self,
         parent=None
@@ -20,6 +22,7 @@ class HomeTabWidget(QTabWidget):
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         self._setup_widget()
+        self._saved_settings_tab.emit_dict.connect(self.send_saved_data)
 
     def _setup_widget(self):
         self._new_tab = NewTab()
@@ -36,7 +39,5 @@ class HomeTabWidget(QTabWidget):
         #self.setMinimumSize(800, 430)
         #self.setMaximumSize(self.minimumSize()*1.5)
 
-    def hyper_link_clicked(self, bttn_name: str):
-        pass
-
-        
+    def send_saved_data(self, data_dict: dict):
+        self.pass_data.emit(data_dict)

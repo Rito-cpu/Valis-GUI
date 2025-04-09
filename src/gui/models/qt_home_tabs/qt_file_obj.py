@@ -6,12 +6,15 @@ from src.core.json.json_themes import Themes
 from src.core.image_functions import Functions
 from src.gui.models.py_push_button import PyPushButton
 from src.gui.models.py_title_bar.py_title_button import PyTitleButton
+from src.gui.models.qt_message import QtMessage
 
 
 class QtFileWidget(QWidget):
+    request_removal = pyqtSignal(QWidget)
+
     def __init__(
         self,
-        file_name: str,
+        file: pathlib.Path,
         icon_file: str = "icon_file.svg",
         icon_remove: str = "icon_remove.svg",
         font_size: int = 13,
@@ -24,12 +27,16 @@ class QtFileWidget(QWidget):
         themes = Themes()
         self.themes = themes.items
 
-        self._file_name = file_name
+        self._file = file
+        self._file_name = file.name
         self._icon_file_path = Functions.set_svg_icon(icon_file)
         self._icon_remove_path = Functions.set_svg_icon(icon_remove)
         self._font_size = font_size
 
+        self._file_path = None
+
         self._setup_widget()
+        self.remove_bttn.clicked.connect(self.remove_clicked)
 
     def _setup_widget(self):
         """
@@ -39,29 +46,6 @@ class QtFileWidget(QWidget):
         4. File delete icon
         5. Object pathlib variable
         6. File validation method (return either sample or user settings type)
-
-        self._icon_path = Functions.set_svg_icon(icon_path)
-        # DRAW BG BLUE
-        p.setBrush(QColor(self._context_color))
-        p.drawRoundedRect(rect_blue, 8, 8)
-
-        # BG INSIDE
-        p.setBrush(QColor(self._bg_one))
-        p.drawRoundedRect(rect_inside_active, 8, 8)
-
-        # DRAW ACTIVE
-        icon_path = self._icon_active_menu
-        icon_path = os.path.abspath(os.path.join(APP_ROOT, icon_path))
-        self._set_icon_color = self._icon_color_active
-        self.icon_active(p, icon_path, self.width())
-
-        # DRAW TEXT
-        p.setPen(QColor(self._set_text_active))
-        p.drawText(rect_text, Qt.AlignmentFlag.AlignCenter, self.text())
-        # TODO: Switch AlignCenter back to AlignVCenter
-
-        # DRAW ICONS
-        self.icon_paint(p, self._icon_path, rect_icon, self._set_icon_color)
         """
         outer_frame = QFrame(self)
         outer_frame.setObjectName("outer_frame")
@@ -71,7 +55,7 @@ class QtFileWidget(QWidget):
             QFrame#outer_frame{{
                 border-radius: 8px;
                 background: {self.themes['app_color']['main_bg']};
-                border: 1px solid black;
+                border: 2px solid {self.themes['app_color']['dark_two']};
             }}
         """)
 
@@ -99,27 +83,27 @@ class QtFileWidget(QWidget):
         file_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         file_label.setStyleSheet(f"color: {self.themes['app_color']['text_color']}; font-size: {self._font_size}px;")
 
-        remove_bttn = PyPushButton(
+        self.remove_bttn = PyPushButton(
             text=None,
             radius=0,
             color=self.themes["app_color"]["main_bg"],
             bg_color=self.themes["app_color"]["main_bg"],
             bg_color_hover=self.themes["app_color"]["main_bg"],
-            bg_color_pressed=self.themes["app_color"]["main_bg"],
+            bg_color_pressed=self.themes['app_color']['main_bg'],
             font_size=16,
             parent=inner_frame
         )
-        remove_bttn.setObjectName("remove_bttn")
-        remove_bttn.setIcon(QIcon(self._icon_remove_path))
-        remove_bttn.setFixedSize(23, 23)
-        remove_bttn.setIconSize(QSize(23, 23))
+        self.remove_bttn.setObjectName("remove_bttn")
+        self.remove_bttn.setIcon(QIcon(self._icon_remove_path))
+        #self.remove_bttn.setFixedSize(23, 23)
+        self.remove_bttn.setIconSize(QSize(23, 23))
 
         inner_layout = QHBoxLayout(inner_frame)
         inner_layout.setSpacing(10)
         inner_layout.setContentsMargins(10, 5, 10, 5)
         inner_layout.addWidget(file_frame)
         inner_layout.addWidget(file_label)
-        inner_layout.addWidget(remove_bttn)
+        inner_layout.addWidget(self.remove_bttn)
 
         outer_layout = QVBoxLayout(outer_frame)
         outer_layout.setContentsMargins(0, 0, 0, 0)
@@ -129,3 +113,31 @@ class QtFileWidget(QWidget):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.addWidget(outer_frame)
+
+    def get_file_name(self):
+        return self._file_name
+    
+    def get_file_path(self):
+        return self._file
+
+    def remove_clicked(self):
+        msg_bttns = {
+            "Yes": QMessageBox.ButtonRole.AcceptRole,
+            "No": QMessageBox.ButtonRole.RejectRole
+        }
+        question_msg = QtMessage(
+            buttons=msg_bttns,
+            color=self.themes["app_color"]["main_bg"],
+            bg_color_one=self.themes["app_color"]["dark_one"],
+            bg_color_two=self.themes["app_color"]["bg_one"],
+            bg_color_hover=self.themes["app_color"]["dark_three"],
+            bg_color_pressed=self.themes["app_color"]["dark_four"]
+        )
+        question_msg.setIcon(QMessageBox.Icon.Question)
+        question_msg.setText(f"Remove {self._file_name}?")
+        question_msg.exec()
+
+        if question_msg.clickedButton() == question_msg.buttons["Yes"]:
+            self.request_removal.emit(self)
+        else:
+            question_msg.close()

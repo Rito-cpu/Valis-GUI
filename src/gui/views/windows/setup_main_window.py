@@ -227,6 +227,7 @@ class SetupMainWindow:
         # ******** Home Page Setup ********
         # *********************************
         home_menu = HomeTabWidget()
+        home_menu.pass_data.connect(lambda saved_data: MainFunctions.saved_settings_registration(self, saved_data))
 
         #self.ui.load_pages.home_tab_layout.addStretch(1)
         self.ui.load_pages.home_tab_layout.addWidget(home_menu)

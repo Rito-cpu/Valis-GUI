@@ -417,6 +417,107 @@ class MainFunctions():
                 error_msg.exec()
             REGISTRATION_STATE = COMPLETE
 
+    def saved_settings_registration(self, data_dict: dict):
+        error_bttns = {
+            "Ok": QMessageBox.ButtonRole.AcceptRole
+        }
+        error_msg = QtMessage(
+            buttons=error_bttns,
+            color=self.themes["app_color"]["main_bg"],
+            bg_color_one=self.themes["app_color"]["dark_one"],
+            bg_color_two=self.themes["app_color"]["bg_one"],
+            bg_color_hover=self.themes["app_color"]["dark_three"],
+            bg_color_pressed=self.themes["app_color"]["dark_four"]
+        )
+        error_msg.setIcon(QMessageBox.Icon.Warning)
+
+        global SAMPLE_UPLOAD_STATE, REGISTRATION_STATE, SUBMITTED_SLIDES, OUTPUT_DIRECTORY
+        # TODO: Leave states incomplete because we use saved settings?
+        SAMPLE_UPLOAD_STATE = COMPLETE
+        output_dir = data_dict["dst_dir"]
+        try:
+            final_output = pathlib.Path(output_dir / "valis_results")
+            if final_output.is_dir():
+                copy_num = 1
+                while(final_output.is_dir()):
+                    final_output = pathlib.Path(output_dir / f"valis_results({copy_num})")
+                    copy_num += 1
+            #info_msg.setText('Output Storage.')
+            #info_msg.setDetailedText(f'Results will be stored under \"{final_output.name}\" in destination directory.')
+            #info_msg.exec()
+            final_output.mkdir(parents=True, exist_ok=True)
+            OUTPUT_DIRECTORY = str(final_output)
+
+            session_settings_dir = final_output / "session_settings"
+            session_settings_dir.mkdir(exist_ok=True)
+            
+            user_settings_source = data_dict["user_settings.json"].get_file_path()
+            user_settings_dest = (session_settings_dir / "user_settings.json").resolve()
+            user_settings_dest.write_bytes(user_settings_source.read_bytes())
+
+            with open(user_settings_dest, "r") as f:
+                data = json.load(f)
+
+            data["user_selections"]["dst_dir"] = OUTPUT_DIRECTORY
+
+            with open(user_settings_dest, "w") as f:
+                json.dump(data, f)
+
+            sample_settings_source = data_dict["sample.json"].get_file_path()
+            sample_settings_dest = (session_settings_dir / "sample.json").resolve()
+            sample_settings_dest.write_bytes(sample_settings_source.read_bytes())
+        except FileExistsError as file_error:
+            error_msg.setText('File Already Exists!')
+            error_msg.setDetailedText(f'An error occurred while trying to create a file/folder: \n{str(e)}')
+            error_msg.exec()
+            return
+        except OSError as os_error:
+            error_msg.setText('Received OS Error!')
+            error_msg.setDetailedText(f'An error occurred while handling files: \n{str(os_error)}')
+            error_msg.exec()
+            return
+        except Exception as exception:
+            error_msg.setText('Encountered Error!')
+            error_msg.setDetailedText(f'An error occurred while trying to register settings: \n{str(exception)}')
+            error_msg.exec()
+            return
+
+        results_area = self.ui.load_pages.results_scroll_content.findChild(QtResultsArea, "results_area")
+        # Create valis-wsi QProcess thread
+        try:
+            self.valis_process = ValisProcessObject(dest_dir=OUTPUT_DIRECTORY)
+            successful_startup = self.valis_process.start_process()
+            if not successful_startup:
+                return
+            MainFunctions.jump_to_results(self)
+            self.ui.left_menu.setDisabled(True)
+            self.valis_process.finished.connect(lambda: MainFunctions.valis_completed(self))
+
+
+            results_area.cancel_valis_bttn.clicked.connect(self.valis_process.kill)
+            results_area.cancel_valis_bttn.setEnabled(True)
+        except Exception as e:
+            self.valis_process.kill()
+            error_msg.setText('Registration Error.')
+            error_msg.setDetailedText(f'An error occurred while trying to register settings: {str(e)}')
+            error_msg.exec()
+            return
+        
+        # Create monitoring script QThread
+        try:
+            results_area.prepare_menu(OUTPUT_DIRECTORY)
+            results_area.create_thread()
+        except Exception as e:
+            self.valis_process.kill()
+            # TODO: Process is not killed if error thrown
+            if results_area._monitoring_thread:
+                results_area._monitoring_thread.terminate()
+            error_msg.setText('Error occurred during registration process (within progress bar thread).')
+            error_msg.setDetailedText(f'An error occurred while trying to create the Valis thread: {str(e)}')
+            error_msg.exec()
+            return
+        REGISTRATION_STATE = COMPLETE
+
     def upload_slides(self, slide_dir_widget: QtSlideDirectory):
         """Validation checking for user provided images to be uploaded and processed in valis registration.
 
