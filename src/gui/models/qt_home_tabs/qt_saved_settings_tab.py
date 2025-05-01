@@ -143,11 +143,11 @@ class SavedSettingsTab(QWidget):
         )
         self.add_file_bttn.setObjectName("find_settings_bttn")
         self.add_file_bttn.setFixedHeight(40)
-        self.add_file_bttn.setMaximumWidth(960)
+        self.add_file_bttn.setFixedWidth(300)
 
         add_bttn_layout = QVBoxLayout(add_bttn_frame)
-        add_bttn_layout.setContentsMargins(95, 5, 95, 5)
-        add_bttn_layout.addWidget(self.add_file_bttn)
+        add_bttn_layout.setContentsMargins(50, 5, 50, 5)
+        add_bttn_layout.addWidget(self.add_file_bttn, alignment=Qt.AlignmentFlag.AlignCenter)
 
         dir_entry_layout = QGridLayout(dir_entry_frame)
         dir_entry_layout.setObjectName('dir_entry_layout')

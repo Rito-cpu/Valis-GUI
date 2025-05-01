@@ -428,6 +428,7 @@ class SetupMainWindow:
         )
         self.export_slides_bttn.setObjectName('_export_slides_bttn')
         self.export_slides_bttn.setFixedSize(200, 35)
+        self.export_slides_bttn.hide()
 
         self.cancel_export_bttn = PyPushButton(
             text="Cancel",

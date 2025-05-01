@@ -33,6 +33,7 @@ class QtExportArea(QWidget):
         # Setup Slots/Signals
         self._select_rigid_bttn.clicked.connect(self.select_all_rigid)
         self._select_non_rigid_bttn.clicked.connect(self.select_all_non_rigid)
+        self.export_sample_bttn.clicked.connect(self.on_export_click)
 
     def _setup_widget(self):
         horizontal_scene = QFrame(self)
@@ -419,10 +420,34 @@ class QtExportArea(QWidget):
         horizontal_layout.addWidget(left_side_frame)
         horizontal_layout.addWidget(self.plot_area)
 
+        export_bttn_frame = QFrame(self)
+        export_bttn_frame.setObjectName('export_bttn_frame')
+        export_bttn_frame.setFrameShape(QFrame.Shape.NoFrame)
+        export_bttn_frame.setFrameShadow(QFrame.Shadow.Plain)
+
+        self.export_sample_bttn = PyPushButton(
+            text="Export Samples",
+            radius=8,
+            color=self.themes["app_color"]["text_color"],
+            bg_color=self.themes["app_color"]["yellow_bg"],
+            bg_color_hover=self.themes["app_color"]["highlight_bg"],
+            bg_color_pressed=self.themes["app_color"]["highlight_bg"],
+            font_size=14,
+            parent=export_bttn_frame
+        )
+        self.export_sample_bttn.setObjectName('export_sample_bttn')
+        self.export_sample_bttn.setFixedSize(200, 40)
+
+        export_bttn_layout = QHBoxLayout(export_bttn_frame)
+        export_bttn_layout.setContentsMargins(0, 0, 0, 0)
+        export_bttn_layout.setSpacing(0)
+        export_bttn_layout.addWidget(self.export_sample_bttn, alignment=Qt.AlignmentFlag.AlignCenter)
+
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(5, 5, 5, 5)
-        main_layout.setSpacing(0)
+        main_layout.setSpacing(20)
         main_layout.addWidget(horizontal_scene)
+        main_layout.addWidget(export_bttn_frame)
 
     def show_bar_frame(self):
         self.bar_frame.show()
@@ -487,8 +512,8 @@ class QtExportArea(QWidget):
         self.plot_area.setCurrentWidget(self._default_face)
         self.clear_plot()
 
-    def set_results_dir(self, dir):
-        self._results_dir = dir
+    def set_results_dir(self, new_dir):
+        self._results_dir = new_dir
 
         try:
             user_settings_path = (pathlib.Path(self._results_dir) / "session_settings" / "user_settings.json").resolve()
@@ -501,3 +526,38 @@ class QtExportArea(QWidget):
         except Exception as e:
             print(f"Failed to retrieve the settings file for plot!\n{e}")
 
+    def on_export_click(self):
+        """
+            1. Get output directory (self._results_dir)
+            2. Prepare session json files
+            3. Create args
+            4. Execute script with args
+        """
+        if self._results_dir is None:
+            return
+        
+        user_output = self._results_dir
+
+        home_dir = str(pathlib.Path.home())
+        user_settings = pathlib.Path(user_output) / "session_settings" / "user_settings.json"
+        sample_settings = pathlib.Path(user_output) / "session_settings" / "sample.json"
+
+        docker_user_settings = str(user_settings).replace(home_dir, "/root")
+        docker_sample_settings = str(sample_settings).replace(home_dir, "/root")
+        docker_home_dir = home_dir
+
+        args = [
+            "docker", "exec", "valis_session_container",
+            "python3", "/app/export_valis.py",
+            "-path", docker_user_settings,
+            "-il", docker_sample_settings,
+            "-hdir", docker_home_dir
+        ]
+
+        excluded_samples = []
+
+        if excluded_samples:
+            args.extend(["-name", excluded_samples])
+
+        export_proc = QProcess(self)
+        export_proc.startDetached("docker", args[1:])
