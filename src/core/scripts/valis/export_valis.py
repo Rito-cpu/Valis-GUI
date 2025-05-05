@@ -8,64 +8,6 @@ from return_selections import *
 from keyword_store import *
 
 
-def test(user_settings_path, slide_settings_path, home_dir):
-    # read in JSON file as a dictionary
-    json_file = open(user_settings_path)
-    reader = json.load(json_file)
-    selections_dict = reader['user_selections']
-    json_file = open(slide_settings_path)
-    reader = json.load(json_file)
-    outer_image_dict = reader
-    json_file.close()
-    del reader
-
-    # Puts slide source into destination src variable
-    selections_dict["src_dir"] = outer_image_dict["src_dir"]
-
-    # DST_DIR = dst_dir
-    # NAME = name
-    directory_list = []
-    name_list = []
-
-    # create list of sample directories and their corresponding names
-    for sample_name, sample_dict in outer_image_dict.items():
-        if sample_name == "src_dir":
-            continue
-        name_list.append(sample_name)
-        slide_data = sample_dict["files"]
-        directory_list.append(slide_data)
-
-    for i in range(0, len(directory_list)):
-        #slide_number refers to each slide within sample directory, slide_settings refers to the individual image settings in those samples
-        for slide_number, slide_settings in directory_list[i].items():
-            # if individual image is marked as "include," update value of image in directory_list to be its filepath
-            # also add file to "processor_dict" with "/root" replacement and image type (this will be important if
-            # the user has manually changed an image type in pre-registration settings).
-
-            if slide_settings["Include"]:
-                directory_list[i][slide_number] = slide_settings["File"]
-            else:
-                # if the user has chosen not to include an image, simply change the value to None
-                directory_list[i][slide_number] = None
-        directory_list[i] = {key: value.replace(home_dir, "/root") for key, value in directory_list[i].items() if value}
-
-    for i in range(len(directory_list) - 1, -1, -1):
-        # delete dirs if user has marked less than 2 images to be included
-        if len(directory_list[i]) <= 1:
-            directory_list.pop(i)
-            name_list.pop(i)
-
-    # directory_count will be used to determine how many runs of valis are needed
-    directory_count = len(directory_list)
-
-    for i in range(0, directory_count):
-        selections_dict[IMG_LIST] = list(directory_list[i].values())
-        selections_dict[NAME] = name_list[i]
-
-        # code to run valis with the formatted data above
-        registrar = registration.Valis(**selections_dict)
-        registrar.warp_and_save_slides(selections_dict[DST_DIR] + "/" + selections_dict[NAME], crop="overlap")
-
 def export_sample(selections_dict, sample_name, slide_data, home_dir):
     # Prepare filtered slide list (only included)
     filtered_dict = {
