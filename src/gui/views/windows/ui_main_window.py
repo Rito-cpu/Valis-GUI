@@ -40,7 +40,7 @@ class UI_MainWindow(object):
         # Add inside PyWindow "layout" all Widgets
         self.window = PyWindow(
             parent,
-            bg_color = self.themes["app_color"]["main_bg"],
+            bg_color = self.themes["app_color"]["bg_light_silver"],
             border_color = self.themes["app_color"]["blue_bg"],
             text_color = self.themes["app_color"]["text_color"]
         )
@@ -75,10 +75,10 @@ class UI_MainWindow(object):
         self.left_menu = PyLeftMenu(
             parent = self.left_menu_frame,
             app_parent = self.central_widget, # For tooltip parent
-            dark_one = self.themes["app_color"]["yellow_bg"],
-            dark_three = self.themes["app_color"]["highlight_bg"],
+            dark_one = self.themes["app_color"]["bg_mint_green"],
+            dark_three = self.themes["app_color"]["bg_mint_green_light"],
             dark_four = self.themes["app_color"]["dark_four"],
-            bg_one = self.themes["app_color"]["main_bg"],
+            bg_one = self.themes["app_color"]["bg_light_silver"],
             icon_color = self.themes["app_color"]["blue_bg"],
             icon_color_hover = self.themes["app_color"]["icon_hover"],
             icon_color_pressed = self.themes["app_color"]["icon_pressed"],
@@ -91,10 +91,11 @@ class UI_MainWindow(object):
 
         # ADD LEFT COLUMN
         # Add here the left column with Stacked Widgets
+        # Information button area
         self.left_column_frame = QFrame()
         self.left_column_frame.setMaximumWidth(self.settings["left_column_size"]["minimum"])
         self.left_column_frame.setMinimumWidth(self.settings["left_column_size"]["minimum"])
-        self.left_column_frame.setStyleSheet(f"background: {self.themes['app_color']['yellow_bg']}")
+        self.left_column_frame.setStyleSheet(f"background: {self.themes['app_color']['bg_light_silver']}")
 
         # ADD LAYOUT TO LEFT COLUMN
         self.left_column_layout = QVBoxLayout(self.left_column_frame)
@@ -147,14 +148,14 @@ class UI_MainWindow(object):
             bg_color = self.themes["app_color"]["blue_bg"],
             div_color = self.themes["app_color"]["bg_three"],
             bttn_bg_color = self.themes["app_color"]["blue_bg"],
-            bttn_bg_color_hover = self.themes["app_color"]["yellow_bg"],
-            bttn_bg_color_pressed = self.themes["app_color"]["highlight_bg"],
+            bttn_bg_color_hover = self.themes["app_color"]["bg_light_silver"],
+            bttn_bg_color_pressed = self.themes["app_color"]["bg_dark_silver"],
             icon_color = self.themes["app_color"]["main_bg"],
             icon_color_hover = self.themes["app_color"]["blue_bg"],
             icon_color_pressed = self.themes["app_color"]["main_bg"],
             icon_color_active = self.themes["app_color"]["blue_bg"],
-            context_color = self.themes["app_color"]["yellow_bg"],
-            dark_one = self.themes["app_color"]["yellow_bg"],
+            context_color = self.themes["app_color"]["bg_light_silver"],
+            dark_one = self.themes["app_color"]["blue_bg"],
             text_foreground = self.themes["app_color"]["text_white"],
             radius = 8,
             font_family = self.settings["font"]["family"],

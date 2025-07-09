@@ -36,7 +36,7 @@ def export_sample(selections_dict, sample_name, slide_data, home_dir):
     registrar_pickle_file = sample_name + "_registrar.pickle"
     pickle_path = output_path / "data" / registrar_pickle_file
     registrar = registration.load_registrar(pickle_path)
-    registrar.warp_and_save_slides(str(output_path), crop="overlap")
+    registrar.warp_and_save_slides(str(output_path))#, crop="overlap")
 
 def main():
     parser = argparse.ArgumentParser()

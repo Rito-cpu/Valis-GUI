@@ -15,39 +15,38 @@ def start_docker_container():
 
     # Check if a container with the name exists (even if stopped)
     result = subprocess.run(
-        ["docker", "ps", "-a", "--filter", f"name={DOCKER_SESSION_CONTAINER}", "--format", "{{.Status}}"],
+        ["docker", "inspect", "-f", "{{.Image}}", DOCKER_SESSION_CONTAINER],
         stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
         text=True
     )
 
-    if result.stdout:
-        print(f"Found a leftover container: {DOCKER_SESSION_CONTAINER}. Removing...")
-        subprocess.run(["docker", "rm", "-f", DOCKER_SESSION_CONTAINER])
-
-    # Check if container is already running
-    try:
-        result = subprocess.run(
-            ["docker", "inspect", "-f", "{{.State.Running}}", DOCKER_SESSION_CONTAINER],
+    if result.returncode == 0:
+        container_image_id = result.stdout.strip()
+        # Get the image ID of the current app image
+        image_id_result = subprocess.run(
+            ["docker", "images", "--no-trunc", "--quiet", DOCKER_GUI_IMAGE],
             stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
             text=True
         )
-        if result.returncode == 0 and result.stdout.strip() == "true":
-            print("Docker container is already running.")
+        current_image_id = image_id_result.stdout.strip()
+
+        if container_image_id != current_image_id:
+            print(f"Outdated container detected. Removing {DOCKER_SESSION_CONTAINER}...")
+            subprocess.run(["docker", "rm", "-f", DOCKER_SESSION_CONTAINER])
+        else:
+            print("Container already exists and uses latest image.")
             return
-    except Exception as e:
-        print(f"Error checking container: {e}")
-        return
-    
-    # Run the container in detached mode if not already running
+
+    # Run the container in detached mode
     docker_command = [
         "docker", "run", "-d",
         "--name", DOCKER_SESSION_CONTAINER,
         "--memory=16g",
         "--cpus=4",
         "-v", f"{str(output_mount)}:/root:cached",
-        "valis-wsi:dev",
-        "tail", "-f", "/dev/null"  # Keep the container alive
+        DOCKER_GUI_IMAGE,
+        "tail", "-f", "/dev/null"
     ]
 
     try:
@@ -55,7 +54,6 @@ def start_docker_container():
         print("Docker container started in detached mode.")
     except subprocess.CalledProcessError as e:
         print(f"Failed to start Docker container: {e}")
-        return
 
 
 if __name__ == '__main__':

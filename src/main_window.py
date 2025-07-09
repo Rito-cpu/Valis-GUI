@@ -192,10 +192,10 @@ class MainWindow(QMainWindow):
         exit_message_box = QtMessage(
             buttons=exit_buttons,
             color=self.themes["app_color"]["main_bg"],
-            bg_color_one=self.themes["app_color"]["dark_one"],
+            bg_color_one=self.themes["app_color"]["yellow_bg"],
             bg_color_two=self.themes["app_color"]["bg_one"],
-            bg_color_hover=self.themes["app_color"]["dark_three"],
-            bg_color_pressed=self.themes["app_color"]["dark_four"]
+            bg_color_hover=self.themes["app_color"]["yellow_bg_light"],
+            bg_color_pressed=self.themes["app_color"]["yellow_bg_dark"]
         )
         exit_message_box.setIcon(QMessageBox.Icon.Warning)
         exit_message_box.setText("Exit Application?")
@@ -205,10 +205,21 @@ class MainWindow(QMainWindow):
         if exit_message_box.clickedButton() == exit_message_box.buttons["Yes"]:
             from subprocess import run
             try:
-                run(["docker", "stop", DOCKER_SESSION_CONTAINER], check=True)
-                print("Docker container stopped.")
+                # Check if the container exists first
+                check = subprocess.run(
+                    ["docker", "inspect", DOCKER_SESSION_CONTAINER],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL
+                )
+                if check.returncode == 0:
+                    subprocess.run(["docker", "stop", DOCKER_SESSION_CONTAINER], check=True)
+                    subprocess.run(["docker", "rm", DOCKER_SESSION_CONTAINER], check=True)
+                    print("Docker container stopped and removed.")
+                else:
+                    print(f"No running Docker container found.")
             except Exception as e:
-                print(f"Error stopping Docker container: {e}")
+                print(f"Error stopping/removing Docker container: {e}")
+            
             QApplication.instance().closeAllWindows()
             event.accept()
         else:

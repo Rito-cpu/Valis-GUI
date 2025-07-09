@@ -118,12 +118,11 @@ def get_nonrigid_registrars():
         nrr_list: list
             list of all available non-rigid registrars, default (index 0) defined in registration.py
     """
-
-    nrr_list = [registration.DEFAULT_NON_RIGID_CLASS().method.split("_")[1]]
+    # nrr_list = [registration.DEFAULT_NON_RIGID_CLASS().method.split("_")[1]]
+    nrr_list = [registration.DEFAULT_NON_RIGID_CLASS.method]
     nrr_to_append = [i.split("_")[1] for i in dir(cv2.optflow) if
-                     (i.find("createOptFlow") != -1) and (i.find("Sparse") == -1) and i.split("_")[1] not in nrr_list]
+                        (i.find("createOptFlow") != -1) and (i.find("Sparse") == -1) and i.split("_")[1] not in nrr_list]
     # appends only what appears after the underscore for each i that isn't the default
-
     nrr_list.extend(nrr_to_append)
     nrr_list.extend(["SimpleElastixWarper, SimpleElastixGroupwiseWarper"])
 
@@ -140,6 +139,11 @@ def get_matchers():
     """
     m_list = [i.split("_")[0] for i in dir(feature_matcher) if i.find("NAME") != -1]
 
-    m_list.insert(0, m_list.pop(m_list.index(feature_matcher.DEFAULT_MATCH_FILTER)))
+    filter_split = feature_matcher.DEFAULT_MATCH_FILTER.split("_")[0]
+    m_index = m_list.index(filter_split)
+    popped = m_list.pop(m_index)
+    
+    m_list.insert(0, popped)
+    #m_list.insert(0, m_list.pop(m_list.index(feature_matcher.DEFAULT_MATCH_FILTER)))
 
     return m_list

@@ -15,7 +15,7 @@ class QtSlideDirectory(QWidget):
             self,
             text_color: str = 'black',
             blue_color: str = 'blue',
-            yellow_color: str = 'yellow',
+            main_bg: str = 'yellow',
             highlight_color: str = 'yellow',
             parent=None
         ):
@@ -28,7 +28,7 @@ class QtSlideDirectory(QWidget):
 
         self._text_color = text_color
         self._blue_color = blue_color
-        self._yellow_color = yellow_color
+        self._main_bg = main_bg
         self._highlight_color = highlight_color
 
         themes = Themes()

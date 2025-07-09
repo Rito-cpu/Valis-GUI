@@ -10,6 +10,7 @@
 import os
 import sys
 import pathlib
+import cv2
 
 # this particular line of code may not work on windows because of the use of a backslash.
 # A simple if statement using sys.platform.startswith("win32") should be able to fix this.

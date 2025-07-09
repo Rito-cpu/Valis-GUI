@@ -158,9 +158,9 @@ class SetupMainWindow:
             text="Sample Upload",
             radius=8,
             color=self.themes["app_color"]["text_color"],
-            bg_color=self.themes["app_color"]["yellow_bg"],
-            bg_color_hover=self.themes["app_color"]["highlight_bg"],
-            bg_color_pressed=self.themes["app_color"]["highlight_bg"],
+            bg_color=self.themes["app_color"]["bg_light_silver"],
+            bg_color_hover=self.themes["app_color"]["bg_dark_silver"],
+            bg_color_pressed=self.themes["app_color"]["bg_silver_pressed"],
             highlight=self.themes["app_color"]["green_bg"],
             parent=self.ui.right_column.slide_navigation_bttn_frame
         )
@@ -172,9 +172,9 @@ class SetupMainWindow:
             text="Registration Settings",
             radius=8,
             color=self.themes["app_color"]["text_color"],
-            bg_color=self.themes["app_color"]["yellow_bg"],
-            bg_color_hover=self.themes["app_color"]["highlight_bg"],
-            bg_color_pressed=self.themes["app_color"]["highlight_bg"],
+            bg_color=self.themes["app_color"]["bg_light_silver"],
+            bg_color_hover=self.themes["app_color"]["bg_dark_silver"],
+            bg_color_pressed=self.themes["app_color"]["bg_silver_pressed"],
             highlight=self.themes["app_color"]["green_bg"],
             parent=self.ui.right_column.slide_navigation_bttn_frame
         )
@@ -185,9 +185,9 @@ class SetupMainWindow:
             text="View Results",
             radius=8,
             color=self.themes["app_color"]["text_color"],
-            bg_color=self.themes["app_color"]["yellow_bg"],
-            bg_color_hover=self.themes["app_color"]["highlight_bg"],
-            bg_color_pressed=self.themes["app_color"]["highlight_bg"],
+            bg_color=self.themes["app_color"]["bg_light_silver"],
+            bg_color_hover=self.themes["app_color"]["bg_dark_silver"],
+            bg_color_pressed=self.themes["app_color"]["bg_silver_pressed"],
             highlight=self.themes["app_color"]["green_bg"],
             parent=self.ui.right_column.results_button_frame
         )
@@ -199,9 +199,9 @@ class SetupMainWindow:
             text="Export Results",
             radius=8,
             color=self.themes["app_color"]["text_color"],
-            bg_color=self.themes["app_color"]["yellow_bg"],
-            bg_color_hover=self.themes["app_color"]["highlight_bg"],
-            bg_color_pressed=self.themes["app_color"]["highlight_bg"],
+            bg_color=self.themes["app_color"]["bg_light_silver"],
+            bg_color_hover=self.themes["app_color"]["bg_dark_silver"],
+            bg_color_pressed=self.themes["app_color"]["bg_silver_pressed"],
             highlight=self.themes["app_color"]["green_bg"],
             parent=self.ui.right_column.results_button_frame
         )
@@ -238,7 +238,7 @@ class SetupMainWindow:
         self.slide_directory = QtSlideDirectory(
             text_color=self.themes['app_color']['text_color'],
             blue_color=self.themes['app_color']['blue_bg'],
-            yellow_color=self.themes['app_color']['yellow_bg'],
+            main_bg=self.themes['app_color']['yellow_bg'],
             highlight_color=self.themes['app_color']['highlight_bg'],
             parent=self.ui.load_pages.slide_dir_interaction
         )
@@ -248,9 +248,9 @@ class SetupMainWindow:
             text="Submit",
             radius=8,
             color=self.themes["app_color"]["white"],
-            bg_color=self.themes["app_color"]["dark_one"],
-            bg_color_hover=self.themes["app_color"]["dark_three"],
-            bg_color_pressed=self.themes["app_color"]["dark_four"],
+            bg_color=self.themes["app_color"]["blue_bg"],
+            bg_color_hover=self.themes["app_color"]["blue_hover"],
+            bg_color_pressed=self.themes["app_color"]["blue_pressed"],
             font_size=14,
             parent=self.ui.load_pages.slide_dir_interaction
         )
@@ -329,9 +329,9 @@ class SetupMainWindow:
             text="Register",
             radius=8,
             color=self.themes["app_color"]["white"],
-            bg_color=self.themes["app_color"]["dark_one"],
-            bg_color_hover=self.themes["app_color"]["dark_three"],
-            bg_color_pressed=self.themes["app_color"]["dark_four"],
+            bg_color=self.themes["app_color"]["bg_mint_green"],
+            bg_color_hover=self.themes["app_color"]["bg_mint_green_light"],
+            bg_color_pressed=self.themes["app_color"]["bg_mint_green_hover"],
             font_size=14,
             parent=register_bttn_frame
         )

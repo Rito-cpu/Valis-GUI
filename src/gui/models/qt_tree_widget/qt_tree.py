@@ -42,7 +42,7 @@ class QtTree(QWidget):
         container_frame.setFrameShadow(QFrame.Shadow.Plain)
         container_frame.setStyleSheet(f"""
             QFrame#container_frame {{
-                background-color: {self.themes['app_color']['yellow_bg']};
+                background-color: {self.themes['app_color']['bg_mint_green_light']};
                 border: none;
                 border-radius: 9px;
             }}""")
@@ -53,7 +53,7 @@ class QtTree(QWidget):
         title_container.setFrameShadow(QFrame.Shadow.Plain)
         title_container.setStyleSheet(f"""
             QFrame#title_container {{
-                background-color: {self.themes['app_color']['yellow_bg']};
+                background-color: {self.themes['app_color']['bg_mint_green_light']};
                 border: none;
                 border-top-left-radius: 8px;
                 border-top-right-radius: 8px;
@@ -135,8 +135,8 @@ class QtTree(QWidget):
             radius=8,
             color=self.themes["app_color"]["white"],
             bg_color=self.themes["app_color"]["blue_bg"],
-            bg_color_hover=self.themes["app_color"]["dark_three"],
-            bg_color_pressed=self.themes["app_color"]["dark_four"],
+            bg_color_hover=self.themes["app_color"]["blue_hover"],
+            bg_color_pressed=self.themes["app_color"]["blue_pressed"],
             font_size=14,
             parent=button_container
         )
@@ -148,8 +148,8 @@ class QtTree(QWidget):
             radius=8,
             color=self.themes["app_color"]["white"],
             bg_color=self.themes["app_color"]["blue_bg"],
-            bg_color_hover=self.themes["app_color"]["dark_three"],
-            bg_color_pressed=self.themes["app_color"]["dark_four"],
+            bg_color_hover=self.themes["app_color"]["blue_hover"],
+            bg_color_pressed=self.themes["app_color"]["blue_pressed"],
             font_size=14,
             parent=button_container
         )

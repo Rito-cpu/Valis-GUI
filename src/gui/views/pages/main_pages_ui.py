@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+import pathlib
+
 from src.core.pyqt_core import *
 from src.core.image_functions import Functions
 from src.gui.models import *
+from src.core.app_config import IMG_RSC_PATH
 
 
 class Ui_MainPages(object):
@@ -39,17 +42,24 @@ class Ui_MainPages(object):
         home_label.setStyleSheet('font-size: 16px; font-weight: bold;')
         home_label.hide()
 
+        home_shadow = QGraphicsDropShadowEffect()
+        home_shadow.setBlurRadius(25)
+        home_shadow.setOffset(0, 7)
+        home_shadow.setColor(QColor(0, 0, 0, 160))
+
         home_logo_frame = QFrame(home_upper_frame)
         home_logo_frame.setObjectName(u"home_logo_frame")
-        home_logo_frame.setMinimumSize(QSize((2107/5), (517/5)))
-        home_logo_frame.setMaximumSize(QSize((2107/5), (517/5)))
+        #home_logo_frame.setMinimumSize(QSize((2107/5), (517/5)))
+        #home_logo_frame.setMaximumSize(QSize((2107/5), (517/5)))
+        home_logo_frame.setFixedSize(QSize(375, 115))
         home_logo_frame.setFrameShape(QFrame.Shape.NoFrame)
         home_logo_frame.setFrameShadow(QFrame.Shadow.Raised)
+        home_logo_frame.setGraphicsEffect(home_shadow)
 
         valis_logo = QSvgWidget(Functions.set_svg_image("valis_logo.svg"))
 
         home_logo_layout = QVBoxLayout(home_logo_frame)
-        home_logo_layout.setContentsMargins(0, 0, 0, 0)
+        home_logo_layout.setContentsMargins(10, 10, 10, 20)
         home_logo_layout.setSpacing(0)
         home_logo_layout.setObjectName(u"home_logo_layout")
         home_logo_layout.addWidget(valis_logo, Qt.AlignmentFlag.AlignCenter, Qt.AlignmentFlag.AlignCenter)
@@ -93,15 +103,63 @@ class Ui_MainPages(object):
         # self.etb_scroll_contents.setStyleSheet(u"border: 2px solid lightblue;")
         self.file_scroll_contents.setStyleSheet(u"background: transparent;")
 
+        title_with_image = QFrame(self.file_scroll_contents)
+        title_with_image.setObjectName('title_with_image')
+        title_with_image.setFrameShape(QFrame.Shape.NoFrame)
+        title_with_image.setFrameShadow(QFrame.Shadow.Plain)
+        
         font = QFont()
         font.setPointSize(16)
-        self.image_dir_title = QLabel(self.file_scroll_contents)
+        self.image_dir_title = QLabel(title_with_image)
         self.image_dir_title.setObjectName(u"image_dir_title")
         self.image_dir_title.setMaximumSize(QSize(16777215, 40))
         # self.import_data_title.font().setPointSize(22)
         # self.import_data_title.font().setBold(True)
         self.image_dir_title.setStyleSheet("font-size: 18px; font-weight: bold;")
         self.image_dir_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        img_shadow_one = QGraphicsDropShadowEffect()
+        img_shadow_one.setBlurRadius(15)
+        img_shadow_one.setOffset(-2, 5)
+        img_shadow_one.setColor(QColor(0, 0, 0, 160))
+
+        img_shadow_two = QGraphicsDropShadowEffect()
+        img_shadow_two.setBlurRadius(15)
+        img_shadow_two.setOffset(2, 5)
+        img_shadow_two.setColor(QColor(0, 0, 0, 160))
+
+        img_transformer = QTransform()
+        img_transformer.rotate(-3)
+
+        slide_example_dark = QPixmap(str(pathlib.Path(IMG_RSC_PATH) / "downloads" / "slide_example_dark.png"))
+        rotated_slide_dark = slide_example_dark.transformed(img_transformer, Qt.TransformationMode.SmoothTransformation)
+
+        slide_dark_label = QLabel(title_with_image)
+        slide_dark_label.setObjectName('slide_dark_label')
+        slide_dark_label.setPixmap(rotated_slide_dark)
+        slide_dark_label.setScaledContents(True)
+        slide_dark_label.setFixedSize(190, 190)
+        slide_dark_label.setGraphicsEffect(img_shadow_one)
+        
+        img_transformer.rotate(6)
+        slide_example_light = QPixmap(str(pathlib.Path(IMG_RSC_PATH) / "downloads" / "slide_example_light.png"))
+        rotated_slide_light = slide_example_light.transformed(img_transformer, Qt.TransformationMode.SmoothTransformation)
+
+        slide_light_label = QLabel(title_with_image)
+        slide_light_label.setObjectName('slide_light_label')
+        slide_light_label.setPixmap(rotated_slide_light)
+        slide_light_label.setScaledContents(True)
+        slide_light_label.setFixedSize(190, 190)
+        slide_light_label.setGraphicsEffect(img_shadow_two)
+
+        title_image_layout = QHBoxLayout(title_with_image)
+        title_image_layout.setContentsMargins(10, 10, 10, 10)
+        title_image_layout.setSpacing(60)
+        title_image_layout.addStretch(1)
+        title_image_layout.addWidget(slide_dark_label, alignment=Qt.AlignmentFlag.AlignLeft)
+        title_image_layout.addWidget(self.image_dir_title, alignment=Qt.AlignmentFlag.AlignCenter)
+        title_image_layout.addWidget(slide_light_label, alignment=Qt.AlignmentFlag.AlignRight)
+        title_image_layout.addStretch(1)
 
         self.slide_dir_interaction = QWidget(self.file_scroll_contents)
         self.slide_dir_interaction.setObjectName('slide_dir_interaction')
@@ -116,7 +174,8 @@ class Ui_MainPages(object):
         self.file_content_layout.setContentsMargins(5, 5, 5, 5)
         self.file_content_layout.setSpacing(50)
         # self.file_content_layout.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
-        self.file_content_layout.addWidget(self.image_dir_title)
+        #self.file_content_layout.addWidget(self.image_dir_title)
+        self.file_content_layout.addWidget(title_with_image)
         self.file_content_layout.addWidget(self.slide_dir_interaction)
 
         self.file_scroll_area.setWidget(self.file_scroll_contents)

@@ -40,7 +40,7 @@ class QtOutputEntry(QWidget):
         container_frame.setFrameShadow(QFrame.Shadow.Plain)
         container_frame.setStyleSheet(f"""
             QFrame#container_frame {{
-                border: 2px solid #eeeeee;
+                border: 2px solid {self.themes['app_color']['blue_pressed']};
                 border-radius: 8px;
             }}
         """)
@@ -70,8 +70,8 @@ class QtOutputEntry(QWidget):
             radius=8,
             color=self.themes["app_color"]["white"],
             bg_color=self.themes["app_color"]["dark_one"],
-            bg_color_hover=self.themes["app_color"]["dark_three"],
-            bg_color_pressed=self.themes["app_color"]["dark_four"],
+            bg_color_hover=self.themes["app_color"]["yellow_bg"],
+            bg_color_pressed=self.themes["app_color"]["highlight_bg"],
             parent=bttn_container
         )
         self.submit_bttn.setObjectName('dir_submit_bttn')

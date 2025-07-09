@@ -26,8 +26,11 @@
         "yellow" : "#f2b50d",
 
         "main_bg": "#FCFCFA",
-        "yellow_bg": "#FFC43D",
+        "yellow_bg": "#F2B327",
+        "yellow_bg_light": "#FFC43D",
+        "yellow_bg_dark": "#F0AD27",
         "blue_bg": "#1B9AAA",
+        "blue_hover": "#188D9B",
         "blue_pressed": "#157985",
         "green_bg": "#06D6A0",
         "highlight_bg": "#F2B63F",
@@ -36,6 +39,13 @@
         "green_two": "green",
         "red_bg": "#ea5015",
         "red_hover": "#e0481f",
-        "red_pressed": "#d24424"
+        "red_pressed": "#d24424",
+        "test_green": "#22dd7d",
+        "bg_mint_green": "#1ECD7F",
+        "bg_mint_green_light": "#53E6A4",
+        "bg_mint_green_hover": "#1DC57A",
+        "bg_light_silver": "#E4E4E4",
+        "bg_dark_silver": "#C0C0C0",
+        "bg_silver_pressed": "#A7A7A7"
     }
 }

@@ -22,8 +22,10 @@ IMG_RSC_PATH = APP_ROOT / image_dir
 scripts_loc = "src/core/scripts/valis"
 SCRIPTS_PATH = (APP_ROOT / scripts_loc).resolve()
 
-# Docker Container name
-DOCKER_SESSION_CONTAINER: str = "valis_session_container"
+# Docker static names
+DOCKER_SESSION_CONTAINER: str = "gui-valis-session"
+DOCKER_GUI_IMAGE: str = "gui-valis-wsi:latest"
+SHOULD_REUSE_CONTAINER: bool = False
 
 # --- Output Directory Instance ---
 OUTPUT_DIRECTORY = None
@@ -79,7 +81,7 @@ NONRIGID_REGISTRARS = None
 try:
     NONRIGID_REGISTRARS = get_nonrigid_registrars()
 except Exception as error:
-    print('Valis non-rigid registrar import failed. Exiting application...')
+    print(f'Valis non-rigid registrar import failed. Exiting application...\n{error}')
     sys.exit(1)
 
 MATCH_FILTERS = None
