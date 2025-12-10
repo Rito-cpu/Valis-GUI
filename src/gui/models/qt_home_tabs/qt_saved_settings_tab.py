@@ -135,9 +135,9 @@ class SavedSettingsTab(QWidget):
             text="Add File",
             radius=8,
             color=self.themes["app_color"]["white"],
-            bg_color=self.themes["app_color"]["yellow_bg"],
-            bg_color_hover=self.themes["app_color"]["yellow_bg_light"],
-            bg_color_pressed=self.themes["app_color"]["yellow_bg_dark"],
+            bg_color=self.themes["app_color"]["bg_mint_green"],
+            bg_color_hover=self.themes["app_color"]["bg_mint_green_light"],
+            bg_color_pressed=self.themes["app_color"]["bg_mint_green_hover"],
             font_size=16,
             parent=add_bttn_frame
         )

@@ -329,9 +329,9 @@ class SetupMainWindow:
             text="Register",
             radius=8,
             color=self.themes["app_color"]["white"],
-            bg_color=self.themes["app_color"]["bg_mint_green"],
-            bg_color_hover=self.themes["app_color"]["bg_mint_green_light"],
-            bg_color_pressed=self.themes["app_color"]["bg_mint_green_hover"],
+            bg_color=self.themes["app_color"]["blue_bg"],
+            bg_color_hover=self.themes["app_color"]["blue_hover"],
+            bg_color_pressed=self.themes["app_color"]["blue_pressed"],
             font_size=14,
             parent=register_bttn_frame
         )

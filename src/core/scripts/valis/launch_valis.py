@@ -146,8 +146,11 @@ def launch_with_selections(user_settings_path: str, slide_settings_path: str, ho
 
         # code to run valis with the formatted data above
         registrar = registration.Valis(**selections_dict)
+        print(f'\n - - WORKING HERE - - \n')
 
         rigid_registrar, non_rigid_registrar, error_df = registrar.register(**registration_params)
+
+        print(f'\n - - ERROR THROWN HERE - - \n')
 
         # TODO: Save this function for the export button
         #registrar.warp_and_save_slides(selections_dict[DST_DIR] + "/" + selections_dict[NAME], crop="overlap")

@@ -76,16 +76,16 @@ class UI_MainWindow(object):
             parent = self.left_menu_frame,
             app_parent = self.central_widget, # For tooltip parent
             dark_one = self.themes["app_color"]["bg_mint_green"],
-            dark_three = self.themes["app_color"]["bg_mint_green_light"],
+            dark_three = self.themes["app_color"]["bg_mint_green_hover"],
             dark_four = self.themes["app_color"]["dark_four"],
             bg_one = self.themes["app_color"]["bg_light_silver"],
-            icon_color = self.themes["app_color"]["blue_bg"],
+            icon_color = self.themes["app_color"]["bg_light_silver"],
             icon_color_hover = self.themes["app_color"]["icon_hover"],
             icon_color_pressed = self.themes["app_color"]["icon_pressed"],
-            icon_color_active = self.themes["app_color"]["bg_three"],
-            context_color = self.themes["app_color"]["blue_bg"],     # context_color shows a highlighted tip to the icon button edge, was edited to bg_one
-            text_foreground = self.themes["app_color"]["text_color"],
-            text_active = self.themes["app_color"]["dark_four"]
+            icon_color_active = self.themes["app_color"]["blue_bg"],
+            context_color = self.themes["app_color"]["bg_light_silver"],     # context_color shows a highlighted tip to the icon button edge, was edited to bg_one
+            text_foreground = self.themes["app_color"]["bg_light_silver"],
+            text_active = self.themes["app_color"]["blue_bg"]
         )
         self.left_menu_layout.addWidget(self.left_menu)
 

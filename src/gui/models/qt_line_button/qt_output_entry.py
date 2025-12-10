@@ -69,9 +69,9 @@ class QtOutputEntry(QWidget):
             text="Submit",
             radius=8,
             color=self.themes["app_color"]["white"],
-            bg_color=self.themes["app_color"]["dark_one"],
-            bg_color_hover=self.themes["app_color"]["yellow_bg"],
-            bg_color_pressed=self.themes["app_color"]["highlight_bg"],
+            bg_color=self.themes["app_color"]["blue_bg"],
+            bg_color_hover=self.themes["app_color"]["blue_hover"],
+            bg_color_pressed=self.themes["app_color"]["blue_pressed"],
             parent=bttn_container
         )
         self.submit_bttn.setObjectName('dir_submit_bttn')
@@ -95,7 +95,7 @@ class QtOutputEntry(QWidget):
         marquee_frame.setFrameShadow(QFrame.Shadow.Plain)
         marquee_frame.setStyleSheet(f"""
             QFrame#marquee_frame{{
-                background-color: {self.themes["app_color"]["blue_bg"]};
+                background-color: {self.themes["app_color"]["bg_mint_green_hover"]};
                 border-radius: 6px;
             }}
         """)

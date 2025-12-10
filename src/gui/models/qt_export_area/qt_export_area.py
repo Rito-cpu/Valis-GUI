@@ -156,7 +156,7 @@ class QtExportArea(QWidget):
                 padding-left: 7px;
                 padding-right: 7px;
             }}
-        """)
+        """) # TODO: fit frame to fill entire GB and push title upwards
 
         export_options_inner_frame = QFrame(export_options_gb)
         export_options_inner_frame.setObjectName('export_options_inner_frame')
