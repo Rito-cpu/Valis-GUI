@@ -148,6 +148,8 @@ def launch_with_selections(user_settings_path: str, slide_settings_path: str, ho
         registrar = registration.Valis(**selections_dict)
         print(f'\n - - WORKING HERE - - \n')
 
+        if not hasattr(registrar, "registrar.non_rigid_reg_kwargs"):
+            registrar.non_rigid_reg_kwargs = None
         rigid_registrar, non_rigid_registrar, error_df = registrar.register(**registration_params)
 
         print(f'\n - - ERROR THROWN HERE - - \n')
@@ -180,5 +182,5 @@ if __name__ == "__main__":
         args = parser.parse_args()
     except SystemExit as e:
         sys.exit(1)
-
+    
     launch_with_selections(args.path, args.il, args.hdir)

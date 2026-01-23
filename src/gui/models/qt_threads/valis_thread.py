@@ -88,7 +88,25 @@ class ValisProcessObject(QProcess):
                 "-hdir", docker_home_dir
             ])
 
-            self.start()
+            try:
+                self.start()
+            except Exception as e:
+                exit_buttons = {
+                    "Ok": QMessageBox.ButtonRole.AcceptRole
+                }
+
+                exit_message_box = QtMessage(
+                    buttons=exit_buttons,
+                    color=self.themes["app_color"]["main_bg"],
+                    bg_color_one=self.themes["app_color"]["yellow_bg"],
+                    bg_color_two=self.themes["app_color"]["bg_one"],
+                    bg_color_hover=self.themes["app_color"]["yellow_bg_light"],
+                    bg_color_pressed=self.themes["app_color"]["yellow_bg_dark"]
+                )
+                exit_message_box.setIcon(QMessageBox.Icon.Critical)
+                exit_message_box.setText("Encountered Error:")
+                exit_message_box.setInformativeText("")
+                exit_message_box.exec()
             return True
 
     def start_process2(self):
